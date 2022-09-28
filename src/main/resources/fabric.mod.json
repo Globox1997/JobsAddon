@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "jobsaddon",
+  "version": "${version}",
+  "name": "JobsAddon",
+  "description": "An addon for LevelZ which adds jobs",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/jobsaddon",
+    "sources": "https://github.com/Globox1997/JobsAddon",
+    "issues": "https://github.com/Globox1997/JobsAddon/issues"
+  },
+  "license": "GPLv3",
+  "icon": "assets/jobsaddon/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.jobsaddon.JobsAddonMain"
+    ],
+    "client": [
+      "net.jobsaddon.JobsAddonClient"
+    ],
+    "modmenu": [
+      "net.jobsaddon.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "jobsaddon.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric-api": "*",
+    "minecraft": "~1.19",
+    "java": ">=17",
+    "levelz": ">=1.3.7"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

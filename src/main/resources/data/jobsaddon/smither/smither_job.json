@@ -1,0 +1,117 @@
+{
+    "2": {
+        "replace": false,
+        "crafting": [
+            "minecraft:wooden_axe",
+            "minecraft:wooden_hoe",
+            "minecraft:wooden_sword",
+            "minecraft:wooden_shovel",
+            "minecraft:wooden_pickaxe",
+            "minecraft:arrow"
+        ]
+    },
+    "3": {
+        "replace": false,
+        "crafting": [
+            "minecraft:stone_axe",
+            "minecraft:stone_hoe",
+            "minecraft:stone_sword",
+            "minecraft:stone_shovel",
+            "minecraft:stone_pickaxe"
+        ],
+        "blast_furnace": [
+            "minecraft:coal"
+        ]
+    },
+    "4": {
+        "replace": false,
+        "blast_furnace": [
+            "minecraft:copper_ingot",
+            "minecraft:quartz"
+        ]
+    },
+    "5": {
+        "replace": false,
+        "blast_furnace": [
+            "minecraft:redstone"
+        ]
+    },
+    "7": {
+        "replace": false,
+        "crafting": [
+            "minecraft:golden_axe",
+            "minecraft:golden_hoe",
+            "minecraft:golden_boots",
+            "minecraft:golden_helmet",
+            "minecraft:golden_sword",
+            "minecraft:golden_leggings",
+            "minecraft:golden_shovel",
+            "minecraft:golden_pickaxe",
+            "minecraft:golden_chestplate"
+        ],
+        "blast_furnace": [
+            "minecraft:gold_ingot",
+            "minecraft:lapis_lazuli"
+        ]
+    },
+    "8": {
+        "replace": false,
+        "crafting": [
+            "minecraft:iron_axe",
+            "minecraft:iron_hoe",
+            "minecraft:iron_boots",
+            "minecraft:iron_helmet",
+            "minecraft:iron_sword",
+            "minecraft:iron_leggings",
+            "minecraft:iron_shovel",
+            "minecraft:iron_pickaxe",
+            "minecraft:iron_chestplate"
+        ],
+        "blast_furnace": [
+            "minecraft:iron_ingot"
+        ]
+    },
+    "9": {
+        "replace": false,
+        "blast_furnace": [
+            "minecraft:emerald"
+        ]
+    },
+    "10": {
+        "replace": false,
+        "crafting": [
+            "minecraft:diamond_axe",
+            "minecraft:diamond_hoe",
+            "minecraft:diamond_boots",
+            "minecraft:diamond_helmet",
+            "minecraft:diamond_sword",
+            "minecraft:diamond_leggings",
+            "minecraft:diamond_shovel",
+            "minecraft:diamond_pickaxe",
+            "minecraft:diamond_chestplate"
+        ],
+        "blast_furnace": [
+            "minecraft:diamond"
+        ]
+    },
+    "12": {
+        "replace": false,
+        "items": [
+            "minecraft:netherite_axe",
+            "minecraft:netherite_hoe",
+            "minecraft:netherite_boots",
+            "minecraft:netherite_helmet",
+            "minecraft:netherite_sword",
+            "minecraft:netherite_leggings",
+            "minecraft:netherite_shovel",
+            "minecraft:netherite_pickaxe",
+            "minecraft:netherite_chestplate"
+        ],
+        "crafting": [
+            "minecraft:netherite_ingot"
+        ],
+        "blast_furnace": [
+            "minecraft:netherite_scrap"
+        ]
+    }
+}

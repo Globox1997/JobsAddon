@@ -1,0 +1,35 @@
+{
+    "parent": "minecraft:adventure/root",
+    "rewards": {
+        "function": "levelz:level100"
+    },
+    "display": {
+        "icon": {
+            "item": "levelz:rare_candy"
+        },
+        "title": {
+            "translate": "advancements.adventure.miner_level_100.title"
+        },
+        "description": {
+            "translate": "advancements.adventure.miner_level_100.description"
+        },
+        "frame": "task",
+        "show_toast": true,
+        "announce_to_chat": false,
+        "hidden": false
+    },
+    "criteria": {
+        "miner_level_100": {
+            "trigger": "jobsaddon:job_up",
+            "conditions": {
+                "job_name": "miner",
+                "job_level": 100
+            }
+        }
+    },
+    "requirements": [
+        [
+            "miner_level_100"
+        ]
+    ]
+}

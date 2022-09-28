@@ -1,0 +1,27 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.jobsaddon.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "player.PlayerManagerMixin",
+    "player.PlayerEntityMixin",
+    "player.ServerPlayerEntityMixin",
+    "entity.FishingBobberEntityMixin",
+    "misc.AnvilScreenHandlerMixin",
+    "misc.FurnaceOutputSlotMixin",
+    "misc.BrewingStandScreenHandlerMixin",
+    "misc.SmithingScreenHandlerMixin",
+    "misc.CraftingResultSlotMixin",
+    "misc.EnchantmentScreenHandlerMixin",
+    "block.BlockMixin",
+    "block.TntBlockMixin"
+  ],
+  "client": [
+    "client.LevelzScreenMixin",
+    "client.InventoryScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,28 @@
+{
+    "2": {
+        "replace": false,
+        "blocks": [
+            "minecraft:jungle_log"
+        ]
+    },
+    "3": {
+        "replace": false,
+        "blocks": [
+            "minecraft:birch_log",
+            "minecraft:spruce_log",
+            "minecraft:mangrove_log",
+            "minecraft:dark_oak_log",
+            "minecraft:acacia_log",
+            "minecraft:oak_log",
+            "minecraft:crimson_stem",
+            "minecraft:warped_stem"
+        ]
+    },
+    "4": {
+        "replace": false,
+        "blocks": [
+            "minecraft:crimson_stem",
+            "minecraft:warped_stem"
+        ]
+    }
+}

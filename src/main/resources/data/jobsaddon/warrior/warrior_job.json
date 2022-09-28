@@ -1,0 +1,115 @@
+{
+    "1": {
+        "replace": false,
+        "entities": [
+            "minecraft:bat",
+            "minecraft:parrot",
+            "minecraft:frog",
+            "minecraft:cat",
+            "minecraft:ocelot",
+            "minecraft:rabbit"
+        ]
+    },
+    "2": {
+        "replace": false,
+        "entities": [
+            "minecraft:cow",
+            "minecraft:snow_golem",
+            "minecraft:chicken",
+            "minecraft:sheep",
+            "minecraft:donkey",
+            "minecraft:strider",
+            "minecraft:llama",
+            "minecraft:fox",
+            "minecraft:mule",
+            "minecraft:turtle",
+            "minecraft:villager",
+            "minecraft:pig",
+            "minecraft:trader_llama",
+            "minecraft:allay",
+            "minecraft:mooshroom",
+            "minecraft:horse",
+            "minecraft:glow_squid",
+            "minecraft:squid",
+            "minecraft:dolphin"
+        ]
+    },
+    "4": {
+        "replace": false,
+        "entities": [
+            "minecraft:bee",
+            "minecraft:magma_cube",
+            "minecraft:slime",
+            "minecraft:panda",
+            "minecraft:goat",
+            "minecraft:silverfish",
+            "minecraft:cave_spider",
+            "minecraft:axolotl",
+            "minecraft:endermite"
+        ]
+    },
+    "5": {
+        "replace": false,
+        "entities": [
+            "minecraft:phantom",
+            "minecraft:spider",
+            "minecraft:polar_bear",
+            "minecraft:wandering_trader",
+            "minecraft:hoglin",
+            "minecraft:pillager",
+            "minecraft:blaze",
+            "minecraft:piglin",
+            "minecraft:skeleton",
+            "minecraft:zombie_villager",
+            "minecraft:husk",
+            "minecraft:iron_golem",
+            "minecraft:zombie_horse",
+            "minecraft:witch",
+            "minecraft:zoglin",
+            "minecraft:creeper",
+            "minecraft:stray",
+            "minecraft:shulker",
+            "minecraft:wolf",
+            "minecraft:vex",
+            "minecraft:zombified_piglin",
+            "minecraft:drowned",
+            "minecraft:zombie",
+            "minecraft:ghast",
+            "minecraft:vindicator",
+            "minecraft:enderman"
+        ]
+    },
+    "6": {
+        "replace": false,
+        "entities": [
+            "minecraft:wither_skeleton",
+            "minecraft:piglin_brute",
+            "minecraft:skeleton_horse",
+            "minecraft:guardian",
+            "minecraft:illusioner",
+            "minecraft:ravager",
+            "minecraft:evoker"
+        ]
+    },
+    "8": {
+        "replace": false,
+        "entities": [
+            "minecraft:player",
+            "minecraft:giant",
+            "minecraft:elder_guardian"
+        ]
+    },
+    "10": {
+        "replace": false,
+        "entities": [
+            "minecraft:wither",
+            "minecraft:warden"
+        ]
+    },
+    "15": {
+        "replace": false,
+        "entities": [
+            "minecraft:ender_dragon"
+        ]
+    }
+}

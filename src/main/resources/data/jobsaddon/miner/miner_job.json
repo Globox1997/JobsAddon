@@ -1,0 +1,51 @@
+{
+    "5": {
+        "replace": false,
+        "blocks": [
+            "minecraft:coal_ore",
+            "minecraft:copper_ore",
+            "minecraft:deepslate_copper_ore",
+            "minecraft:deepslate_coal_ore",
+            "minecraft:nether_quartz_ore"
+        ]
+    },
+    "6": {
+        "replace": false,
+        "blocks": [
+            "minecraft:deepslate_redstone_ore",
+            "minecraft:redstone_ore"
+        ]
+    },
+    "7": {
+        "replace": false,
+        "blocks": [
+            "minecraft:gold_ore",
+            "minecraft:nether_gold_ore",
+            "minecraft:deepslate_gold_ore",
+            "minecraft:lapis_ore",
+            "minecraft:deepslate_lapis_ore",
+            "minecraft:iron_ore",
+            "minecraft:deepslate_iron_ore"
+        ]
+    },
+    "8": {
+        "replace": false,
+        "blocks": [
+            "minecraft:deepslate_diamond_ore",
+            "minecraft:diamond_ore"
+        ]
+    },
+    "9": {
+        "replace": false,
+        "blocks": [
+            "minecraft:emerald_ore",
+            "minecraft:deepslate_emerald_ore"
+        ]
+    },
+    "15": {
+        "replace": false,
+        "blocks": [
+            "minecraft:ancient_debris"
+        ]
+    }
+}

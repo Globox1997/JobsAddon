@@ -1,0 +1,68 @@
+{
+    "1": {
+        "replace": false,
+        "items": [
+            "minecraft:grass",
+            "minecraft:seagrass"
+        ],
+        "crafting": [
+            "minecraft:cookie"
+        ],
+        "smoker": [
+            "minecraft:dried_kelp"
+        ]
+    },
+    "3": {
+        "replace": false,
+        "items": [
+            "minecraft:wheat",
+            "minecraft:carrot",
+            "minecraft:potato",
+            "minecraft:beetroot",
+            "minecraft:sweet_berries",
+            "minecraft:nether_wart",
+            "minecraft:brown_mushroom",
+            "minecraft:red_mushroom",
+            "minecraft:pumpkin",
+            "minecraft:melon_slice"
+        ],
+        "crafting": [
+            "minecraft:beetroot_soup",
+            "minecraft:mushroom_stew"
+        ],
+        "smoker": [
+            "minecraft:baked_potato",
+            "minecraft:cooked_chicken",
+            "minecraft:cooked_mutton",
+            "minecraft:cooked_beef",
+            "minecraft:cooked_porkchop",
+            "minecraft:cooked_salmon",
+            "minecraft:cooked_cod"
+        ]
+    },
+    "4": {
+        "replace": false,
+        "crafting": [
+            "minecraft:golden_carrot",
+            "minecraft:rabbit_stew",
+            "minecraft:suspicious_stew"
+        ],
+        "smoker": [
+            "minecraft:cooked_rabbit"
+        ]
+    },
+    "5": {
+        "replace": false,
+        "crafting": [
+            "minecraft:pumpkin_pie",
+            "minecraft:cake"
+        ]
+    },
+    "10": {
+        "replace": false,
+        "crafting": [
+            "minecraft:golden_apple",
+            "minecraft:enchanted_golden_apple"
+        ]
+    }
+}

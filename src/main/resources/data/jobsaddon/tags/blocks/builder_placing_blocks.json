@@ -1,0 +1,15 @@
+{
+    "replace": false,
+    "values": [
+        "#minecraft:planks",
+        "#minecraft:stairs",
+        "#minecraft:stone_bricks",
+        "#minecraft:walls",
+        "#minecraft:slabs",
+        "#minecraft:fences",
+        "#minecraft:doors",
+        "#minecraft:impermeable",
+        "minecraft:obsidian",
+        "minecraft:crying_obsidian"
+    ]
+}
