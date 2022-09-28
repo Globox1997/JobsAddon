@@ -162,6 +162,8 @@ public class JobsGui extends LightweightGuiDescription {
             if (jobsManager.getEmployedJobs() != null && jobsManager.getEmployedJobs().size() > 0) {
                 if (jobsManager.getEmployedJobs().size() > 2)
                     return Text.translatable("text.jobsaddon.tooManyEmployedJobs", jobTitle(jobsManager.getEmployedJobs().get(0)), jobTitle(jobsManager.getEmployedJobs().get(1))).getString();
+                else if (jobsManager.getEmployedJobs().size() == 1)
+                    return Text.translatable("text.jobsaddon.employedJob", jobTitle(jobsManager.getEmployedJobs().get(0))).getString();
                 else
                     return Text.translatable("text.jobsaddon.employedJobs", jobTitle(jobsManager.getEmployedJobs().get(0)), jobTitle(jobsManager.getEmployedJobs().get(1))).getString();
             } else

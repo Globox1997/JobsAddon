@@ -43,6 +43,7 @@
 
     "text.jobsaddon.jobLevel": "Lv. %s",
     "text.jobsaddon.employedTime": "Job Cooldown: ",
+    "text.jobsaddon.employedJob": "Employed Job: %s",
     "text.jobsaddon.employedJobs": "Employed Jobs: %s, %s",
     "text.jobsaddon.tooManyEmployedJobs": "Employed Jobs: %s, %s, ...",
     "text.jobsaddon.notEmployed": "Not Employed",
