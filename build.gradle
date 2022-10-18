@@ -51,6 +51,10 @@ dependencies {
 	}
 	modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.0-beta.1")
     modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.0-beta.1")
+	// FarmersDelight
+	modCompileOnly ('curse.maven:farmers-delight-fabric-482834:3947019') {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 }
 
 processResources {
