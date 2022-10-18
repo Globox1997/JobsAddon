@@ -202,6 +202,17 @@ The warrior can define "entities" for killing them.
 }
 ```
 
+#### Tags
+For a few situations there are a couple of tags which provide some usage:
+- farmer_furnace_items: items which are an output from the furnace used for farmer experience
+- smither_furnace_items: items which are an output from the furnace used for smither experience
+- smither_crafting_items: items which can be crafted and are not an instance of SwordItem, ArmorItem, ToolItem, BowItem or CrossbowItem
+- fisher_crafting_items: items which can be crafted used for fisher experience
+- farmer_crafting_items: items which can be crafted and are not a food item for farmer experience
+- farmer_breaking_items: items which are a drop from plant blocks and their instances for farmer experience
+- builder_placing_blocks: blocks which the builder can place for experience
+- miner_breaking_blocks: blocks which the miner can break for experience
+
 ### Advancement
 
 JobsAddon provides an advancement criterion trigger called "jobsaddon:job_up".\
