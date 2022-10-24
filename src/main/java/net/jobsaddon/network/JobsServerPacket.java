@@ -74,12 +74,13 @@ public class JobsServerPacket {
     }
 
     public static void writeS2CJobXPPacket(ServerPlayerEntity serverPlayerEntity, String jobName, int amount) {
+        JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
         // set on server
-        ((JobsManagerAccess) serverPlayerEntity).getJobsManager().addJobXP(serverPlayerEntity, jobName, amount);
+        jobsManager.addJobXP(serverPlayerEntity, jobName, amount);
         // send to client
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeString(jobName);
-        buf.writeInt(amount);
+        buf.writeInt(jobsManager.getJobXP(jobName));
         CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(JOB_XP_PACKET, buf);
         serverPlayerEntity.networkHandler.sendPacket(packet);
     }

@@ -59,9 +59,9 @@ public class JobsClientPacket {
 
         ClientPlayNetworking.registerGlobalReceiver(JobsServerPacket.JOB_XP_PACKET, (client, handler, buf, sender) -> {
             String jobName = buf.readString();
-            int amount = buf.readInt();
+            int currentXP = buf.readInt();
             client.execute(() -> {
-                ((JobsManagerAccess) client.player).getJobsManager().addJobXP(client.player, jobName, amount);
+                ((JobsManagerAccess) client.player).getJobsManager().setJobXP(jobName, currentXP);
             });
         });
 

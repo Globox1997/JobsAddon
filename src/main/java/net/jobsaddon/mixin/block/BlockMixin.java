@@ -17,6 +17,8 @@ import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PlantBlock;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -34,12 +36,15 @@ public class BlockMixin {
     private void onBreakMixin(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo info) {
         if (!world.isClient) {
             if (state.isIn(TagInit.MINER_BLOCKS) && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("miner")) {
-                int xpCount = 0;
-                if (JobLists.minerBlockIdMap.containsKey(Registry.BLOCK.getRawId(state.getBlock())))
-                    xpCount = JobLists.minerBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
-                else
-                    xpCount = ConfigInit.CONFIG.minerXP;
-                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "miner", xpCount);
+                if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, player.getMainHandStack()) == 0) {
+                    System.out.println(player.getMainHandStack());
+                    int xpCount = 0;
+                    if (JobLists.minerBlockIdMap.containsKey(Registry.BLOCK.getRawId(state.getBlock())))
+                        xpCount = JobLists.minerBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
+                    else
+                        xpCount = ConfigInit.CONFIG.minerXP;
+                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "miner", xpCount);
+                }
             }
 
             if (state.isIn(BlockTags.LOGS) && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("lumberjack")) {

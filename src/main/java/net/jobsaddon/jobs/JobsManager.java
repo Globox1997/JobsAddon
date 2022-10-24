@@ -208,6 +208,7 @@ public class JobsManager {
         }
     }
 
+    // Should only get called on server
     public void addJobXP(PlayerEntity playerEntity, String string, int XP) {
         if (!isJobMaxLevel(string)) {
             int currentJobXp = getJobXP(string) + XP;
