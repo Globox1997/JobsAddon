@@ -41,7 +41,6 @@ public class JobUpCriterion extends AbstractCriterion<JobUpCriterion.Conditions>
         }
 
         public boolean matches(ServerPlayerEntity player, String jobName, int jobLevel) {
-            System.out.println(this.jobPredicate.test(jobName) + " : " + jobLevelPredicate.test(jobLevel) + " : " + jobName + " : " + jobLevel);
             return this.jobPredicate.test(jobName) && jobLevelPredicate.test(jobLevel);
         }
 
