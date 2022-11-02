@@ -13,7 +13,6 @@ import com.google.gson.JsonParser;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.init.ConfigInit;
-import net.jobsaddon.init.TagInit;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -205,11 +204,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
                                     continue;
                                 }
-                                Item item = Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()));
-                                if (!item.isFood() && !item.getDefaultStack().isIn(TagInit.FARMER_CRAFTING_ITEMS)) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid food item", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
-                                    continue;
-                                }
+                                
+                                // Item item = Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()));
+                                // if (!item.isFood() && !item.getDefaultStack().isIn(TagInit.FARMER_CRAFTING_ITEMS)) {
+                                //     JobsAddonMain.LOGGER.warn("{} is not a valid food item", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
+                                //     continue;
+                                // }
 
                                 JobLists.farmerCraftingIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
                             }
