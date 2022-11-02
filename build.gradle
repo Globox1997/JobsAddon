@@ -55,6 +55,10 @@ dependencies {
 	modCompileOnly ('curse.maven:farmers-delight-fabric-482834:3947019') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
+	// FallingTree
+	modCompileOnly ('curse.maven:falling-tree-349559:3968312'),{
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 }
 
 processResources {

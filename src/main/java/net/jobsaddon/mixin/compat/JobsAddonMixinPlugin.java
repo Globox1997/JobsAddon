@@ -24,6 +24,10 @@ public class JobsAddonMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.contains("TomatoBushCropBlockMixin") && !FabricLoader.getInstance().isModLoaded("farmersdelight"))
             return false;
+        // if ((mixinClassName.contains("ShiftDownTreeBreakingHandlerMixin") || mixinClassName.contains("InstantaneousTreeBreakingHandler")) && !FabricLoader.getInstance().isModLoaded("fallingtree"))
+        // return false;
+        if (mixinClassName.contains("BlockWrapperMixin") && !FabricLoader.getInstance().isModLoaded("fallingtree"))
+            return false;
 
         return true;
     }
