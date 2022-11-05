@@ -12,13 +12,6 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 @Config.Gui.Background("minecraft:textures/block/stone.png")
 public class JobsAddonConfig implements ConfigData {
 
-    // public int test = 0;
-    // public int test1 = 0;
-    // public int test2 = 0;
-    // public int test3 = 70;
-    // public int test4 = 10;
-    // public int test5 = 10;
-
     @Comment("Count for how many jobs can a player have at a time")
     public int employedJobs = 2;
     @Comment("Delay to employ new job")
@@ -63,6 +56,7 @@ public class JobsAddonConfig implements ConfigData {
     @ConfigEntry.Category("reward_settings")
     @Comment("Numismatic Overhaul compat lvl * multiplicator")
     public int moneyMultiplicator = 20;
+    public boolean allow_max_lvl_progress = false;
 
     @Comment("Show the job gui button in the inventory")
     public boolean inventoryButton = true;

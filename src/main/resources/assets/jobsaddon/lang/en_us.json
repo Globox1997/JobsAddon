@@ -31,6 +31,7 @@
 
     "text.autoconfig.jobsaddon.option.levelZXPMultiplicator": "LevelZ XP Multiplicator",
     "text.autoconfig.jobsaddon.option.moneyMultiplicator": "Money Multiplicator",
+    "text.autoconfig.jobsaddon.option.allow_max_lvl_progress": "Allow Max Level Progress",
 
     "text.jobsaddon.brewer": "Brewer",
     "text.jobsaddon.builder": "Builder",
