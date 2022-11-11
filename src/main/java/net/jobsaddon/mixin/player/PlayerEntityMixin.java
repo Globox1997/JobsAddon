@@ -23,14 +23,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
 
     private final JobsManager jobsManager = new JobsManager();
+    private BlockPos lastBlockPos;
     private int lastBlockId;
-    private int placeBlockCount;
+    private int blockCount;
 
     @Inject(method = "readCustomDataFromNbt", at = @At(value = "TAIL"))
     private void readCustomDataFromNbtMixin(NbtCompound tag, CallbackInfo info) {
@@ -78,22 +80,34 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     }
 
     @Override
-    public void setLastBlockId(int id) {
-        if (this.lastBlockId == id)
-            placeBlockCount++;
-        else
-            placeBlockCount = 0;
-        this.lastBlockId = id;
-        if (placeBlockCount > 200) {
-            JobsAddonMain.LOGGER.warn("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registry.BLOCK.get(id).asItem().getName().getString()
-                    + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos());
-            try (FileWriter playerLogFile = new FileWriter("playerlog.txt", true)) {
-                playerLogFile.append("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registry.BLOCK.get(id).asItem().getName().getString()
-                        + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos() + " at " + new Timestamp(System.currentTimeMillis()));
-                playerLogFile.append(System.lineSeparator());
-            } catch (IOException e) {
+    public boolean setLastBlockId(BlockPos blockPos, boolean building, int id) {
+        if (building) {
+            if (this.lastBlockId == id)
+                blockCount++;
+            else
+                blockCount = 0;
+            this.lastBlockId = id;
+            if (blockCount > 200) {
+                JobsAddonMain.LOGGER.warn("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registry.BLOCK.get(id).asItem().getName().getString()
+                        + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos());
+                try (FileWriter playerLogFile = new FileWriter("playerlog.txt", true)) {
+                    playerLogFile.append("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registry.BLOCK.get(id).asItem().getName().getString()
+                            + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos() + " at " + new Timestamp(System.currentTimeMillis()));
+                    playerLogFile.append(System.lineSeparator());
+                } catch (IOException e) {
+                }
             }
+            return blockCount < 200;
+        } else {
+            if (this.lastBlockPos != null && this.lastBlockPos.equals(blockPos))
+                blockCount++;
+            else
+                blockCount = 0;
+            this.lastBlockPos = blockPos;
+
+            return blockCount < 10;
         }
+
     }
 
     @Override

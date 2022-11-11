@@ -35,7 +35,7 @@ public class BlockMixin {
     @Inject(method = "onBreak", at = @At(value = "HEAD"))
     private void onBreakMixin(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo info) {
         if (!world.isClient) {
-            if (state.isIn(TagInit.MINER_BLOCKS) && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("miner")) {
+            if (state.isIn(TagInit.MINER_BLOCKS) && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("miner") && ((PlayerAccess) player).setLastBlockId(pos, false, 0)) {
                 if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, player.getMainHandStack()) == 0) {
                     System.out.println(player.getMainHandStack());
                     int xpCount = 0;
@@ -47,7 +47,7 @@ public class BlockMixin {
                 }
             }
 
-            if (state.isIn(BlockTags.LOGS) && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("lumberjack")) {
+            if (state.isIn(BlockTags.LOGS) && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("lumberjack") && ((PlayerAccess) player).setLastBlockId(pos, false, 0)) {
                 int xpCount = 0;
                 if (JobLists.lumberjackBlockIdMap.containsKey(Registry.BLOCK.getRawId(state.getBlock())))
                     xpCount = JobLists.lumberjackBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
@@ -55,7 +55,7 @@ public class BlockMixin {
                     xpCount = ConfigInit.CONFIG.lumberjackXP;
                 JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "lumberjack", xpCount);
             }
-            if (state.getBlock() instanceof PlantBlock && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("farmer")) {
+            if (state.getBlock() instanceof PlantBlock && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("farmer") && ((PlayerAccess) player).setLastBlockId(pos, false, 0)) {
                 int xpCount = 0;
                 List<ItemStack> list = Block.getDroppedStacks(state, (ServerWorld) world, pos, null);
                 for (int i = 0; i < list.size(); i++)
@@ -76,15 +76,16 @@ public class BlockMixin {
     private void onPlacedMixin(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack, CallbackInfo info) {
         if (!world.isClient && placer != null && placer instanceof ServerPlayerEntity)
             if (state.isIn(TagInit.BUILDER_PLACING_BLOCKS) && ((JobsManagerAccess) placer).getJobsManager().isEmployedJob("builder")) {
-                ((PlayerAccess) placer).setLastBlockId(Registry.BLOCK.getRawId(state.getBlock()));
+                if (((PlayerAccess) placer).setLastBlockId(pos, true, Registry.BLOCK.getRawId(state.getBlock()))) {
 
-                int xpCount = 0;
-                if (JobLists.builderBlockIdMap.containsKey(Registry.BLOCK.getRawId(state.getBlock())))
-                    xpCount = JobLists.builderBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
-                else
-                    xpCount = ConfigInit.CONFIG.builderXP;
+                    int xpCount = 0;
+                    if (JobLists.builderBlockIdMap.containsKey(Registry.BLOCK.getRawId(state.getBlock())))
+                        xpCount = JobLists.builderBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
+                    else
+                        xpCount = ConfigInit.CONFIG.builderXP;
 
-                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) placer, "builder", xpCount);
+                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) placer, "builder", xpCount);
+                }
             }
     }
 }
