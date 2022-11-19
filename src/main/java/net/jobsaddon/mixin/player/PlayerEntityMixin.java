@@ -58,7 +58,7 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
                 if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("fisher")) {
                     int xpCount = 0;
                     if (JobLists.fisherEntityIdMap.containsKey(Registry.ENTITY_TYPE.getRawId(other.getType())))
-                        xpCount = JobLists.fisherCraftingIdMap.get(Registry.ENTITY_TYPE.getRawId(other.getType()));
+                        xpCount = JobLists.fisherEntityIdMap.get(Registry.ENTITY_TYPE.getRawId(other.getType()));
                     else
                         xpCount = ConfigInit.CONFIG.fisherXP;
                     JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "fisher", xpCount);
