@@ -29,6 +29,7 @@
     "text.autoconfig.jobsaddon.option.smitherXP": "Smither XP",
     "text.autoconfig.jobsaddon.option.warriorXP": "Warrior XP",
 
+    "text.autoconfig.jobsaddon.option.xpMultiplicator": "XP Multiplicator",
     "text.autoconfig.jobsaddon.option.levelZXPMultiplicator": "LevelZ XP Multiplicator",
     "text.autoconfig.jobsaddon.option.moneyMultiplicator": "Money Multiplicator",
     "text.autoconfig.jobsaddon.option.allow_max_lvl_progress": "Allow Max Level Progress",
