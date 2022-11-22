@@ -42,6 +42,15 @@
     "text.jobsaddon.smither": "Smither",
     "text.jobsaddon.warrior": "Warrior",
 
+    "text.jobsaddon.brewer.tooltop": "Brew Potions\nEnchant Items",
+    "text.jobsaddon.builder.tooltop": "Build Buildings",
+    "text.jobsaddon.farmer.tooltop": "Cook Food\nFarm Plants",
+    "text.jobsaddon.fisher.tooltop": "Catch Fish",
+    "text.jobsaddon.lumberjack.tooltop": "Cut Trees",
+    "text.jobsaddon.miner.tooltop": "Mine Ore\nUse Tnt",
+    "text.jobsaddon.smither.tooltop": "Use Anvil\nSmelt Ore\nSmith Tools and Weapons",
+    "text.jobsaddon.warrior.tooltop": "Kill Mobs",
+
     "text.jobsaddon.jobLevel": "Lv. %s",
     "text.jobsaddon.employedTime": "Job Cooldown: ",
     "text.jobsaddon.employedJob": "Employed Job: %s",

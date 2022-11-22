@@ -25,7 +25,9 @@ public class JobSprite extends WSprite {
         }
     }
 
-    public void addText(String string) {
-        text.add(Text.of(string).asOrderedText());
+    public void addText(String... string) {
+        for (String s : string) {
+            text.add(Text.of(s).asOrderedText());
+        }
     }
 }
