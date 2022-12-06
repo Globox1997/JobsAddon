@@ -204,11 +204,11 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
                                     continue;
                                 }
-                                
+
                                 // Item item = Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()));
                                 // if (!item.isFood() && !item.getDefaultStack().isIn(TagInit.FARMER_CRAFTING_ITEMS)) {
-                                //     JobsAddonMain.LOGGER.warn("{} is not a valid food item", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
-                                //     continue;
+                                // JobsAddonMain.LOGGER.warn("{} is not a valid food item", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
+                                // continue;
                                 // }
 
                                 JobLists.farmerCraftingIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
@@ -554,7 +554,28 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
                 JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
             }
         });
+        refreshReplaceList();
+        // restricted
+        manager.findResources("restricted", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
+            try {
+                InputStream stream = resourceRef.getInputStream();
+                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
 
+                if (JsonHelper.getBoolean(data, "replace", false))
+                    JobLists.restrictedRecipeIds.clear();
+
+                if (data.getAsJsonArray("recipes") != null)
+                    for (int u = 0; u < data.getAsJsonArray("recipes").size(); u++) {
+                        // if (!Registry.RECIPE_TYPE.containsId(new Identifier(data.getAsJsonArray("recipes").get(u).getAsString()))) {
+                        // JobsAddonMain.LOGGER.warn("{} is not a valid recipe identifier", data.getAsJsonArray("recipes").get(u).getAsString());
+                        // continue;
+                        // }
+                        JobLists.restrictedRecipeIds.add(new Identifier(data.getAsJsonArray("recipes").get(u).getAsString()));
+                    }
+            } catch (Exception e) {
+                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
+            }
+        });
     }
 
     private void refreshReplaceList() {

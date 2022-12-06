@@ -17,22 +17,20 @@
             "minecraft:stone_hoe",
             "minecraft:stone_sword",
             "minecraft:stone_shovel",
-            "minecraft:stone_pickaxe"
-        ],
-        "blast_furnace": [
+            "minecraft:stone_pickaxe",
             "minecraft:coal"
         ]
     },
     "4": {
         "replace": false,
-        "blast_furnace": [
+        "crafting": [
             "minecraft:copper_ingot",
             "minecraft:quartz"
         ]
     },
     "5": {
         "replace": false,
-        "blast_furnace": [
+        "crafting": [
             "minecraft:redstone"
         ]
     },
@@ -47,9 +45,7 @@
             "minecraft:golden_leggings",
             "minecraft:golden_shovel",
             "minecraft:golden_pickaxe",
-            "minecraft:golden_chestplate"
-        ],
-        "blast_furnace": [
+            "minecraft:golden_chestplate",
             "minecraft:gold_ingot",
             "minecraft:lapis_lazuli"
         ]
@@ -65,15 +61,13 @@
             "minecraft:iron_leggings",
             "minecraft:iron_shovel",
             "minecraft:iron_pickaxe",
-            "minecraft:iron_chestplate"
-        ],
-        "blast_furnace": [
+            "minecraft:iron_chestplate",
             "minecraft:iron_ingot"
         ]
     },
     "9": {
         "replace": false,
-        "blast_furnace": [
+        "crafting": [
             "minecraft:emerald"
         ]
     },
@@ -88,15 +82,13 @@
             "minecraft:diamond_leggings",
             "minecraft:diamond_shovel",
             "minecraft:diamond_pickaxe",
-            "minecraft:diamond_chestplate"
-        ],
-        "blast_furnace": [
+            "minecraft:diamond_chestplate",
             "minecraft:diamond"
         ]
     },
     "12": {
         "replace": false,
-        "items": [
+        "crafting": [
             "minecraft:netherite_axe",
             "minecraft:netherite_hoe",
             "minecraft:netherite_boots",
@@ -105,12 +97,8 @@
             "minecraft:netherite_leggings",
             "minecraft:netherite_shovel",
             "minecraft:netherite_pickaxe",
-            "minecraft:netherite_chestplate"
-        ],
-        "crafting": [
-            "minecraft:netherite_ingot"
-        ],
-        "blast_furnace": [
+            "minecraft:netherite_chestplate",
+            "minecraft:netherite_ingot",
             "minecraft:netherite_scrap"
         ]
     }

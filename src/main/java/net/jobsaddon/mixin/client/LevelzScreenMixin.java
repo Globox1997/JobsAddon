@@ -30,7 +30,7 @@ public abstract class LevelzScreenMixin extends CottonClientScreen {
         super(description);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V", ordinal = 1, shift = Shift.BEFORE))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/util/Identifier;)V", ordinal = 0, shift = Shift.BEFORE))
     private void renderMixin(MatrixStack matrices, int mouseX, int mouseY, float partialTicks, CallbackInfo info) {
         RenderSystem.setShaderTexture(0, RenderInit.JOB_GUI_ICONS);
         if (LibGui.isDarkMode())

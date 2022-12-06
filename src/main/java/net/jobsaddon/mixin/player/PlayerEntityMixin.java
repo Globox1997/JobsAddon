@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
@@ -33,6 +35,8 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     private BlockPos lastBlockPos;
     private int lastBlockId;
     private int blockCount;
+    @Nullable
+    private Identifier lastRecipeIdentifier;
 
     @Inject(method = "readCustomDataFromNbt", at = @At(value = "TAIL"))
     private void readCustomDataFromNbtMixin(NbtCompound tag, CallbackInfo info) {
@@ -113,5 +117,16 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     @Override
     public int getLastBlockId() {
         return this.lastBlockId;
+    }
+
+    @Nullable
+    @Override
+    public Identifier getLastRecipeId() {
+        return this.lastRecipeIdentifier;
+    }
+
+    @Override
+    public void setLastRecipeId(Identifier identifier) {
+        this.lastRecipeIdentifier = identifier;
     }
 }

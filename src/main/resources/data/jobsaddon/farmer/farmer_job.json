@@ -6,9 +6,7 @@
             "minecraft:seagrass"
         ],
         "crafting": [
-            "minecraft:cookie"
-        ],
-        "smoker": [
+            "minecraft:cookie",
             "minecraft:dried_kelp"
         ]
     },
@@ -28,9 +26,7 @@
         ],
         "crafting": [
             "minecraft:beetroot_soup",
-            "minecraft:mushroom_stew"
-        ],
-        "smoker": [
+            "minecraft:mushroom_stew",
             "minecraft:baked_potato",
             "minecraft:cooked_chicken",
             "minecraft:cooked_mutton",
@@ -45,9 +41,7 @@
         "crafting": [
             "minecraft:golden_carrot",
             "minecraft:rabbit_stew",
-            "minecraft:suspicious_stew"
-        ],
-        "smoker": [
+            "minecraft:suspicious_stew",
             "minecraft:cooked_rabbit"
         ]
     },

@@ -9,9 +9,6 @@ import net.minecraft.util.registry.Registry;
 public class TagInit {
 
     // Item
-    public static final TagKey<Item> FARMER_FURNACE_ITEMS = TagKey.of(Registry.ITEM_KEY, new Identifier("jobsaddon", "farmer_furnace_items"));
-    public static final TagKey<Item> SMITHER_FURNACE_ITEMS = TagKey.of(Registry.ITEM_KEY, new Identifier("jobsaddon", "smither_furnace_items"));
-
     public static final TagKey<Item> SMITHER_CRAFTING_ITEMS = TagKey.of(Registry.ITEM_KEY, new Identifier("jobsaddon", "smither_crafting_items"));
     public static final TagKey<Item> FISHER_CRAFTING_ITEMS = TagKey.of(Registry.ITEM_KEY, new Identifier("jobsaddon", "fisher_crafting_items"));
     public static final TagKey<Item> FARMER_CRAFTING_ITEMS = TagKey.of(Registry.ITEM_KEY, new Identifier("jobsaddon", "farmer_crafting_items"));

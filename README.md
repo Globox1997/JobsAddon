@@ -96,7 +96,7 @@ The builder can define "blocks" for placing blocks on the ground.
 
 #### 3. Farmer
 
-The farmer can define "items" for block drops like wheat, "crafting" for craftable items and "smoker" for item outputs from the smoker.
+The farmer can define "items" for block drops like wheat and "crafting" for craftable items including outputs from the smoker.
 
 ```json
 {
@@ -106,9 +106,7 @@ The farmer can define "items" for block drops like wheat, "crafting" for craftab
             "minecraft:wheat"
         ],
         "crafting": [
-            "minecraft:cake"
-        ],
-        "smoker": [
+            "minecraft:cake",
             "minecraft:baked_potato"
         ]
     }
@@ -168,19 +166,14 @@ The miner can define "blocks" for breaking these blocks.
 
 #### 7. Smither
 
-The smither can define "items" for item outputs by the anvil and smithing table, "crafting" for craftable items and "blast_furnace" for item outputs from the blast furnace.
+The smither can define "crafting" for craftable items including other furnace outputs.
 
 ```json
 {
     "5": {
         "replace": false,
-        "items": [
-            "minecraft:netherite_sword"
-        ],
         "crafting": [
-            "minecraft:iron_sword"
-        ],
-        "blast_furnace": [
+            "minecraft:netherite_sword",
             "minecraft:iron_ingot"
         ]
     }
@@ -204,14 +197,25 @@ The warrior can define "entities" for killing them.
 
 #### Tags
 For a few situations there are a couple of tags which provide some usage:
-- farmer_furnace_items: items which are an output from the furnace used for farmer experience
-- smither_furnace_items: items which are an output from the furnace used for smither experience
 - smither_crafting_items: items which can be crafted and are not an instance of SwordItem, ArmorItem, ToolItem, BowItem or CrossbowItem
 - fisher_crafting_items: items which can be crafted used for fisher experience
 - farmer_crafting_items: items which can be crafted and are not a food item for farmer experience
 - farmer_breaking_items: items which are a drop from plant blocks and their instances for farmer experience
 - builder_placing_blocks: blocks which the builder can place for experience
 - miner_breaking_blocks: blocks which the miner can break for experience
+
+#### Restriction (Since version 1.0.6)
+It is possible to restrict recipes by their id for granting jobsaddon experience.
+The file has to be in the folder called "resticted" and an example can be found below:
+
+```json
+{
+    "replace": false,
+    "recipes": [
+        "minecraft:golden_sword"
+    ]
+}
+```
 
 ### Advancement
 

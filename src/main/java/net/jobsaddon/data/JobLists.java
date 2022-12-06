@@ -1,9 +1,11 @@
 package net.jobsaddon.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 
 public class JobLists {
 
@@ -30,4 +32,7 @@ public class JobLists {
     public static final HashMap<Integer, Integer> smitherCraftingIdMap = new HashMap<>(); // sword items, armor items, bow items, crossbow items, tool items (or inside smither_crafting_items tag)
     // warrior
     public static final HashMap<Integer, Integer> warriorEntityIdMap = new HashMap<>(); // all types of creatures
+
+    // restricted
+    public static final ArrayList<Identifier> restrictedRecipeIds = new ArrayList<Identifier>();
 }
