@@ -34,7 +34,7 @@ dependencies {
 	// modImplementation ('com.github.Globox1997:LevelZ:1.19-SNAPSHOT') {
 	// 	exclude(group: "net.fabricmc.fabric-api")
 	// }
-	modImplementation ('curse.maven:levelz-517130:3973731') {
+	modImplementation ('curse.maven:levelz-517130:4137159') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Cloth
