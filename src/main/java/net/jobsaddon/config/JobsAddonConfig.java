@@ -15,7 +15,7 @@ public class JobsAddonConfig implements ConfigData {
     @Comment("Count for how many jobs can a player have at a time")
     public int employedJobs = 2;
     @Comment("Delay to employ new job")
-    public int jobChangeTime = 72000;
+    public int jobChangeTime = 24000;
     @Comment("Reset current job lvl xp when died")
     public boolean resetCurrentJobXP = true;
     @Comment("Only for Devs")

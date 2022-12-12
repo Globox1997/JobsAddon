@@ -178,7 +178,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("brewer")) {
                 brewerButton.setEmployedButton(true);
                 jobsManager.employJob("brewer");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "brewer", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -191,7 +191,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("builder")) {
                 builderButton.setEmployedButton(true);
                 jobsManager.employJob("builder");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "builder", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -204,7 +204,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("farmer")) {
                 farmerButton.setEmployedButton(true);
                 jobsManager.employJob("farmer");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "farmer", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -217,7 +217,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("fisher")) {
                 fisherButton.setEmployedButton(true);
                 jobsManager.employJob("fisher");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "fisher", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -230,7 +230,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("lumberjack")) {
                 lumberjackButton.setEmployedButton(true);
                 jobsManager.employJob("lumberjack");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "lumberjack", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -243,7 +243,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("miner")) {
                 minerButton.setEmployedButton(true);
                 jobsManager.employJob("miner");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "miner", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -256,7 +256,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("smither")) {
                 smitherButton.setEmployedButton(true);
                 jobsManager.employJob("smither");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "smither", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -269,7 +269,7 @@ public class JobsGui extends LightweightGuiDescription {
             } else if (jobsManager.canEmployJob("warrior")) {
                 warriorButton.setEmployedButton(true);
                 jobsManager.employJob("warrior");
-                jobsManager.setEmployedJobTime(jobsManager.hasMaxEmployedJobs() ? ConfigInit.CONFIG.jobChangeTime : 0);
+                jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 JobsClientPacket.writeC2SSelectJobPacket(jobsManager, "warrior", true, jobsManager.getEmployedJobTime());
             }
             setButtonEnabled(brewerButton, builderButton, farmerButton, fisherButton, lumberjackButton, minerButton, smitherButton, warriorButton, jobsManager);
@@ -324,15 +324,15 @@ public class JobsGui extends LightweightGuiDescription {
 
     private static String[] jobTooltip(String string) {
         String tooltip = switch (string) {
-            case "brewer" -> Text.translatable("text.jobsaddon.brewer.tooltop").getString();
-            case "builder" -> Text.translatable("text.jobsaddon.builder.tooltop").getString();
-            case "farmer" -> Text.translatable("text.jobsaddon.farmer.tooltop").getString();
-            case "fisher" -> Text.translatable("text.jobsaddon.fisher.tooltop").getString();
-            case "lumberjack" -> Text.translatable("text.jobsaddon.lumberjack.tooltop").getString();
-            case "miner" -> Text.translatable("text.jobsaddon.miner.tooltop").getString();
-            case "smither" -> Text.translatable("text.jobsaddon.smither.tooltop").getString();
-            case "warrior" -> Text.translatable("text.jobsaddon.warrior.tooltop").getString();
-            default -> Text.translatable("text.jobsaddon.nonJobTitle.tooltop").getString();
+        case "brewer" -> Text.translatable("text.jobsaddon.brewer.tooltop").getString();
+        case "builder" -> Text.translatable("text.jobsaddon.builder.tooltop").getString();
+        case "farmer" -> Text.translatable("text.jobsaddon.farmer.tooltop").getString();
+        case "fisher" -> Text.translatable("text.jobsaddon.fisher.tooltop").getString();
+        case "lumberjack" -> Text.translatable("text.jobsaddon.lumberjack.tooltop").getString();
+        case "miner" -> Text.translatable("text.jobsaddon.miner.tooltop").getString();
+        case "smither" -> Text.translatable("text.jobsaddon.smither.tooltop").getString();
+        case "warrior" -> Text.translatable("text.jobsaddon.warrior.tooltop").getString();
+        default -> Text.translatable("text.jobsaddon.nonJobTitle.tooltop").getString();
         };
         return tooltip.split("\n");
     }
