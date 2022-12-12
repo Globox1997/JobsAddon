@@ -63,9 +63,17 @@ public class PlayerManagerMixin {
             newJobsManager.setJobXP("miner", keepInventory ? jobsManager.getJobXP("miner") : resetCurrentJobXP ? 0 : jobsManager.getJobXP("miner"));
             newJobsManager.setJobXP("smither", keepInventory ? jobsManager.getJobXP("smither") : resetCurrentJobXP ? 0 : jobsManager.getJobXP("smither"));
             newJobsManager.setJobXP("warrior", keepInventory ? jobsManager.getJobXP("warrior") : resetCurrentJobXP ? 0 : jobsManager.getJobXP("warrior"));
+
+            if (jobsManager.getEmployedJobs() != null)
+                jobsManager.getEmployedJobs().forEach((job) -> {
+                    newJobsManager.employJob(job);
+                });
+            newJobsManager.setEmployedJobTime(jobsManager.getEmployedJobTime());
         }
-        if (ConfigInit.CONFIG.hardMode) {
+        if (!alive && ConfigInit.CONFIG.hardMode) {
             serverPlayerEntity.getScoreboard().forEachScore(CriteriaInit.JOBS, serverPlayerEntity.getEntityName(), ScoreboardPlayerScore::clearScore);
+            // set timer cause it is hard mode
+            ((JobsManagerAccess) serverPlayerEntity).getJobsManager().setEmployedJobTime(net.jobsaddon.init.ConfigInit.CONFIG.jobChangeTime);
         }
     }
 }
