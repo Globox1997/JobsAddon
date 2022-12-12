@@ -29,6 +29,7 @@
     "text.autoconfig.jobsaddon.option.smitherXP": "Smither XP",
     "text.autoconfig.jobsaddon.option.warriorXP": "Warrior XP",
 
+    "text.autoconfig.jobsaddon.option.xpMultiplicator": "XP Multiplicator",
     "text.autoconfig.jobsaddon.option.levelZXPMultiplicator": "LevelZ XP Multiplicator",
     "text.autoconfig.jobsaddon.option.moneyMultiplicator": "Money Multiplicator",
     "text.autoconfig.jobsaddon.option.allow_max_lvl_progress": "Allow Max Level Progress",
@@ -41,6 +42,15 @@
     "text.jobsaddon.miner": "Miner",
     "text.jobsaddon.smither": "Smither",
     "text.jobsaddon.warrior": "Warrior",
+
+    "text.jobsaddon.brewer.tooltop": "Brew Potions\nEnchant Items",
+    "text.jobsaddon.builder.tooltop": "Build Buildings",
+    "text.jobsaddon.farmer.tooltop": "Cook Food\nFarm Plants",
+    "text.jobsaddon.fisher.tooltop": "Catch Fish",
+    "text.jobsaddon.lumberjack.tooltop": "Cut Trees",
+    "text.jobsaddon.miner.tooltop": "Mine Ore\nUse Tnt",
+    "text.jobsaddon.smither.tooltop": "Use Anvil\nSmelt Ore\nSmith Tools and Weapons",
+    "text.jobsaddon.warrior.tooltop": "Kill Mobs",
 
     "text.jobsaddon.jobLevel": "Lv. %s",
     "text.jobsaddon.employedTime": "Job Cooldown: ",

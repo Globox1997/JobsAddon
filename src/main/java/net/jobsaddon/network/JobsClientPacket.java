@@ -82,6 +82,7 @@ public class JobsClientPacket {
             int minerXP = buf.readInt();
             int smitherXP = buf.readInt();
             int warriorXP = buf.readInt();
+            int xpMultiplicator = buf.readInt();
             int levelZXPMultiplicator = buf.readInt();
             int moneyMultiplicator = buf.readInt();
 
@@ -103,6 +104,7 @@ public class JobsClientPacket {
                 ConfigInit.CONFIG.minerXP = minerXP;
                 ConfigInit.CONFIG.smitherXP = smitherXP;
                 ConfigInit.CONFIG.warriorXP = warriorXP;
+                ConfigInit.CONFIG.xpMultiplicator = xpMultiplicator;
                 ConfigInit.CONFIG.levelZXPMultiplicator = levelZXPMultiplicator;
                 ConfigInit.CONFIG.moneyMultiplicator = moneyMultiplicator;
             });

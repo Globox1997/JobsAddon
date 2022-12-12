@@ -52,6 +52,8 @@ public class JobsAddonConfig implements ConfigData {
     public int warriorXP = 5;
 
     @ConfigEntry.Category("reward_settings")
+    public int xpMultiplicator = 1;
+    @ConfigEntry.Category("reward_settings")
     public int levelZXPMultiplicator = 1;
     @ConfigEntry.Category("reward_settings")
     @Comment("Numismatic Overhaul compat lvl * multiplicator")
@@ -63,6 +65,6 @@ public class JobsAddonConfig implements ConfigData {
 
     public ArrayList<Object> getJobConfigList() {
         return new ArrayList<Object>(Arrays.asList(employedJobs, jobChangeTime, resetCurrentJobXP, jobMaxLevel, jobXPBaseCost, jobXPCostMultiplicator, jobXPExponent, jobXPMaxCost, brewerXP,
-                builderXP, farmerXP, fisherXP, lumberjackXP, minerXP, smitherXP, warriorXP, levelZXPMultiplicator, moneyMultiplicator));
+                builderXP, farmerXP, fisherXP, lumberjackXP, minerXP, smitherXP, warriorXP, xpMultiplicator, levelZXPMultiplicator, moneyMultiplicator));
     }
 }

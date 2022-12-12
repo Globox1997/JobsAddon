@@ -69,19 +69,14 @@ public class JobsGui extends LightweightGuiDescription {
         JobSprite smitherIcon = new JobSprite(RenderInit.JOB_GUI_ICONS, 0.2734375F, 0.1875F, 0.328125F, 0.2421875F);
         JobSprite warriorIcon = new JobSprite(RenderInit.JOB_GUI_ICONS, 0.328125F, 0.1875F, 0.3828125F, 0.2421875F);
 
-        brewerIcon.addText("Brew Potions");
-        brewerIcon.addText("Enchant Items");
-        builderIcon.addText("Build Buildings");
-        farmerIcon.addText("Cook Food");
-        farmerIcon.addText("Farm Plants");
-        fisherIcon.addText("Catch Fish");
-        lumberjackIcon.addText("Cut Trees");
-        minerIcon.addText("Mine Ore");
-        minerIcon.addText("Use Tnt");
-        smitherIcon.addText("Use Anvil");
-        smitherIcon.addText("Smelt Ore");
-        smitherIcon.addText("Smith Tools and Weapons");
-        warriorIcon.addText("Kill Mobs");
+        brewerIcon.addText(jobTooltip("brewer"));
+        builderIcon.addText(jobTooltip("builder"));
+        farmerIcon.addText(jobTooltip("farmer"));
+        fisherIcon.addText(jobTooltip("fisher"));
+        lumberjackIcon.addText(jobTooltip("lumberjack"));
+        minerIcon.addText(jobTooltip("miner"));
+        smitherIcon.addText(jobTooltip("smither"));
+        warriorIcon.addText(jobTooltip("warrior"));
 
         root.add(lumberjackIcon, 12, 52, 14, 14);
         root.add(minerIcon, 107, 52, 14, 14);
@@ -325,6 +320,21 @@ public class JobsGui extends LightweightGuiDescription {
         default:
             return Text.translatable("text.jobsaddon.nonJobTitle");
         }
+    }
+
+    private static String[] jobTooltip(String string) {
+        String tooltip = switch (string) {
+            case "brewer" -> Text.translatable("text.jobsaddon.brewer.tooltop").getString();
+            case "builder" -> Text.translatable("text.jobsaddon.builder.tooltop").getString();
+            case "farmer" -> Text.translatable("text.jobsaddon.farmer.tooltop").getString();
+            case "fisher" -> Text.translatable("text.jobsaddon.fisher.tooltop").getString();
+            case "lumberjack" -> Text.translatable("text.jobsaddon.lumberjack.tooltop").getString();
+            case "miner" -> Text.translatable("text.jobsaddon.miner.tooltop").getString();
+            case "smither" -> Text.translatable("text.jobsaddon.smither.tooltop").getString();
+            case "warrior" -> Text.translatable("text.jobsaddon.warrior.tooltop").getString();
+            default -> Text.translatable("text.jobsaddon.nonJobTitle.tooltop").getString();
+        };
+        return tooltip.split("\n");
     }
 
 }
