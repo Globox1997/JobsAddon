@@ -39,7 +39,9 @@ public class ItemMixin {
                         xpCount = stack.getCount() * JobLists.smitherCraftingIdMap.get(Registry.ITEM.getRawId(stack.getItem()));
                     else
                         xpCount = stack.getCount() * ConfigInit.CONFIG.smitherXP;
-                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "smither", xpCount);
+
+                    if (xpCount > 0)
+                        JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "smither", xpCount);
                 }
                 if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("fisher") && stack.isIn(TagInit.FISHER_CRAFTING_ITEMS)) {
                     int xpCount = 0;
@@ -47,7 +49,9 @@ public class ItemMixin {
                         xpCount = stack.getCount() * JobLists.fisherCraftingIdMap.get(Registry.ITEM.getRawId(stack.getItem()));
                     else
                         xpCount = stack.getCount() * ConfigInit.CONFIG.fisherXP;
-                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "fisher", xpCount);
+
+                    if (xpCount > 0)
+                        JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "fisher", xpCount);
                 }
                 if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("farmer") && (stack.isFood() || stack.isIn(TagInit.FARMER_CRAFTING_ITEMS))) {
                     int xpCount = 0;
@@ -55,7 +59,9 @@ public class ItemMixin {
                         xpCount = stack.getCount() * JobLists.farmerCraftingIdMap.get(Registry.ITEM.getRawId(stack.getItem()));
                     else
                         xpCount = stack.getCount() * ConfigInit.CONFIG.farmerXP;
-                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "farmer", xpCount);
+
+                    if (xpCount > 0)
+                        JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "farmer", xpCount);
                 }
             }
             ((PlayerAccess) player).setLastRecipeId(null);

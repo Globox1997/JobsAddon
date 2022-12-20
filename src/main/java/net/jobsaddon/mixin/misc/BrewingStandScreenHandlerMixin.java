@@ -29,7 +29,8 @@ public class BrewingStandScreenHandlerMixin {
             else
                 xpCount += stack.getCount() * ConfigInit.CONFIG.brewerXP;
 
-            JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "brewer", xpCount);
+            if (xpCount > 0)
+                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "brewer", xpCount);
         }
     }
 }

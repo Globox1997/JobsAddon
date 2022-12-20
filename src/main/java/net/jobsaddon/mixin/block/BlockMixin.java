@@ -43,7 +43,9 @@ public class BlockMixin {
                         xpCount = JobLists.minerBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
                     else
                         xpCount = ConfigInit.CONFIG.minerXP;
-                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "miner", xpCount);
+
+                    if (xpCount > 0)
+                        JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "miner", xpCount);
                 }
             }
 
@@ -53,7 +55,9 @@ public class BlockMixin {
                     xpCount = JobLists.lumberjackBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
                 else
                     xpCount = ConfigInit.CONFIG.lumberjackXP;
-                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "lumberjack", xpCount);
+
+                if (xpCount > 0)
+                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "lumberjack", xpCount);
             }
             if (state.getBlock() instanceof PlantBlock && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("farmer") && ((PlayerAccess) player).setLastBlockId(pos, false, 0)) {
                 int xpCount = 0;
@@ -84,7 +88,8 @@ public class BlockMixin {
                     else
                         xpCount = ConfigInit.CONFIG.builderXP;
 
-                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) placer, "builder", xpCount);
+                    if (xpCount > 0)
+                        JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) placer, "builder", xpCount);
                 }
             }
     }

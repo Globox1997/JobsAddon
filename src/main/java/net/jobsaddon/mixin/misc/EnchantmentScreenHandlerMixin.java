@@ -54,7 +54,8 @@ public class EnchantmentScreenHandlerMixin {
                     xpCount += ConfigInit.CONFIG.brewerXP * enchantmentMap.get(enchantment);
             }
 
-            JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "brewer", xpCount);
+            if (xpCount > 0)
+                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "brewer", xpCount);
         }
     }
 }

@@ -26,7 +26,9 @@ public class AnvilScreenHandlerMixin {
                 xpCount = stack.getCount() * JobLists.smitherItemIdMap.get(Registry.ITEM.getRawId(stack.getItem()));
             else
                 xpCount = stack.getCount() * ConfigInit.CONFIG.smitherXP;
-            JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "smither", xpCount);
+
+            if (xpCount > 0)
+                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "smither", xpCount);
         }
     }
 }

@@ -65,7 +65,9 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
                         xpCount = JobLists.fisherEntityIdMap.get(Registry.ENTITY_TYPE.getRawId(other.getType()));
                     else
                         xpCount = ConfigInit.CONFIG.fisherXP;
-                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "fisher", xpCount);
+
+                    if (xpCount > 0)
+                        JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "fisher", xpCount);
                 }
             } else if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("warrior")) {
                 int xpCount = 0;
@@ -73,7 +75,9 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
                     xpCount = JobLists.warriorEntityIdMap.get(Registry.ENTITY_TYPE.getRawId(other.getType()));
                 else
                     xpCount = ConfigInit.CONFIG.warriorXP;
-                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "warrior", xpCount);
+
+                if (xpCount > 0)
+                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "warrior", xpCount);
             }
         }
     }

@@ -34,7 +34,9 @@ public class FishingBobberEntityMixin {
                 xpCount = itemStack.getCount() * JobLists.fisherItemIdMap.get(Registry.ITEM.getRawId(itemStack.getItem()));
             else
                 xpCount = itemStack.getCount() * ConfigInit.CONFIG.fisherXP;
-            JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) getPlayerOwner(), "fisher", xpCount);
+
+            if (xpCount > 0)
+                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) getPlayerOwner(), "fisher", xpCount);
         }
 
     }

@@ -42,7 +42,9 @@ public class BlockWrapperMixin {
                     xpCount = JobLists.lumberjackBlockIdMap.get(Registry.BLOCK.getRawId(state.getBlock()));
                 else
                     xpCount = ConfigInit.CONFIG.lumberjackXP;
-                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) playerEntity, "lumberjack", xpCount);
+
+                if (xpCount > 0)
+                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) playerEntity, "lumberjack", xpCount);
             }
         }
     }
