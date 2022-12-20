@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
@@ -30,8 +31,9 @@ public class ItemMixin {
     private void onCraftMixin(ItemStack stack, World world, PlayerEntity player, CallbackInfo info) {
         if (!world.isClient && stack != null && !stack.isEmpty()) {
             if (((PlayerAccess) player).getLastRecipeId() == null || !JobLists.restrictedRecipeIds.contains(((PlayerAccess) player).getLastRecipeId())) {
-                if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("smither") && (stack.getItem() instanceof SwordItem || stack.getItem() instanceof ArmorItem
-                        || stack.getItem() instanceof ToolItem || stack.getItem() instanceof BowItem || stack.getItem() instanceof CrossbowItem || stack.isIn(TagInit.SMITHER_CRAFTING_ITEMS))) {
+                if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("smither")
+                        && (stack.getItem() instanceof SwordItem || stack.getItem() instanceof ArmorItem || stack.getItem() instanceof ToolItem || stack.getItem() instanceof BowItem
+                                || stack.getItem() instanceof CrossbowItem || stack.getItem() instanceof HorseArmorItem || stack.isIn(TagInit.SMITHER_CRAFTING_ITEMS))) {
                     int xpCount = 0;
                     if (JobLists.smitherCraftingIdMap.containsKey(Registry.ITEM.getRawId(stack.getItem())))
                         xpCount = stack.getCount() * JobLists.smitherCraftingIdMap.get(Registry.ITEM.getRawId(stack.getItem()));
