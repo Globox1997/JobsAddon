@@ -19,7 +19,9 @@
     "block.SweetBerryBushBlockMixin",
     "compat.TomatoBushCropBlockMixin",
     "compat.BlockWrapperMixin",
-    "compat.ChopResultMixin"
+    "compat.ChopResultMixin",
+    "compat.MacheteItemMixin",
+    "compat.ScytheItemMixin"
   ],
   "client": [
     "client.LevelzScreenMixin",

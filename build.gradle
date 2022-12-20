@@ -63,6 +63,14 @@ dependencies {
 	modCompileOnly ('curse.maven:treechop-421377:4147540'),{
 		exclude(group: "net.fabricmc.fabric-api")
 	}
+	// MedievalWeapons
+	// modCompileOnly ('curse.maven:medievalweapons-411400:4088548'),{
+	// 	exclude(group: "net.fabricmc.fabric-api")
+	// }
+	// Harvest Scythes
+	modCompileOnly ('curse.maven:harvest-scythes-412225:4026103'),{
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 }
 
 processResources {
