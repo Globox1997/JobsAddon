@@ -59,6 +59,10 @@ dependencies {
 	modCompileOnly ('curse.maven:falling-tree-349559:3968312'),{
 		exclude(group: "net.fabricmc.fabric-api")
 	}
+	// TreeChop
+	modCompileOnly ('curse.maven:treechop-421377:4147540'),{
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 }
 
 processResources {

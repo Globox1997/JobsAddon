@@ -18,7 +18,8 @@
     "block.TntBlockMixin",
     "block.SweetBerryBushBlockMixin",
     "compat.TomatoBushCropBlockMixin",
-    "compat.BlockWrapperMixin"
+    "compat.BlockWrapperMixin",
+    "compat.ChopResultMixin"
   ],
   "client": [
     "client.LevelzScreenMixin",
