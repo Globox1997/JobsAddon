@@ -52,9 +52,9 @@ public class JobsAddonConfig implements ConfigData {
     public int warriorXP = 5;
 
     @ConfigEntry.Category("reward_settings")
-    public int xpMultiplicator = 1;
+    public int xpMultiplicator = 3;
     @ConfigEntry.Category("reward_settings")
-    public int levelZXPMultiplicator = 1;
+    public int levelZXPMultiplicator = 3;
     @ConfigEntry.Category("reward_settings")
     @Comment("Numismatic Overhaul compat lvl * multiplicator")
     public int moneyMultiplicator = 20;

@@ -229,10 +229,14 @@ public class JobsManager {
 
     public void addJobExperienceLevels(PlayerEntity playerEntity, String string, int levels) {
         int jobLevel = getJobLevel(string);
-        if (jobLevel < ConfigInit.CONFIG.jobMaxLevel)
-            setJobLevel(string, jobLevel + levels);
-        if (jobLevel < 0)
-            setJobLevel(string, 0);
+        if (jobLevel < ConfigInit.CONFIG.jobMaxLevel) {
+            jobLevel += levels;
+            setJobLevel(string, jobLevel);
+        }
+        if (jobLevel < 0) {
+            jobLevel = 0;
+            setJobLevel(string, jobLevel);
+        }
         if (!playerEntity.world.isClient) {
             // Add numismatic money
             if (FabricLoader.getInstance().isModLoaded("numismatic-overhaul") && ConfigInit.CONFIG.moneyMultiplicator > 0) {
@@ -241,7 +245,7 @@ public class JobsManager {
             }
             // Add levelz xp
             if (ConfigInit.CONFIG.levelZXPMultiplicator > 0)
-                ((PlayerSyncAccess) playerEntity).addLevelExperience(ConfigInit.CONFIG.levelZXPMultiplicator *jobLevel);
+                ((PlayerSyncAccess) playerEntity).addLevelExperience(ConfigInit.CONFIG.levelZXPMultiplicator * jobLevel);
             // Add vanilla xp
             if (ConfigInit.CONFIG.xpMultiplicator > 0)
                 playerEntity.addExperience(ConfigInit.CONFIG.xpMultiplicator * jobLevel);
