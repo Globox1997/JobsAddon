@@ -3,10 +3,7 @@ package net.jobsaddon.mixin.compat;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -20,21 +17,16 @@ import net.jobsaddon.init.ConfigInit;
 import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.World;
 
 @Mixin(ChopResult.class)
 public class ChopResultMixin {
 
-    @Shadow
-    @Mutable
-    @Final
-    private World level;
-
     @Inject(method = "Lht/treechop/common/chop/ChopResult;apply(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/item/ItemStack;Z)Z", at = @At(value = "INVOKE", target = "Lht/treechop/common/chop/ChopResult;fellBlocks(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;Ljava/util/stream/Stream;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void applyMixin(BlockPos targetPos, ServerPlayerEntity player, ItemStack tool, boolean breakLeaves, CallbackInfoReturnable<Boolean> info, GameMode gameType,
+    private void applyMixin(BlockPos targetPos, ServerPlayerEntity player, ItemStack tool, boolean breakLeaves, CallbackInfoReturnable<Boolean> info, ServerWorld level, GameMode gameType,
             AtomicBoolean somethingChanged, List<BlockPos> logs) {
         if (player != null && !level.isClient) {
             if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("lumberjack") && ((PlayerAccess) player).setLastBlockId(targetPos, false, 0)) {

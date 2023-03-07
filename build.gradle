@@ -60,7 +60,7 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// TreeChop
-	modCompileOnly ('curse.maven:treechop-421377:4147540'),{
+	modCompileOnly ('curse.maven:treechop-421377:4413708'),{
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// MedievalWeapons
