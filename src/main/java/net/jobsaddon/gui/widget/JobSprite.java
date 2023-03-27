@@ -1,4 +1,4 @@
-package net.jobsaddon.gui.util;
+package net.jobsaddon.gui.widget;
 
 import java.util.List;
 

@@ -16,7 +16,8 @@ repositories {
 	maven { url "https://server.bbkr.space/artifactory/libs-release" }
 	maven { url "https://www.cursemaven.com" }
 	maven { url "https://ladysnake.jfrog.io/artifactory/mods" }
-    maven { url 'https://jitpack.io' }
+    maven { url "https://jitpack.io" }
+	maven { url "https://maven.nucleoid.xyz/"}
 }
 
 dependencies {
@@ -28,13 +29,12 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	// LibGui
-    modImplementation ("io.github.cottonmc:LibGui:${project.cottonmc_version}")
     // LevelZ
-	// modImplementation ('com.github.Globox1997:LevelZ:1.19-SNAPSHOT') {
-	// 	exclude(group: "net.fabricmc.fabric-api")
-	// }
-	modImplementation ('curse.maven:levelz-517130:4137159') {
+	modImplementation ('com.github.Globox1997:LevelZ:1.19-SNAPSHOT') {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	// LibZ
+    modImplementation ('com.github.Globox1997:LibZ:c19da208d5') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Cloth
@@ -49,8 +49,8 @@ dependencies {
 	modCompileOnly ('curse.maven:numismatic-overhaul-568316:3860596') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-	modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.0-beta.1")
-    modImplementation ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.0-beta.1")
+	modCompileOnly ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.0-beta.1")
+    modCompileOnly ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.0-beta.1")
 	// FarmersDelight
 	modCompileOnly ('curse.maven:farmers-delight-fabric-482834:3947019') {
 		exclude(group: "net.fabricmc.fabric-api")

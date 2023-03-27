@@ -1,4 +1,4 @@
-package net.jobsaddon.gui.util;
+package net.jobsaddon.gui.widget;
 
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.WButton;

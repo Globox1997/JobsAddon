@@ -23,10 +23,7 @@
     "compat.MacheteItemMixin",
     "compat.ScytheItemMixin"
   ],
-  "client": [
-    "client.LevelzScreenMixin",
-    "client.InventoryScreenMixin"
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }
