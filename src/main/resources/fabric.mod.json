@@ -30,13 +30,20 @@
     "jobsaddon.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.9",
-    "fabric-api": "*",
-    "minecraft": "~1.19",
     "java": ">=17",
+    "minecraft": "${minecraft_version}",
+    "fabric-api": ">=${fabric_version}",
+    "fabricloader": ">=${loader_version}",
+    "cloth-config2": ">=${cloth_config_version}",
     "levelz": ">=1.3.7"
   },
   "suggests": {
     "another-mod": "*"
+  },
+  "custom": {
+    "mc-publish": {
+      "modrinth": "whv2X0ei",
+      "curseforge": 682362
+    }
   }
 }
