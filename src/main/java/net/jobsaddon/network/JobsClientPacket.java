@@ -112,11 +112,10 @@ public class JobsClientPacket {
         });
     }
 
-    public static void writeC2SSelectJobPacket(JobsManager jobsManager, String jobName, boolean employJob, int time) {
+    public static void writeC2SSelectJobPacket(JobsManager jobsManager, String jobName, boolean employJob) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeString(jobName);
         buf.writeBoolean(employJob);
-        buf.writeInt(time);
         CustomPayloadC2SPacket packet = new CustomPayloadC2SPacket(JobsServerPacket.EMPLOY_JOB_PACKET, buf);
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(packet);
     }

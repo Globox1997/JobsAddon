@@ -1,7 +1,8 @@
-package net.jobsaddon.gui.widget;
+package net.jobsaddon.screen.widget;
 
-import net.jobsaddon.gui.JobsGui;
-import net.jobsaddon.gui.JobsScreen;
+// import net.jobsaddon.gui.JobsGui;
+// import net.jobsaddon.gui.JobsScreen;
+import net.jobsaddon.screen.JobScreen;
 import net.libz.api.InventoryTab;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -15,7 +16,8 @@ public class JobTab extends InventoryTab {
 
     @Override
     public void onClick(MinecraftClient client) {
-        client.setScreen(new JobsScreen(new JobsGui(client)));
+        client.setScreen(new JobScreen());
+        // client.setScreen(new JobsScreen(new JobsGui(client)));
     }
 
 }

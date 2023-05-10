@@ -60,9 +60,6 @@ public class JobsAddonConfig implements ConfigData {
     public int moneyMultiplicator = 20;
     public boolean allow_max_lvl_progress = false;
 
-    @Comment("Show the job gui button in the inventory")
-    public boolean inventoryButton = true;
-
     public ArrayList<Object> getJobConfigList() {
         return new ArrayList<Object>(Arrays.asList(employedJobs, jobChangeTime, resetCurrentJobXP, jobMaxLevel, jobXPBaseCost, jobXPCostMultiplicator, jobXPExponent, jobXPMaxCost, brewerXP,
                 builderXP, farmerXP, fisherXP, lumberjackXP, minerXP, smitherXP, warriorXP, xpMultiplicator, levelZXPMultiplicator, moneyMultiplicator));

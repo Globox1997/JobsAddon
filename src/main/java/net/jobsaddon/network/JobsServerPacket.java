@@ -22,20 +22,24 @@ public class JobsServerPacket {
 
     public static void init() {
         ServerPlayNetworking.registerGlobalReceiver(EMPLOY_JOB_PACKET, (server, player, handler, buffer, sender) -> {
-            if (player != null) {
-                String jobName = buffer.readString();
-                boolean employJob = buffer.readBoolean();
-                int employTime = buffer.readInt();
+            String jobName = buffer.readString();
+            boolean employJob = buffer.readBoolean();
+            server.execute(() -> {
                 JobsManager jobsManager = ((JobsManagerAccess) player).getJobsManager();
                 if (employJob) {
-                    jobsManager.employJob(jobName);
-                    jobsManager.setEmployedJobTime(employTime);
-                } else
+                    if (jobsManager.canEmployJob(jobName)) {
+                        jobsManager.employJob(jobName);
+                        jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
+                    }
+                } else {
                     jobsManager.quitJob(jobName);
-            }
+                }
+            });
         });
         ServerPlayNetworking.registerGlobalReceiver(SEND_JOB_CONFIG_SYNC_PACKET, (server, player, handler, buffer, sender) -> {
-            writeS2CJobConfigSyncPacket(player, ConfigInit.CONFIG.getJobConfigList());
+            server.execute(() -> {
+                writeS2CJobConfigSyncPacket(player, ConfigInit.CONFIG.getJobConfigList());
+            });
         });
     }
 
