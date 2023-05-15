@@ -166,13 +166,13 @@ The miner can define "blocks" for breaking these blocks.
 
 #### 7. Smither
 
-The smither can define "crafting" for craftable items including other furnace outputs.
+The smither can define "items" for craftable items including other furnace outputs.
 
 ```json
 {
     "5": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:netherite_sword",
             "minecraft:iron_ingot"
         ]
@@ -197,7 +197,6 @@ The warrior can define "entities" for killing them.
 
 #### Tags
 For a few situations there are a couple of tags which provide some usage:
-- smither_crafting_items: items which can be crafted and are not an instance of SwordItem, ArmorItem, ToolItem, BowItem or CrossbowItem
 - fisher_crafting_items: items which can be crafted used for fisher experience
 - farmer_crafting_items: items which can be crafted and are not a food item for farmer experience
 - farmer_breaking_items: items which are a drop from plant blocks and their instances for farmer experience

@@ -458,48 +458,6 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
                             }
                         }
 
-                        if (jsonObject.getAsJsonArray("crafting") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.smitherCraftingIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("crafting").size(); u++) {
-
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.smitherCraftingIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
-                            }
-                        }
-
-                        if (jsonObject.getAsJsonArray("blast_furnace") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.smitherBlastFurnaceIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("blast_furnace").size(); u++) {
-
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("blast_furnace").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("blast_furnace").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.smitherBlastFurnaceIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("blast_furnace").get(u).getAsString()))), i);
-                            }
-                        }
-
                     } else
                         continue;
                 }

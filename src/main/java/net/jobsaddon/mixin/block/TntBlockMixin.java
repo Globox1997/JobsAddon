@@ -21,7 +21,8 @@ public class TntBlockMixin {
 
     @Inject(method = "Lnet/minecraft/block/TntBlock;primeTnt(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/LivingEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
     private static void primeTnt(World world, BlockPos pos, @Nullable LivingEntity igniter, CallbackInfo info) {
-        if (igniter != null && igniter instanceof PlayerEntity && ((JobsManagerAccess) igniter).getJobsManager().isEmployedJob("miner"))
+        if (igniter != null && igniter instanceof PlayerEntity && ((JobsManagerAccess) igniter).getJobsManager().isEmployedJob("miner")) {
             JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) igniter, "miner", ConfigInit.CONFIG.minerXP);
+        }
     }
 }

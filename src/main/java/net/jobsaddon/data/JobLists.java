@@ -27,9 +27,7 @@ public class JobLists {
     // miner
     public static final HashMap<Integer, Integer> minerBlockIdMap = new HashMap<>(); // blocks of all types, inside c:ores tag
     // smither
-    public static final HashMap<Integer, Integer> smitherItemIdMap = new HashMap<>(); // output items from anvil and smithing table
-    public static final HashMap<Integer, Integer> smitherBlastFurnaceIdMap = new HashMap<>(); // output items which can be used inside the blast furnace (or inside smither_furnace_items tag for furnace)
-    public static final HashMap<Integer, Integer> smitherCraftingIdMap = new HashMap<>(); // sword items, armor items, bow items, crossbow items, tool items (or inside smither_crafting_items tag)
+    public static final HashMap<Integer, Integer> smitherItemIdMap = new HashMap<>(); // craftable items and furnace outputs
     // warrior
     public static final HashMap<Integer, Integer> warriorEntityIdMap = new HashMap<>(); // all types of creatures
 

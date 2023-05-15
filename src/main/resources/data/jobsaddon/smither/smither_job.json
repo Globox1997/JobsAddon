@@ -1,7 +1,7 @@
 {
     "2": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:wooden_axe",
             "minecraft:wooden_hoe",
             "minecraft:wooden_sword",
@@ -12,7 +12,7 @@
     },
     "3": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:stone_axe",
             "minecraft:stone_hoe",
             "minecraft:stone_sword",
@@ -23,20 +23,20 @@
     },
     "4": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:copper_ingot",
             "minecraft:quartz"
         ]
     },
     "5": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:redstone"
         ]
     },
     "7": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:golden_axe",
             "minecraft:golden_hoe",
             "minecraft:golden_boots",
@@ -52,7 +52,7 @@
     },
     "8": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:iron_axe",
             "minecraft:iron_hoe",
             "minecraft:iron_boots",
@@ -67,13 +67,13 @@
     },
     "9": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:emerald"
         ]
     },
     "10": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:diamond_axe",
             "minecraft:diamond_hoe",
             "minecraft:diamond_boots",
@@ -88,7 +88,7 @@
     },
     "12": {
         "replace": false,
-        "crafting": [
+        "items": [
             "minecraft:netherite_axe",
             "minecraft:netherite_hoe",
             "minecraft:netherite_boots",

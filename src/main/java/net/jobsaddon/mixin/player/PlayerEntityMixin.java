@@ -14,15 +14,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.access.PlayerAccess;
-import net.jobsaddon.data.JobLists;
-import net.jobsaddon.init.ConfigInit;
+import net.jobsaddon.jobs.JobHelper;
 import net.jobsaddon.jobs.JobsManager;
-import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -50,35 +46,17 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickMixin(CallbackInfo info) {
-        if (jobsManager.getEmployedJobTime() > 0)
+        if (jobsManager.getEmployedJobTime() > 0) {
             jobsManager.setEmployedJobTime(jobsManager.getEmployedJobTime() - 1);
+        }
     }
 
     @Inject(method = "onKilledOther", at = @At("HEAD"))
     private void onKilledOtherMixin(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (!player.world.isClient) {
-            if (other instanceof WaterCreatureEntity) {
-                if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("fisher")) {
-                    int xpCount = 0;
-                    if (JobLists.fisherEntityIdMap.containsKey(Registry.ENTITY_TYPE.getRawId(other.getType())))
-                        xpCount = JobLists.fisherEntityIdMap.get(Registry.ENTITY_TYPE.getRawId(other.getType()));
-                    else
-                        xpCount = ConfigInit.CONFIG.fisherXP;
-
-                    if (xpCount > 0)
-                        JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "fisher", xpCount);
-                }
-            } else if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("warrior")) {
-                int xpCount = 0;
-                if (JobLists.warriorEntityIdMap.containsKey(Registry.ENTITY_TYPE.getRawId(other.getType())))
-                    xpCount = JobLists.warriorEntityIdMap.get(Registry.ENTITY_TYPE.getRawId(other.getType()));
-                else
-                    xpCount = ConfigInit.CONFIG.warriorXP;
-
-                if (xpCount > 0)
-                    JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "warrior", xpCount);
-            }
+            JobHelper.addFisherEntityXp(player, other);
+            JobHelper.addWarriorXp(player, other);
         }
     }
 
@@ -90,10 +68,11 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     @Override
     public boolean setLastBlockId(BlockPos blockPos, boolean building, int id) {
         if (building) {
-            if (this.lastBlockId == id)
+            if (this.lastBlockId == id) {
                 blockCount++;
-            else
+            } else {
                 blockCount = 0;
+            }
             this.lastBlockId = id;
             if (blockCount > 200) {
                 JobsAddonMain.LOGGER.warn("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registry.BLOCK.get(id).asItem().getName().getString()
@@ -104,13 +83,15 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
                     playerLogFile.append(System.lineSeparator());
                 } catch (IOException e) {
                 }
+                blockCount = 0;
             }
             return blockCount < 200;
         } else {
-            if (this.lastBlockPos != null && this.lastBlockPos.equals(blockPos))
+            if (this.lastBlockPos != null && this.lastBlockPos.equals(blockPos)) {
                 blockCount++;
-            else
+            } else {
                 blockCount = 0;
+            }
             this.lastBlockPos = blockPos;
 
             return blockCount < 10;

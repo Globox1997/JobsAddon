@@ -28,7 +28,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
     @Inject(method = "playerTick", at = @At(value = "FIELD", target = "Lnet/minecraft/server/network/ServerPlayerEntity;totalExperience:I", ordinal = 0, shift = At.Shift.BEFORE))
     private void playerTickMixin(CallbackInfo info) {
-        if (this.syncTeleportStats)
+        if (this.syncTeleportStats) {
             JobsServerPacket.writeS2CJobPacket(((JobsManagerAccess) this).getJobsManager(), (ServerPlayerEntity) (Object) this);
+        }
     }
 }
