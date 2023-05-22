@@ -45,6 +45,20 @@ public class JobHelper {
     }
 
     public static void addFisherXp(PlayerEntity player, ItemStack stack) {
+        if (!player.world.isClient && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("fisher")) {
+            int xpCount = 0;
+            if (JobLists.farmerItemIdMap.containsKey(Registry.ITEM.getRawId(stack.getItem()))) {
+                xpCount = stack.getCount() * JobLists.farmerItemIdMap.get(Registry.ITEM.getRawId(stack.getItem()));
+            } else {
+                xpCount = stack.getCount() * ConfigInit.CONFIG.fisherXP;
+            }
+            if (xpCount > 0) {
+                JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "fisher", xpCount);
+            }
+        }
+    }
+
+    public static void addFisherCraftingXp(PlayerEntity player, ItemStack stack) {
         if (!player.world.isClient && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("fisher") && stack.isIn(TagInit.FISHER_CRAFTING_ITEMS)) {
             int xpCount = 0;
             if (JobLists.fisherCraftingIdMap.containsKey(Registry.ITEM.getRawId(stack.getItem()))) {

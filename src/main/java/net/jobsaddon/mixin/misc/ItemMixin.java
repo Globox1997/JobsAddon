@@ -21,7 +21,7 @@ public class ItemMixin {
         if (!world.isClient && stack != null && !stack.isEmpty()) {
             if (((PlayerAccess) player).getLastRecipeId() == null || !JobLists.restrictedRecipeIds.contains(((PlayerAccess) player).getLastRecipeId())) {
                 JobHelper.addSmitherXp(player, stack);
-                JobHelper.addFisherXp(player, stack);
+                JobHelper.addFisherCraftingXp(player, stack);
                 JobHelper.addFarmerCraftingXp(player, stack);
             }
             ((PlayerAccess) player).setLastRecipeId(null);
