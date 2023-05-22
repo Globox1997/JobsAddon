@@ -213,7 +213,7 @@ public class JobScreen extends Screen implements Tab {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        DrawTabHelper.onTabButtonClick(client, this, this.x, this.y, mouseX, mouseY, this.getFocused() != null);
+        DrawTabHelper.onTabButtonClick(client, this, this.x, this.y, mouseX, mouseY, false);
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
