@@ -34,7 +34,7 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// LibZ
-    modImplementation ('com.github.Globox1997:LibZ:c19da208d5') {
+    modImplementation ('com.github.Globox1997:LibZ:344927d33c') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Cloth
