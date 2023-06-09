@@ -7,7 +7,7 @@ import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -20,10 +20,10 @@ public class JobUpCriterion extends AbstractCriterion<JobUpCriterion.Conditions>
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
+    protected Conditions conditionsFromJson(JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         JobPredicate jobPredicate = JobPredicate.fromJson(jsonObject.get("job_name"));
         NumberPredicate jobLevelPredicate = NumberPredicate.fromJson(jsonObject.get("job_level"));
-        return new Conditions(extended, jobPredicate, jobLevelPredicate);
+        return new Conditions(lootContextPredicate, jobPredicate, jobLevelPredicate);
     }
 
     public void trigger(ServerPlayerEntity player, String jobName, int jobLevel) {
@@ -34,8 +34,8 @@ public class JobUpCriterion extends AbstractCriterion<JobUpCriterion.Conditions>
         private final JobPredicate jobPredicate;
         private final NumberPredicate jobLevelPredicate;
 
-        public Conditions(EntityPredicate.Extended player, JobPredicate jobPredicate, NumberPredicate jobLevelPredicate) {
-            super(ID, player);
+        public Conditions(LootContextPredicate lootContextPredicate, JobPredicate jobPredicate, NumberPredicate jobLevelPredicate) {
+            super(ID, lootContextPredicate);
             this.jobPredicate = jobPredicate;
             this.jobLevelPredicate = jobLevelPredicate;
         }

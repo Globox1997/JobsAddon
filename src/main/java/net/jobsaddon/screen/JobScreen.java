@@ -17,11 +17,10 @@ import net.jobsaddon.network.JobsClientPacket;
 import net.levelz.init.KeyInit;
 import net.libz.api.Tab;
 import net.libz.util.DrawTabHelper;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -95,26 +94,18 @@ public class JobScreen extends Screen implements Tab {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrices);
-
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        DrawableHelper.drawTexture(matrices, i, j, this.getZOffset(), 0.0f, 0.0f, this.backgroundWidth, this.backgroundHeight, 256, 256);
+        context.drawTexture(BACKGROUND_TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight, 256, 256);
 
-        super.render(matrices, mouseX, mouseY, partialTicks);
-
-        RenderSystem.enableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShaderTexture(0, ICON_TEXTURES);
+        super.render(context, mouseX, mouseY, delta);
 
         // render title
         if (this.client.player != null) {
             Text title = Text.translatable("text.jobsaddon.gui.title", this.client.player.getName().getString());
-            this.textRenderer.draw(matrices, title, this.x + this.backgroundWidth / 2 - this.client.textRenderer.getWidth(title) / 2, this.y + 7, 0x3F3F3F);
+            context.drawText(this.textRenderer, title, this.x + this.backgroundWidth / 2 - this.client.textRenderer.getWidth(title) / 2, this.y + 7, 0x3F3F3F, false);
         }
         // render time label
         Text timeText = null;
@@ -155,50 +146,46 @@ public class JobScreen extends Screen implements Tab {
             }
         }
         if (timeText != null) {
-            this.textRenderer.draw(matrices, timeText, this.x + 12, this.y + 20, 0x3F3F3F);
+            context.drawText(this.textRenderer, timeText, this.x + 12, this.y + 20, 0x3F3F3F, false);
         }
         if (employedText != null) {
-            this.textRenderer.draw(matrices, employedText, this.x + 12, this.y + 33, 0x3F3F3F);
+            context.drawText(this.textRenderer, employedText, this.x + 12, this.y + 33, 0x3F3F3F, false);
         }
 
-        RenderSystem.setShaderTexture(0, ICON_TEXTURES);
         for (int o = 0; o < 2; o++)
             for (int u = 0; u < 4; u++) {
                 int jobInt = (o != 0 ? 4 : 0) + u;
                 int xPos = this.x + (jobInt > 3 ? 95 : 0);
                 int yPos = this.y + jobInt * 41 - (jobInt > 3 ? 164 : 0);
                 // render xp bar background
-                this.drawTexture(matrices, xPos + 12, yPos + 76, 0, 0, 81, 5);
+                context.drawTexture(ICON_TEXTURES, xPos + 12, yPos + 76, 0, 0, 81, 5);
 
                 if (jobsManager != null) {
 
                     String jobName = jobNames.get(jobInt);
                     int jobXP = jobsManager.getJobXP(jobName);
                     // render job title
-                    this.textRenderer.draw(matrices, this.getJobTitle(jobName), xPos + 30, yPos + 51, 0xFFFFFF);
+                    context.drawText(this.textRenderer, this.getJobTitle(jobName), xPos + 30, yPos + 51, 0xFFFFFF, false);
                     // render job levels
-                    this.textRenderer.draw(matrices, Text.translatable("text.jobsaddon.jobLevel", jobsManager.getJobLevel(jobName), ConfigInit.CONFIG.jobMaxLevel), xPos + 42, yPos + 66, 0xFFFFFF);
-                    RenderSystem.setShaderTexture(0, ICON_TEXTURES);
+                    context.drawText(this.textRenderer, Text.translatable("text.jobsaddon.jobLevel", jobsManager.getJobLevel(jobName), ConfigInit.CONFIG.jobMaxLevel), xPos + 42, yPos + 66, 0xFFFFFF,
+                            false);
                     // render icons
-                    this.drawTexture(matrices, xPos + 12, yPos + 52, jobInt * 14, 10, 14, 14);
+                    context.drawTexture(ICON_TEXTURES, xPos + 12, yPos + 52, jobInt * 14, 10, 14, 14);
                     if (this.isPointWithinBounds(xPos + 12 - this.x, yPos + 52 - this.y, 14, 14, mouseX, mouseY)) {
                         List<Text> tooltip = new ArrayList<>();
                         this.getJobTooltip(jobName).forEach((text) -> {
                             tooltip.add(Text.of(text));
                         });
-                        this.renderTooltip(matrices, tooltip, mouseX, mouseY);
+                        context.drawTooltip(this.textRenderer, tooltip, mouseX, mouseY);
                     }
-                    RenderSystem.setShaderTexture(0, ICON_TEXTURES);
                     // render xp bar
                     if (jobsManager.getNextJobLevelExperience(jobName) > 0 && jobXP > 0) {
-                        this.drawTexture(matrices, xPos + 12, yPos + 76, 0, 5, 80 * jobXP / jobsManager.getNextJobLevelExperience(jobName), 5);
+                        context.drawTexture(ICON_TEXTURES, xPos + 12, yPos + 76, 0, 5, 80 * jobXP / jobsManager.getNextJobLevelExperience(jobName), 5);
                     }
                 }
             }
-        RenderSystem.disableBlend();
-        RenderSystem.disableDepthTest();
 
-        DrawTabHelper.drawTab(client, matrices, this, x, y, mouseX, mouseY);
+        DrawTabHelper.drawTab(client, context, this, x, y, mouseX, mouseY);
     }
 
     @Override
@@ -267,38 +254,25 @@ public class JobScreen extends Screen implements Tab {
         private boolean employed = false;
 
         public WidgetButtonPage(int x, int y, ButtonWidget.PressAction onPress) {
-            super(x, y, 91, 38, ScreenTexts.EMPTY, onPress);
+            super(x, y, 91, 38, ScreenTexts.EMPTY, onPress, DEFAULT_NARRATION_SUPPLIER);
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, JOB_BUTTON_TEXTURES);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, this.alpha);
-
-            int i = this.getYImage(this.isHovered());
+        public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+            MinecraftClient minecraftClient = MinecraftClient.getInstance();
+            context.setShaderColor(1.0f, 1.0f, 1.0f, this.alpha);
             RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
             RenderSystem.enableDepthTest();
-
+            int i = this.getTextureY();
             if (isEmployedButton()) {
                 i = 3;
                 if (this.isHovered()) {
                     i = 4;
                 }
             }
-
-            this.drawTexture(matrices, this.x, this.y, 0, i * 38, this.width, this.height);
-
+            context.drawTexture(JOB_BUTTON_TEXTURES, this.getX(), this.getY(), 0, i * 38, this.width, this.height);
             if (this.isHovered()) {
-                this.renderTooltip(matrices, mouseX, mouseY);
-            }
-        }
-
-        @Override
-        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
-            if (!tooltip.isEmpty()) {
-                JobScreen.this.renderTooltip(matrices, tooltip, mouseX, mouseY);
+                context.drawTooltip(minecraftClient.textRenderer, this.tooltip, mouseX, mouseY);
             }
         }
 
@@ -308,6 +282,16 @@ public class JobScreen extends Screen implements Tab {
 
         public boolean isEmployedButton() {
             return this.employed;
+        }
+
+        private int getTextureY() {
+            int i = 1;
+            if (!this.active) {
+                i = 0;
+            } else if (this.isSelected()) {
+                i = 2;
+            }
+            return i;
         }
 
     }

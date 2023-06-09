@@ -1,0 +1,13 @@
+{
+    "replace": false,
+    "recipes": [
+        "minecraft:iron_ingot_from_iron_block",
+        "minecraft:iron_ingot_from_nuggets",
+        "minecraft:copper_ingot_from_waxed_copper_block",
+        "minecraft:copper_ingot",
+        "minecraft:gold_ingot_from_gold_block",
+        "minecraft:gold_ingot_from_nuggets",
+        "minecraft:netherite_ingot_from_netherite_block",
+        "minecraft:wheat"
+    ]
+}

@@ -9,17 +9,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import ht.treechop.common.chop.ChopResult;
+import ht.treechop.common.util.ChopResult;
 import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.access.PlayerAccess;
 import net.jobsaddon.data.JobLists;
 import net.jobsaddon.init.ConfigInit;
 import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
 @Mixin(ChopResult.class)
@@ -32,8 +32,8 @@ public class ChopResultMixin {
             if (((JobsManagerAccess) player).getJobsManager().isEmployedJob("lumberjack") && ((PlayerAccess) player).setLastBlockId(targetPos, false, 0)) {
                 int xpCount = 0;
                 for (int i = 0; i < logs.size(); i++) {
-                    if (JobLists.lumberjackBlockIdMap.containsKey(Registry.BLOCK.getRawId(level.getBlockState(logs.get(i)).getBlock())))
-                        xpCount += JobLists.lumberjackBlockIdMap.get(Registry.BLOCK.getRawId(level.getBlockState(logs.get(i)).getBlock()));
+                    if (JobLists.lumberjackBlockIdMap.containsKey(Registries.BLOCK.getRawId(level.getBlockState(logs.get(i)).getBlock())))
+                        xpCount += JobLists.lumberjackBlockIdMap.get(Registries.BLOCK.getRawId(level.getBlockState(logs.get(i)).getBlock()));
                     else
                         xpCount += ConfigInit.CONFIG.lumberjackXP;
                 }

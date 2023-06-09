@@ -1,10 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.1-SNAPSHOT'
+	id 'fabric-loom' version '1.2-SNAPSHOT'
 	id 'maven-publish'
 }
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -13,7 +10,7 @@ group = project.maven_group
 repositories {
 	maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }
-	maven { url "https://www.cursemaven.com" }
+	maven { url "https://api.modrinth.com/maven" }
 	maven { url "https://ladysnake.jfrog.io/artifactory/mods" }
     maven { url "https://jitpack.io" }
 	maven { url "https://maven.nucleoid.xyz/"}
@@ -29,11 +26,11 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // LevelZ
-	modImplementation ('com.github.Globox1997:LevelZ:1.19-SNAPSHOT') {
+    modImplementation ('maven.modrinth:levelz:1.4.9+1.20') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-	// LibZ
-    modImplementation ('com.github.Globox1997:LibZ:344927d33c') {
+    // LibZ
+    modApi ('maven.modrinth:libz:1.0.1+1.20') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Cloth
@@ -45,21 +42,21 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 	// Numismatic
-	modCompileOnly ('curse.maven:numismatic-overhaul-568316:3860596') {
+    modCompileOnly ('maven.modrinth:numismatic-overhaul:0.2.9+1.19.4'){
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	modCompileOnly ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.0-beta.1")
     modCompileOnly ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.0-beta.1")
 	// FarmersDelight
-	modCompileOnly ('curse.maven:farmers-delight-fabric-482834:3947019') {
+	modCompileOnly ('maven.modrinth:farmers-delight-fabric:1.3.9'){
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// FallingTree
-	modCompileOnly ('curse.maven:falling-tree-349559:3968312'),{
+	modCompileOnly ('maven.modrinth:fallingtree:1.20-4.0.0'){
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-	// TreeChop
-	modCompileOnly ('curse.maven:treechop-421377:4413708'),{
+    // TreeChop
+    modCompileOnly ('maven.modrinth:treechop:0.14.7'){
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// MedievalWeapons
@@ -67,7 +64,7 @@ dependencies {
 	// 	exclude(group: "net.fabricmc.fabric-api")
 	// }
 	// Harvest Scythes
-	modCompileOnly ('curse.maven:harvest-scythes-412225:4026103'),{
+    modCompileOnly ('maven.modrinth:harvest-scythes:2.5.5+MC1.19.3'){
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 }
@@ -96,6 +93,9 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 // configure the maven publication

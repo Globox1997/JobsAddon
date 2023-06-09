@@ -1,7 +1,6 @@
 ### Added:
-- 
+- Added default crafting recipe xp restrictions
 ### Fixed:
-- Fixed not being able to click tab
-- Fixed fisher job
-### Changed:
 - 
+### Changed:
+- Updated to mc 1.20

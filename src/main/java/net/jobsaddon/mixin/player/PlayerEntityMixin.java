@@ -19,10 +19,10 @@ import net.jobsaddon.jobs.JobsManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
@@ -54,7 +54,7 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     @Inject(method = "onKilledOther", at = @At("HEAD"))
     private void onKilledOtherMixin(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
-        if (!player.world.isClient) {
+        if (!player.getWorld().isClient()) {
             JobHelper.addFisherEntityXp(player, other);
             JobHelper.addWarriorXp(player, other);
         }
@@ -75,11 +75,12 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
             }
             this.lastBlockId = id;
             if (blockCount > 200) {
-                JobsAddonMain.LOGGER.warn("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registry.BLOCK.get(id).asItem().getName().getString()
-                        + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos());
+                JobsAddonMain.LOGGER.warn("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type "
+                        + Registries.BLOCK.get(id).asItem().getName().getString() + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos());
                 try (FileWriter playerLogFile = new FileWriter("playerlog.txt", true)) {
-                    playerLogFile.append("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registry.BLOCK.get(id).asItem().getName().getString()
-                            + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos() + " at " + new Timestamp(System.currentTimeMillis()));
+                    playerLogFile
+                            .append("Player " + ((PlayerEntity) (Object) this).getName().getString() + " placed over 200 blocks of type " + Registries.BLOCK.get(id).asItem().getName().getString()
+                                    + " at last pos " + ((PlayerEntity) (Object) this).getBlockPos() + " at " + new Timestamp(System.currentTimeMillis()));
                     playerLogFile.append(System.lineSeparator());
                 } catch (IOException e) {
                 }

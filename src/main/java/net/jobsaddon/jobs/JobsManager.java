@@ -215,8 +215,8 @@ public class JobsManager {
 
             while (getNextJobLevelExperience(string) < currentJobXp && !isJobMaxLevel(string)) {
                 addJobExperienceLevels(playerEntity, string, 1);
-                playerEntity.world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, playerEntity.getSoundCategory(), 1.0F, 1.0F);
-                if (!playerEntity.world.isClient) {
+                playerEntity.getWorld().playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, playerEntity.getSoundCategory(), 1.0F, 1.0F);
+                if (!playerEntity.getWorld().isClient()) {
                     playerEntity.getScoreboard().forEachScore(CriteriaInit.JOBS, playerEntity.getEntityName(), ScoreboardPlayerScore::incrementScore);
                     CriteriaInit.JOB_UP.trigger((ServerPlayerEntity) playerEntity, string, getJobLevel(string));
                     JobsServerPacket.writeS2CJobPacket(this, (ServerPlayerEntity) playerEntity);
@@ -237,7 +237,7 @@ public class JobsManager {
             jobLevel = 0;
             setJobLevel(string, jobLevel);
         }
-        if (!playerEntity.world.isClient) {
+        if (!playerEntity.getWorld().isClient()) {
             // Add numismatic money
             if (FabricLoader.getInstance().isModLoaded("numismatic-overhaul") && ConfigInit.CONFIG.moneyMultiplicator > 0) {
                 CurrencyComponent playerBalance = ModComponents.CURRENCY.get(playerEntity);

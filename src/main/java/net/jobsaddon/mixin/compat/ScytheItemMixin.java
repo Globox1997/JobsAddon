@@ -19,11 +19,11 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import wraith.harvest_scythes.item.ScytheItem;
 
@@ -38,8 +38,8 @@ public class ScytheItemMixin {
             int xpCount = 0;
             for (int i = 0; i < drops.size(); i++)
                 if (drops.get(i).isIn(TagInit.FARMER_BREAKING_ITEMS)) {
-                    if (JobLists.farmerItemIdMap.containsKey(Registry.ITEM.getRawId(drops.get(i).getItem())))
-                        xpCount += drops.get(i).getCount() * JobLists.farmerItemIdMap.get(Registry.ITEM.getRawId(drops.get(i).getItem()));
+                    if (JobLists.farmerItemIdMap.containsKey(Registries.ITEM.getRawId(drops.get(i).getItem())))
+                        xpCount += drops.get(i).getCount() * JobLists.farmerItemIdMap.get(Registries.ITEM.getRawId(drops.get(i).getItem()));
                     else
                         xpCount += drops.get(i).getCount() * ConfigInit.CONFIG.farmerXP;
                 }

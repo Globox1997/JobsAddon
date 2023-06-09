@@ -15,9 +15,9 @@ import net.jobsaddon.config.JobsAddonConfig;
 import net.jobsaddon.network.JobsClientPacket;
 import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ConfigInit {
     public static JobsAddonConfig CONFIG = new JobsAddonConfig();
@@ -45,16 +45,17 @@ public class ConfigInit {
             });
         });
         if (CONFIG.devMode) {
-            List<Iterator<Identifier>> iteratorList = List.of(Registry.POTION.getIds().iterator(), Registry.ENCHANTMENT.getIds().iterator(), Registry.ENTITY_TYPE.getIds().iterator(),
-                    Registry.ITEM.getIds().iterator(), Registry.BLOCK.getIds().iterator());
+            List<Iterator<Identifier>> iteratorList = List.of(Registries.POTION.getIds().iterator(), Registries.ENCHANTMENT.getIds().iterator(), Registries.ENTITY_TYPE.getIds().iterator(),
+                    Registries.ITEM.getIds().iterator(), Registries.BLOCK.getIds().iterator());
             List<String> registryNames = List.of("POTIONS", "ENCHANTMENTS", "ENTITY_TYPES", "ITEMS", "BLOCKS");
 
             for (int i = 0; i < iteratorList.size(); i++) {
                 Iterator<Identifier> iterator = iteratorList.get(i);
                 writeId(registryNames.get(i));
 
-                while (iterator.hasNext())
+                while (iterator.hasNext()) {
                     writeId(iterator.next().toString());
+                }
                 writeId(System.lineSeparator());
             }
             JobsAddonMain.LOGGER.warn("Cauton! JobsAddon dev mode is in use, check joblist.json inside your mc directory");

@@ -17,10 +17,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
@@ -64,7 +64,7 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("effects").size(); u++) {
 
-                                if (!Registry.POTION.containsId(new Identifier(jsonObject.getAsJsonArray("effects").get(u).getAsString()))) {
+                                if (!Registries.POTION.containsId(new Identifier(jsonObject.getAsJsonArray("effects").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid potion effect identifier", jsonObject.getAsJsonArray("effects").get(u).getAsString());
                                     continue;
                                 }
@@ -91,12 +91,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("enchantments").size(); u++) {
 
-                                if (!Registry.ENCHANTMENT.containsId(new Identifier(jsonObject.getAsJsonArray("enchantments").get(u).getAsString()))) {
+                                if (!Registries.ENCHANTMENT.containsId(new Identifier(jsonObject.getAsJsonArray("enchantments").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid enchantment identifier", jsonObject.getAsJsonArray("enchantments").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.brewerEnchantmentMap.put(Registry.ENCHANTMENT.get(new Identifier(jsonObject.getAsJsonArray("enchantments").get(u).getAsString())), i);
+                                JobLists.brewerEnchantmentMap.put(Registries.ENCHANTMENT.get(new Identifier(jsonObject.getAsJsonArray("enchantments").get(u).getAsString())), i);
                             }
                         }
 
@@ -136,11 +136,11 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("blocks").size(); u++) {
 
-                                if (!Registry.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
+                                if (!Registries.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", jsonObject.getAsJsonArray("blocks").get(u).getAsString());
                                     continue;
                                 }
-                                JobLists.builderBlockIdMap.put(Registry.BLOCK.getRawId(Registry.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
+                                JobLists.builderBlockIdMap.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
                             }
                         }
 
@@ -180,12 +180,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("items").size(); u++) {
 
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
+                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("items").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.farmerItemIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
+                                JobLists.farmerItemIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
                             }
                         }
 
@@ -200,18 +200,18 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
                                 continue;
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("crafting").size(); u++) {
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))) {
+                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
                                     continue;
                                 }
 
-                                // Item item = Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()));
+                                // Item item = Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()));
                                 // if (!item.isFood() && !item.getDefaultStack().isIn(TagInit.FARMER_CRAFTING_ITEMS)) {
                                 // JobsAddonMain.LOGGER.warn("{} is not a valid food item", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
                                 // continue;
                                 // }
 
-                                JobLists.farmerCraftingIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
+                                JobLists.farmerCraftingIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
                             }
                         }
 
@@ -227,12 +227,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("smoker").size(); u++) {
 
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("smoker").get(u).getAsString()))) {
+                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("smoker").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("smoker").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.farmerSmokerIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("smoker").get(u).getAsString()))), i);
+                                JobLists.farmerSmokerIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("smoker").get(u).getAsString()))), i);
                             }
                         }
 
@@ -272,12 +272,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("items").size(); u++) {
 
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
+                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("items").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.fisherItemIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
+                                JobLists.fisherItemIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
                             }
                         }
 
@@ -293,12 +293,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("crafting").size(); u++) {
 
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))) {
+                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.fisherCraftingIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
+                                JobLists.fisherCraftingIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
                             }
                         }
 
@@ -314,12 +314,13 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("entities").size(); u++) {
 
-                                if (!Registry.ENTITY_TYPE.containsId(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))) {
+                                if (!Registries.ENTITY_TYPE.containsId(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid entity identifier", jsonObject.getAsJsonArray("entities").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.fisherEntityIdMap.put(Registry.ENTITY_TYPE.getRawId(Registry.ENTITY_TYPE.get(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))), i);
+                                JobLists.fisherEntityIdMap.put(Registries.ENTITY_TYPE.getRawId(Registries.ENTITY_TYPE.get(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))),
+                                        i);
                             }
                         }
 
@@ -359,12 +360,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("blocks").size(); u++) {
 
-                                if (!Registry.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
+                                if (!Registries.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", jsonObject.getAsJsonArray("blocks").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.lumberjackBlockIdMap.put(Registry.BLOCK.getRawId(Registry.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
+                                JobLists.lumberjackBlockIdMap.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
                             }
                         }
 
@@ -404,12 +405,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("blocks").size(); u++) {
 
-                                if (!Registry.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
+                                if (!Registries.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", jsonObject.getAsJsonArray("blocks").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.minerBlockIdMap.put(Registry.BLOCK.getRawId(Registry.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
+                                JobLists.minerBlockIdMap.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
                             }
                         }
 
@@ -449,12 +450,12 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("items").size(); u++) {
 
-                                if (!Registry.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
+                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("items").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.smitherItemIdMap.put(Registry.ITEM.getRawId(Registry.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
+                                JobLists.smitherItemIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
                             }
                         }
 
@@ -494,13 +495,13 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("entities").size(); u++) {
 
-                                if (!Registry.ENTITY_TYPE.containsId(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))) {
+                                if (!Registries.ENTITY_TYPE.containsId(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid entity identifier", jsonObject.getAsJsonArray("entities").get(u).getAsString());
                                     continue;
                                 }
 
-                                JobLists.warriorEntityIdMap.put(Registry.ENTITY_TYPE.getRawId(Registry.ENTITY_TYPE.get(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))),
-                                        i);
+                                JobLists.warriorEntityIdMap
+                                        .put(Registries.ENTITY_TYPE.getRawId(Registries.ENTITY_TYPE.get(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))), i);
                             }
                         }
 

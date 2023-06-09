@@ -138,22 +138,27 @@ public class CommandInit {
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
 
             int playerJobLevel = jobsManager.getJobLevel(jobName);
-            if (reference == 0)
+            if (reference == 0) {
                 playerJobLevel += i;
-            if (reference == 1)
+            }
+            if (reference == 1) {
                 playerJobLevel = playerJobLevel - i > 0 ? playerJobLevel - i : 0;
-            if (reference == 2)
+            }
+            if (reference == 2) {
                 playerJobLevel = i;
+            }
             if (reference == 3) {
-                if (jobName.equals("all"))
+                if (jobName.equals("all")) {
                     for (int u = 0; u < jobStrings().size(); u++) {
-                        jobName = jobStrings().get(u);
-
-                        source.sendFeedback(Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(jobName) + " Level:",
-                                jobsManager.getJobLevel(jobName)), true);
+                        final String finalBobName = jobStrings().get(u);
+                        source.sendFeedback(() -> Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(finalBobName) + " Level:",
+                                jobsManager.getJobLevel(finalBobName)), true);
                     }
-                else
-                    source.sendFeedback(Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(jobName) + " Level:", playerJobLevel), true);
+                } else {
+                    final int finalPlayerJobLevel = playerJobLevel;
+                    source.sendFeedback(
+                            () -> Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(jobName) + " Level:", finalPlayerJobLevel), true);
+                }
 
                 continue;
             }
@@ -161,8 +166,9 @@ public class CommandInit {
 
             JobsServerPacket.writeS2CJobPacket(jobsManager, serverPlayerEntity);
 
-            if (reference != 3)
-                source.sendFeedback(Text.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
+            if (reference != 3) {
+                source.sendFeedback(() -> Text.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
+            }
         }
 
         return targets.size();
