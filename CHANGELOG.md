@@ -1,6 +1,6 @@
 ### Added:
-- Added default crafting recipe xp restrictions
-### Fixed:
 - 
+### Fixed:
+- Fixed smither job
 ### Changed:
-- Updated to mc 1.20
+- 
