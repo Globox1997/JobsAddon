@@ -20,7 +20,13 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
@@ -35,7 +41,8 @@ public class JobHelper {
             int xpCount = 0;
             if (JobLists.smitherItemIdMap.containsKey(Registries.ITEM.getRawId(stack.getItem()))) {
                 xpCount = stack.getCount() * JobLists.smitherItemIdMap.get(Registries.ITEM.getRawId(stack.getItem()));
-            } else {
+            } else if (stack.getItem() instanceof SwordItem || stack.getItem() instanceof ArmorItem || stack.getItem() instanceof ToolItem || stack.getItem() instanceof BowItem
+                    || stack.getItem() instanceof CrossbowItem || stack.getItem() instanceof HorseArmorItem) {
                 xpCount = stack.getCount() * ConfigInit.CONFIG.smitherXP;
             }
             if (xpCount > 0) {
