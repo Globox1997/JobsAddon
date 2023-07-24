@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import ht.treechop.common.util.ChopResult;
+import ht.treechop.common.chop.ChopResult;
 import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.access.PlayerAccess;
 import net.jobsaddon.data.JobLists;

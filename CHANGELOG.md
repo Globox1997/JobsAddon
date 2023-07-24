@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed smither job
-### Changed:
 - 
+### Changed:
+- Updated to mc 1.20.1
