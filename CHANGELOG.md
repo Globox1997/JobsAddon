@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- 
+- Fixed treechop compat
 ### Changed:
-- Updated to mc 1.20.1
+- 
