@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed treechop compat
+- Fixed crafting xp bug
 ### Changed:
 - 
