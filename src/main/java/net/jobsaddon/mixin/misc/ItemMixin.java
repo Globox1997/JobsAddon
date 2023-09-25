@@ -18,13 +18,15 @@ public class ItemMixin {
 
     @Inject(method = "onCraft", at = @At("TAIL"))
     private void onCraftMixin(ItemStack stack, World world, PlayerEntity player, CallbackInfo info) {
-        if (!world.isClient && stack != null && !stack.isEmpty()) {
-            if (((PlayerAccess) player).getLastRecipeId() == null || !JobLists.restrictedRecipeIds.contains(((PlayerAccess) player).getLastRecipeId())) {
+        if (!world.isClient() && stack != null && !stack.isEmpty()) {
+            if (!((PlayerAccess) player).isQuickCrafted()
+                    && (((PlayerAccess) player).getLastRecipeId() == null || !JobLists.restrictedRecipeIds.contains(((PlayerAccess) player).getLastRecipeId()))) {
                 JobHelper.addSmitherXp(player, stack);
                 JobHelper.addFisherCraftingXp(player, stack);
                 JobHelper.addFarmerCraftingXp(player, stack);
+                ((PlayerAccess) player).setLastRecipeId(null);
             }
-            ((PlayerAccess) player).setLastRecipeId(null);
+            ((PlayerAccess) player).setQuickCraftedRecipe(false);
         }
     }
 }
