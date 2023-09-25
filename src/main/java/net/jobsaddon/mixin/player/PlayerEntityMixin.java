@@ -33,6 +33,7 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     private int blockCount;
     @Nullable
     private Identifier lastRecipeIdentifier;
+    private boolean quickCraftedRecipe;
 
     @Inject(method = "readCustomDataFromNbt", at = @At(value = "TAIL"))
     private void readCustomDataFromNbtMixin(NbtCompound tag, CallbackInfo info) {
@@ -113,5 +114,15 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     @Override
     public void setLastRecipeId(Identifier identifier) {
         this.lastRecipeIdentifier = identifier;
+    }
+
+    @Override
+    public boolean isQuickCrafted() {
+        return this.quickCraftedRecipe;
+    }
+
+    @Override
+    public void setQuickCraftedRecipe(boolean quickCrafted) {
+        this.quickCraftedRecipe = quickCrafted;
     }
 }
