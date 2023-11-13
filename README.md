@@ -74,7 +74,7 @@ The brewer can define "effects" for potion brewing at the brewing table and "enc
 
 #### 2. Builder
 
-The builder can define "blocks" for placing blocks on the ground.
+The builder can define "blocks" for placing blocks on the ground. Block tags can be used, put a # infront!
 
 ```json
 {
