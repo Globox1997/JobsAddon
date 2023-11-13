@@ -281,7 +281,7 @@ public class JobsManager {
     }
 
     public boolean isJobMaxLevel(String string) {
-        if (ConfigInit.CONFIG.allow_max_lvl_progress)
+        if (ConfigInit.CONFIG.allowMaxLvlProgress)
             return false;
         return getJobLevel(string) >= ConfigInit.CONFIG.jobMaxLevel;
     }

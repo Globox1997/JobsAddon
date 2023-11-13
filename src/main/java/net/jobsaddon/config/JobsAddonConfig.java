@@ -58,7 +58,7 @@ public class JobsAddonConfig implements ConfigData {
     @ConfigEntry.Category("reward_settings")
     @Comment("Numismatic Overhaul compat lvl * multiplicator")
     public int moneyMultiplicator = 20;
-    public boolean allow_max_lvl_progress = false;
+    public boolean allowMaxLvlProgress = false;
 
     public ArrayList<Object> getJobConfigList() {
         return new ArrayList<Object>(Arrays.asList(employedJobs, jobChangeTime, resetCurrentJobXP, jobMaxLevel, jobXPBaseCost, jobXPCostMultiplicator, jobXPExponent, jobXPMaxCost, brewerXP,
