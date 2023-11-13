@@ -1,6 +1,7 @@
 package net.jobsaddon.init;
 
 import ht.treechop.api.TreeChopEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.access.PlayerAccess;
@@ -14,6 +15,14 @@ public class EventInit {
     public static final boolean isTreeChopLoaded = FabricLoader.getInstance().isModLoaded("treechop");
 
     public static void init() {
+        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
+            JobLists.builderBlockTagMap.forEach((tagKey, xp) -> {
+                Registries.BLOCK.getOrCreateEntryList(tagKey).forEach(block -> {
+                    JobLists.builderBlockIdMap.put(Registries.BLOCK.getRawId(block.value()), xp);
+                });
+            });
+        });
+
         if (isTreeChopLoaded) {
             TreeChopEvents.AFTER_CHOP.register((world, player, pos, state, data, felled) -> {
                 if (player != null && !world.isClient() && felled) {

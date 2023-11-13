@@ -18,6 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -136,6 +138,10 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                             for (int u = 0; u < jsonObject.getAsJsonArray("blocks").size(); u++) {
 
+                                if (jsonObject.getAsJsonArray("blocks").get(u).getAsString().startsWith("#")) {
+                                    JobLists.builderBlockTagMap.put(TagKey.of(RegistryKeys.BLOCK, new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString().replace("#", ""))), i);
+                                    continue;
+                                }
                                 if (!Registries.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
                                     JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", jsonObject.getAsJsonArray("blocks").get(u).getAsString());
                                     continue;

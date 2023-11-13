@@ -3,8 +3,10 @@ package net.jobsaddon.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public class JobLists {
@@ -14,6 +16,7 @@ public class JobLists {
     public static final HashMap<Enchantment, Integer> brewerEnchantmentMap = new HashMap<>(); // enchantments
     // builder
     public static final HashMap<Integer, Integer> builderBlockIdMap = new HashMap<>(); // blocks of all types, inside builder_placing_items tag
+    public static final HashMap<TagKey<Block>, Integer> builderBlockTagMap = new HashMap<>();
     // farmer
     public static final HashMap<Integer, Integer> farmerItemIdMap = new HashMap<>(); // block drops like wheat, inside farmer_breaking_items tag
     public static final HashMap<Integer, Integer> farmerCraftingIdMap = new HashMap<>(); // food items
