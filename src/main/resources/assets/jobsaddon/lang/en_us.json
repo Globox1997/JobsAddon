@@ -31,7 +31,7 @@
     "text.autoconfig.jobsaddon.option.xpMultiplicator": "XP Multiplicator",
     "text.autoconfig.jobsaddon.option.levelZXPMultiplicator": "LevelZ XP Multiplicator",
     "text.autoconfig.jobsaddon.option.moneyMultiplicator": "Money Multiplicator",
-    "text.autoconfig.jobsaddon.option.allow_max_lvl_progress": "Allow Max Level Progress",
+    "text.autoconfig.jobsaddon.option.allowMaxLvlProgress": "Allow Max Level Progress",
 
     "text.jobsaddon.brewer": "Brewer",
     "text.jobsaddon.builder": "Builder",
@@ -58,6 +58,7 @@
     "text.jobsaddon.tooManyEmployedJobs": "Employed Jobs: %s, %s, ...",
     "text.jobsaddon.notEmployed": "Not Employed",
     "text.jobsaddon.nonJobTitle": "",
+    "text.jobsaddon.jobLevelExperience": "XP: %s/%s",
 
     "advancements.adventure.miner_level_100.title": "Work hard, play hard",
     "advancements.adventure.miner_level_100.description": "Mine a lot of blocks"

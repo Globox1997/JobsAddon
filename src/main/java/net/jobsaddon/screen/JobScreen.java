@@ -161,7 +161,6 @@ public class JobScreen extends Screen implements Tab {
                 context.drawTexture(ICON_TEXTURES, xPos + 12, yPos + 76, 0, 0, 81, 5);
 
                 if (jobsManager != null) {
-
                     String jobName = jobNames.get(jobInt);
                     int jobXP = jobsManager.getJobXP(jobName);
                     // render job title
@@ -181,6 +180,10 @@ public class JobScreen extends Screen implements Tab {
                     // render xp bar
                     if (jobsManager.getNextJobLevelExperience(jobName) > 0 && jobXP > 0) {
                         context.drawTexture(ICON_TEXTURES, xPos + 12, yPos + 76, 0, 5, 80 * jobXP / jobsManager.getNextJobLevelExperience(jobName), 5);
+
+                        if (isPointWithinBounds(xPos + 12 - this.x, yPos + 76 - this.y, 81, 5, mouseX, mouseY)) {
+                            context.drawTooltip(textRenderer, Text.translatable("text.jobsaddon.jobLevelExperience", jobXP, jobsManager.getNextJobLevelExperience(jobName)), mouseX, mouseY);
+                        }
                     }
                 }
             }
