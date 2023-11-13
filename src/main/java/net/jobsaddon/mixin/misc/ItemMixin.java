@@ -30,10 +30,8 @@ public class ItemMixin {
             Identifier receipt = ((PlayerAccess) player).getLastRecipeId();
 
 
+            // We need to rely on this check, because of a bug in 1.19 causing wrong setLastRecipeId
             boolean isFurnace = player.currentScreenHandler instanceof FurnaceScreenHandler || player.currentScreenHandler instanceof BlastFurnaceScreenHandler;
-
-            boolean isCrafting = player.currentScreenHandler instanceof CraftingScreenHandler || player.currentScreenHandler instanceof PlayerScreenHandler;
-
 
             if (!isQuickCrafted && ((receipt == null || !isRestricted) || isFurnace)) {
                 JobHelper.addSmitherXp(player, stack);
