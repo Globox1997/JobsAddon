@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "recipes": [
+    "snuffles:snuffle_fluff_from_frosty_fluff",
+    "snuffles:snuffle_fluff_carpet_from_frosty_fluff_carpet",
+    "snuffles:snuffle_fluff_carpet_from_snuffle_fluff",
+    "snuffles:frosty_fluff_from_snuffle_fluff",
+    "snuffles:frosty_fluff_carpet_from_frosty_fluff",
+    "snuffles:frosty_fluff_carpet_from_snuffle_fluff_carpet"
+  ]
+}

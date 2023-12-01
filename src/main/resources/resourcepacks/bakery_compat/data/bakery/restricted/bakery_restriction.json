@@ -1,0 +1,11 @@
+{
+    "replace": false,
+    "recipes": [
+        "bakery:oat_bag",
+        "bakery:oat_ball",
+        "bakery:oat_from_crate",
+        "bakery:oat_from_ball",
+        "bakery:strawberry_crate",
+        "bakery:strawberry_from_crate"
+    ]
+}

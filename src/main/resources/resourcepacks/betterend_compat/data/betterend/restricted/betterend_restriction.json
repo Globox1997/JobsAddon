@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "recipes": [
+    "betterend:amber_block",
+    "betterend:amber_gem_block",
+    "betterend:charcoal_block",
+    "betterend:charcoal_from_block",
+    "betterend:aeternium_block",
+    "betterend:aeternium_block_to_ingot",
+    "betterend:thallasium_block",
+    "betterend:thallasium_ingot_from_block",
+    "betterend:thallasium_ingot_from_nuggets",
+    "betterend:thallasium_nuggets_from_ingot",
+    "betterend:terminite_block",
+    "betterend:terminite_ingot_from_block",
+    "betterend:terminite_ingot_from_nuggets",
+    "betterend:terminite_nuggets_from_ingot",
+    "betterend:ender_perl_to_block",
+    "betterend:ender_block_to_perl"
+  ]
+}

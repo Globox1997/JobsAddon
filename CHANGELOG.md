@@ -1,6 +1,6 @@
 ### Added:
-- 
+- Added default datapacks
 ### Fixed:
-- Fixed crafting xp bug
-### Changed:
 - 
+### Changed:
+- Tweaked recipe restrictions

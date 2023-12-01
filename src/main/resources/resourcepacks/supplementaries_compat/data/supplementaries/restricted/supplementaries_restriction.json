@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "recipes": [
+    "supplementaries:flax_block",
+    "supplementaries:flax_block_uncrafting",
+    "supplementaries:soap_block",
+    "supplementaries:soap_block_uncrafting",
+    "supplementaries:feather_block",
+    "supplementaries:feather_block_uncrafting",
+    "supplementaries:flint_block",
+    "supplementaries:flint_block_uncrafting",
+    "supplementaries:sugar_cube",
+    "supplementaries:sugar_cube_uncrafting"
+  ]
+}

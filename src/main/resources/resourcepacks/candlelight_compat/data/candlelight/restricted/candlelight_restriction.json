@@ -1,0 +1,15 @@
+{
+    "replace": false,
+    "recipes": [
+        "candlelight:beetroot_crate",
+        "candlelight:beetroot_from_crate",
+        "candlelight:lettuce",
+        "candlelight:lettuce_crate",
+        "candlelight:carrot_crate",
+        "candlelight:carrot_from_crate",
+        "candlelight:potato_crate",
+        "candlelight:poatto_from_crate",
+        "candlelight:tomato",
+        "candlelight:tomato_crate"
+    ]
+}

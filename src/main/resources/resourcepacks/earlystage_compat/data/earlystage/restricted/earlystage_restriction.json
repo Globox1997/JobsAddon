@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "recipes": [
+    "earlystage:steel_ingot_from_nuggets",
+    "earlystage:steel_nugget",
+    "earlystage:steel_ingot_from_iron_steel",
+    "earlystage:steel_block"
+  ]
+}

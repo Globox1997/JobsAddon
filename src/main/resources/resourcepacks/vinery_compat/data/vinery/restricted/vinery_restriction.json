@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "recipes": [
+    "vinery:apple_crate",
+    "vinery:apples",
+    "vinery:cherries",
+    "vinery:cherry_crate",
+    "vinery:red_grape",
+    "vinery:red_grape_crate",
+    "vinery:white_grape",
+    "vinery:white_grape_crate"
+  ]
+}
