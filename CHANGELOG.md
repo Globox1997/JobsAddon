@@ -1,6 +1,6 @@
 ### Added:
-- Added default datapacks
+- Added composter xp
 ### Fixed:
 - 
 ### Changed:
-- Tweaked recipe restrictions
+- 

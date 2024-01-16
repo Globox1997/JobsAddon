@@ -18,6 +18,7 @@
     "block.BlockMixin",
     "block.TntBlockMixin",
     "block.SweetBerryBushBlockMixin",
+    "block.ComposterBlockMixin",
     "compat.TomatoBushCropBlockMixin",
     "compat.BlockWrapperMixin",
     "compat.MacheteItemMixin",
