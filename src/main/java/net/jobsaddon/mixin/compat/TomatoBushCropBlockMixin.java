@@ -27,7 +27,7 @@ public class TomatoBushCropBlockMixin {
 
     @Inject(method = "onUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onUseMixin(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> info, int i, boolean bl, int j) {
-        if (!world.isClient && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("farmer")) {
+        if (!world.isClient() && ((JobsManagerAccess) player).getJobsManager().isEmployedJob("farmer")) {
             int xpCount = 0;
             if (JobLists.farmerItemIdMap.containsKey(Registries.ITEM.getRawId(ItemsRegistry.TOMATO.get()))) {
                 xpCount += j * JobLists.farmerItemIdMap.get(Registries.ITEM.getRawId(ItemsRegistry.TOMATO.get()));
@@ -35,7 +35,6 @@ public class TomatoBushCropBlockMixin {
                     JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "farmer", xpCount);
                 }
             }
-
         }
     }
 }
