@@ -1,5 +1,10 @@
 package net.jobsaddon.mixin.misc;
 
+import net.minecraft.screen.BlastFurnaceScreenHandler;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.FurnaceScreenHandler;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,13 +23,24 @@ public class ItemMixin {
 
     @Inject(method = "onCraft", at = @At("TAIL"))
     private void onCraftMixin(ItemStack stack, World world, PlayerEntity player, CallbackInfo info) {
-        if (!world.isClient && stack != null && !stack.isEmpty()) {
-            if (((PlayerAccess) player).getLastRecipeId() == null || !JobLists.restrictedRecipeIds.contains(((PlayerAccess) player).getLastRecipeId())) {
+
+        if (!world.isClient() && stack != null && !stack.isEmpty()) {
+            boolean isQuickCrafted = ((PlayerAccess) player).isQuickCrafted();
+            boolean isRestricted = JobLists.restrictedRecipeIds.contains(((PlayerAccess) player).getLastRecipeId());
+            Identifier receipt = ((PlayerAccess) player).getLastRecipeId();
+
+
+            // We need to rely on this check, because of a bug in 1.19 causing wrong setLastRecipeId
+            boolean isFurnace = player.currentScreenHandler instanceof FurnaceScreenHandler || player.currentScreenHandler instanceof BlastFurnaceScreenHandler;
+
+            if (!isQuickCrafted && ((receipt == null || !isRestricted) || isFurnace)) {
                 JobHelper.addSmitherXp(player, stack);
                 JobHelper.addFisherCraftingXp(player, stack);
                 JobHelper.addFarmerCraftingXp(player, stack);
+                ((PlayerAccess) player).setLastRecipeId(null);
             }
-            ((PlayerAccess) player).setLastRecipeId(null);
+            ((PlayerAccess) player).setQuickCraftedRecipe(false);
         }
     }
 }
+
