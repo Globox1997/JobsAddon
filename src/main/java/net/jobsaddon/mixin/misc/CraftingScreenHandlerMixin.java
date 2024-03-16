@@ -13,7 +13,7 @@ import net.minecraft.screen.CraftingScreenHandler;
 @Mixin(CraftingScreenHandler.class)
 public class CraftingScreenHandlerMixin {
 
-    @Inject(method = "quickMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandlerContext;run(Ljava/util/function/BiConsumer;)V"))
+    @Inject(method = "transferSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandlerContext;run(Ljava/util/function/BiConsumer;)V"))
     private void quickMoveMixin(PlayerEntity player, int slot, CallbackInfoReturnable<ItemStack> info) {
         if (!player.getWorld().isClient()) {
             ((PlayerAccess) player).setQuickCraftedRecipe(true);
