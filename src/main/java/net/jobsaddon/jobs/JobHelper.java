@@ -101,7 +101,7 @@ public class JobHelper {
             if (JobLists.farmerCraftingIdMap.containsKey(Registries.ITEM.getRawId(stack.getItem()))) {
                 xpCount = stack.getCount() * JobLists.farmerCraftingIdMap.get(Registries.ITEM.getRawId(stack.getItem()));
             } else {
-                xpCount = stack.getCount() * ConfigInit.CONFIG.farmerXP;
+                xpCount = ConfigInit.CONFIG.farmerXP;
             }
             if (xpCount > 0) {
                 JobsServerPacket.writeS2CJobXPPacket((ServerPlayerEntity) player, "farmer", xpCount);
