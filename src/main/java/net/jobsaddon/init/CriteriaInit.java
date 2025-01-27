@@ -6,8 +6,8 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 
 public class CriteriaInit {
 
-    public static final JobUpCriterion JOB_UP = Criteria.register(new JobUpCriterion());
     public static final ScoreboardCriterion JOBS = ScoreboardCriterion.create("jobsaddon");
+    public static final JobUpCriterion JOB_UP = Criteria.register("jobsaddon:job_up", new JobUpCriterion());
 
     public static void init() {
     }

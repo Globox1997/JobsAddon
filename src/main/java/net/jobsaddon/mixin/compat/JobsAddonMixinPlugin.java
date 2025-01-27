@@ -28,6 +28,8 @@ public class JobsAddonMixinPlugin implements IMixinConfigPlugin {
             return false;
         if ((mixinClassName.contains("ScytheItemMixin") || mixinClassName.contains("MacheteItemMixin")) && !FabricLoader.getInstance().isModLoaded("harvest_scythes"))
             return false;
+        if (mixinClassName.contains("MobEntityMixin") && FabricLoader.getInstance().isModLoaded("rpgz"))
+            return false;
 
         return true;
     }

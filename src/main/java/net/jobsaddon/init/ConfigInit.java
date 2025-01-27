@@ -26,39 +26,39 @@ public class ConfigInit {
         AutoConfig.register(JobsAddonConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(JobsAddonConfig.class).getConfig();
 
-        AutoConfig.getConfigHolder(JobsAddonConfig.class).registerSaveListener((manager, data) -> {
-            if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT) && !MinecraftClient.getInstance().isInSingleplayer()
-                    && MinecraftClient.getInstance().getNetworkHandler() != null)
-                JobsClientPacket.writeC2SSyncJobConfigPacket();
-            return ActionResult.SUCCESS;
-        });
-        AutoConfig.getConfigHolder(JobsAddonConfig.class).registerLoadListener((manager, newData) -> {
-            if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT) && !MinecraftClient.getInstance().isInSingleplayer()
-                    && MinecraftClient.getInstance().getNetworkHandler() != null)
-                JobsClientPacket.writeC2SSyncJobConfigPacket();
-            return ActionResult.SUCCESS;
-        });
+//        AutoConfig.getConfigHolder(JobsAddonConfig.class).registerSaveListener((manager, data) -> {
+//            if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT) && !MinecraftClient.getInstance().isInSingleplayer()
+//                    && MinecraftClient.getInstance().getNetworkHandler() != null)
+//                JobsClientPacket.writeC2SSyncJobConfigPacket();
+//            return ActionResult.SUCCESS;
+//        });
+//        AutoConfig.getConfigHolder(JobsAddonConfig.class).registerLoadListener((manager, newData) -> {
+//            if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT) && !MinecraftClient.getInstance().isInSingleplayer()
+//                    && MinecraftClient.getInstance().getNetworkHandler() != null)
+//                JobsClientPacket.writeC2SSyncJobConfigPacket();
+//            return ActionResult.SUCCESS;
+//        });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             // if (!server.isSingleplayer()) // set in sp too
             server.execute(() -> {
-                JobsServerPacket.writeS2CJobConfigSyncPacket(handler.player, ConfigInit.CONFIG.getJobConfigList());
+//                JobsServerPacket.writeS2CJobConfigSyncPacket(handler.player, ConfigInit.CONFIG.getJobConfigList());
             });
         });
         if (CONFIG.devMode) {
-            List<Iterator<Identifier>> iteratorList = List.of(Registries.POTION.getIds().iterator(), Registries.ENCHANTMENT.getIds().iterator(), Registries.ENTITY_TYPE.getIds().iterator(),
-                    Registries.ITEM.getIds().iterator(), Registries.BLOCK.getIds().iterator());
-            List<String> registryNames = List.of("POTIONS", "ENCHANTMENTS", "ENTITY_TYPES", "ITEMS", "BLOCKS");
-
-            for (int i = 0; i < iteratorList.size(); i++) {
-                Iterator<Identifier> iterator = iteratorList.get(i);
-                writeId(registryNames.get(i));
-
-                while (iterator.hasNext()) {
-                    writeId(iterator.next().toString());
-                }
-                writeId(System.lineSeparator());
-            }
-            JobsAddonMain.LOGGER.warn("Cauton! JobsAddon dev mode is in use, check joblist.json inside your mc directory");
+//            List<Iterator<Identifier>> iteratorList = List.of(Registries.POTION.getIds().iterator(), Registries.ENCHANTMENT.getIds().iterator(), Registries.ENTITY_TYPE.getIds().iterator(),
+//                    Registries.ITEM.getIds().iterator(), Registries.BLOCK.getIds().iterator());
+//            List<String> registryNames = List.of("POTIONS", "ENCHANTMENTS", "ENTITY_TYPES", "ITEMS", "BLOCKS");
+//
+//            for (int i = 0; i < iteratorList.size(); i++) {
+//                Iterator<Identifier> iterator = iteratorList.get(i);
+//                writeId(registryNames.get(i));
+//
+//                while (iterator.hasNext()) {
+//                    writeId(iterator.next().toString());
+//                }
+//                writeId(System.lineSeparator());
+//            }
+//            JobsAddonMain.LOGGER.warn("Cauton! JobsAddon dev mode is in use, check joblist.json inside your mc directory");
         }
 
     }

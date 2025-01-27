@@ -1,241 +1,142 @@
 package net.jobsaddon.jobs;
 
-import java.util.ArrayList;
-
 import com.glisco.numismaticoverhaul.ModComponents;
 import com.glisco.numismaticoverhaul.currency.CurrencyComponent;
-
-import org.jetbrains.annotations.Nullable;
-
 import net.fabricmc.loader.api.FabricLoader;
 import net.jobsaddon.init.ConfigInit;
 import net.jobsaddon.init.CriteriaInit;
 import net.jobsaddon.network.JobsServerPacket;
-import net.levelz.access.PlayerSyncAccess;
+import net.levelz.access.ServerPlayerSyncAccess;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.scoreboard.ScoreAccess;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JobsManager {
 
-    // Jobs
-    private int brewerLevel;
-    private int builderLevel;
-    private int farmerLevel;
-    private int fisherLevel;
-    private int lumberjackLevel;
-    private int minerLevel;
-    private int smitherLevel;
-    private int warriorLevel;
-    // XP
-    private int brewerXP;
-    private int builderXP;
-    private int farmerXP;
-    private int fisherXP;
-    private int lumberjackXP;
-    private int minerXP;
-    private int smitherXP;
-    private int warriorXP;
+    public static final Map<Integer, Job> JOBS = new HashMap<>();
+    public static final Map<Integer, JobExperience> BLOCK_BREAK_EXPERIENCE = new HashMap<>();
+    public static final Map<Integer, JobExperience> BLOCK_PLACE_EXPERIENCE = new HashMap<>();
+    public static final Map<Integer, JobExperience> ITEM_DROP_EXPERIENCE = new HashMap<>(); // used for entity drops, block drops and fish drops
+    public static final Map<Integer, JobExperience> ITEM_CRAFT_EXPERIENCE = new HashMap<>();
+    public static final Map<Integer, JobExperience> ENCHANTMENT_EXPERIENCE = new HashMap<>();
+    public static final Map<Integer, JobExperience> BREWING_EXPERIENCE = new HashMap<>(); // used for brewing
+    public static final Map<Integer, JobExperience> ENTITY_KILL_EXPERIENCE = new HashMap<>(); // used for killing entities
+    public static final List<Identifier> RESTRICTED_RECIPES = new ArrayList<>(); // used for crafting xp restriction
+
+    private final PlayerEntity playerEntity;
+    private Map<Integer, Job> playerJobs = new HashMap<>();
     // Employed Jobs
-    private ArrayList<String> employedJobsList = new ArrayList<String>();
+    private ArrayList<Integer> employedJobsList = new ArrayList<>();
     private int employedJobTime;
 
-    public void readNbt(NbtCompound tag) {
-        if (tag.contains("BrewerLevel", 99)) {
-            // Job Level
-            this.brewerLevel = tag.getInt("BrewerLevel");
-            this.builderLevel = tag.getInt("BuilderLevel");
-            this.farmerLevel = tag.getInt("FarmerLevel");
-            this.fisherLevel = tag.getInt("FisherLevel");
-            this.lumberjackLevel = tag.getInt("LumberjackLevel");
-            this.minerLevel = tag.getInt("MinerLevel");
-            this.smitherLevel = tag.getInt("SmitherLevel");
-            this.warriorLevel = tag.getInt("WarriorLevel");
-            // Job XP
-            this.brewerXP = tag.getInt("BrewerXP");
-            this.builderXP = tag.getInt("BuilderXP");
-            this.farmerXP = tag.getInt("FarmerXP");
-            this.fisherXP = tag.getInt("FisherXP");
-            this.lumberjackXP = tag.getInt("LumberjackXP");
-            this.minerXP = tag.getInt("MinerXP");
-            this.smitherXP = tag.getInt("SmitherXP");
-            this.warriorXP = tag.getInt("WarriorXP");
-            // Employed Jobs
-            int employedJobCount = tag.getInt("EmployedJobCount");
-            if (employedJobCount > 0) {
-                employedJobsList.clear();
-                for (int i = 0; i < employedJobCount; i++)
-                    employedJobsList.add(tag.getString("EmployedJob" + i));
+
+    public JobsManager(PlayerEntity playerEntity) {
+        this.playerEntity = playerEntity;
+
+        for (Job job : JOBS.values()) {
+            if (!this.playerJobs.containsKey(job.getId())) {
+                this.playerJobs.put(job.getId(), new Job(job.getId(), job.getKey(), job.getMaxLevel(), 0, 0));
+            } else if (this.playerJobs.get(job.getId()).getLevel() > job.getMaxLevel()) {
+                this.playerJobs.get(job.getId()).setLevel(job.getMaxLevel());
             }
-            this.employedJobTime = tag.getInt("EmployedJobTime");
         }
     }
 
-    public void writeNbt(NbtCompound tag) {
-        // Job Level
-        tag.putInt("BrewerLevel", this.brewerLevel);
-        tag.putInt("BuilderLevel", this.builderLevel);
-        tag.putInt("FarmerLevel", this.farmerLevel);
-        tag.putInt("FisherLevel", this.fisherLevel);
-        tag.putInt("LumberjackLevel", this.lumberjackLevel);
-        tag.putInt("MinerLevel", this.minerLevel);
-        tag.putInt("SmitherLevel", this.smitherLevel);
-        tag.putInt("WarriorLevel", this.warriorLevel);
-        // Job XP
-        tag.putInt("BrewerXP", this.brewerXP);
-        tag.putInt("BuilderXP", this.builderXP);
-        tag.putInt("FarmerXP", this.farmerXP);
-        tag.putInt("FisherXP", this.fisherXP);
-        tag.putInt("LumberjackXP", this.lumberjackXP);
-        tag.putInt("MinerXP", this.minerXP);
-        tag.putInt("SmitherXP", this.smitherXP);
-        tag.putInt("WarriorXP", this.warriorXP);
+    public void readNbt(NbtCompound nbt) {
+        NbtList jobsList = nbt.getList("Jobs", NbtElement.COMPOUND_TYPE);
+        for (int i = 0; i < jobsList.size(); i++) {
+            Job job = new Job(jobsList.getCompound(i));
+            this.playerJobs.put(job.getId(), job);
+        }
         // Employed Jobs
-        if (!employedJobsList.isEmpty())
-            for (int i = 0; i < employedJobsList.size(); i++)
-                tag.putString("EmployedJob" + i, employedJobsList.get(i));
-        tag.putInt("EmployedJobCount", employedJobsList.size());
-        tag.putInt("EmployedJobTime", this.employedJobTime);
+        int employedJobCount = nbt.getInt("EmployedJobCount");
+        if (employedJobCount > 0) {
+            this.employedJobsList.clear();
+            for (int i = 0; i < employedJobCount; i++) {
+                this.employedJobsList.add(nbt.getInt("EmployedJob" + i));
+            }
+        }
+        this.employedJobTime = nbt.getInt("EmployedJobTime");
     }
 
-    public void setJobLevel(String string, int level) {
-        switch (string) {
-        case "brewer":
-            this.brewerLevel = level;
-            break;
-        case "builder":
-            this.builderLevel = level;
-            break;
-        case "farmer":
-            this.farmerLevel = level;
-            break;
-        case "fisher":
-            this.fisherLevel = level;
-            break;
-        case "lumberjack":
-            this.lumberjackLevel = level;
-            break;
-        case "miner":
-            this.minerLevel = level;
-            break;
-        case "smither":
-            this.smitherLevel = level;
-            break;
-        case "warrior":
-            this.warriorLevel = level;
-            break;
-        default:
-            break;
+    public void writeNbt(NbtCompound nbt) {
+        NbtList jobs = new NbtList();
+        for (Job job : this.playerJobs.values()) {
+            jobs.add(job.writeDataToNbt());
         }
+        nbt.put("Jobs", jobs);
+        // Employed Jobs
+        if (!this.employedJobsList.isEmpty()) {
+            for (int i = 0; i < this.employedJobsList.size(); i++) {
+                nbt.putInt("EmployedJob" + i, this.employedJobsList.get(i));
+            }
+        }
+        nbt.putInt("EmployedJobCount", this.employedJobsList.size());
+        nbt.putInt("EmployedJobTime", this.employedJobTime);
     }
 
-    public int getJobLevel(String string) {
-        switch (string) {
-        case "brewer":
-            return this.brewerLevel;
-        case "builder":
-            return this.builderLevel;
-        case "farmer":
-            return this.farmerLevel;
-        case "fisher":
-            return this.fisherLevel;
-        case "lumberjack":
-            return this.lumberjackLevel;
-        case "miner":
-            return this.minerLevel;
-        case "smither":
-            return this.smitherLevel;
-        case "warrior":
-            return this.warriorLevel;
-        default:
-            return 0;
-        }
+    public Map<Integer, Job> getPlayerJobs() {
+        return playerJobs;
     }
 
-    public void setJobXP(String string, int amount) {
-        switch (string) {
-        case "brewer":
-            this.brewerXP = amount;
-            break;
-        case "builder":
-            this.builderXP = amount;
-            break;
-        case "farmer":
-            this.farmerXP = amount;
-            break;
-        case "fisher":
-            this.fisherXP = amount;
-            break;
-        case "lumberjack":
-            this.lumberjackXP = amount;
-            break;
-        case "miner":
-            this.minerXP = amount;
-            break;
-        case "smither":
-            this.smitherXP = amount;
-            break;
-        case "warrior":
-            this.warriorXP = amount;
-            break;
-        default:
-            break;
-        }
+    public void setPlayerJobs(Map<Integer, Job> playerJobs) {
+        this.playerJobs = playerJobs;
     }
 
-    public int getJobXP(String string) {
-        switch (string) {
-        case "brewer":
-            return this.brewerXP;
-        case "builder":
-            return this.builderXP;
-        case "farmer":
-            return this.farmerXP;
-        case "fisher":
-            return this.fisherXP;
-        case "lumberjack":
-            return this.lumberjackXP;
-        case "miner":
-            return this.minerXP;
-        case "smither":
-            return this.smitherXP;
-        case "warrior":
-            return this.warriorXP;
-        default:
-            return 0;
-        }
+    public void setJobLevel(int id, int level) {
+        this.playerJobs.get(id).setLevel(level);
+    }
+
+    public int getJobLevel(int id) {
+        return this.playerJobs.get(id).getLevel();
+    }
+
+    public void setJobXP(int id, int experience) {
+        this.playerJobs.get(id).setExperience(experience);
+    }
+
+    public int getJobXP(int id) {
+        return this.playerJobs.get(id).getExperience();
     }
 
     // Should only get called on server
-    public void addJobXP(PlayerEntity playerEntity, String string, int XP) {
-        if (!isJobMaxLevel(string)) {
-            int currentJobXp = getJobXP(string) + XP;
+    public void addJobXP(PlayerEntity playerEntity, int id, int experience) {
+        if (!isJobMaxLevel(id)) {
+            int currentJobXp = getJobXP(id) + experience;
 
-            while (getNextJobLevelExperience(string) < currentJobXp && !isJobMaxLevel(string)) {
-                addJobExperienceLevels(playerEntity, string, 1);
+            while (getNextJobLevelExperience(id) < currentJobXp && !isJobMaxLevel(id)) {
+                addJobExperienceLevels(playerEntity, id, 1);
                 playerEntity.getWorld().playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, playerEntity.getSoundCategory(), 1.0F, 1.0F);
                 if (!playerEntity.getWorld().isClient()) {
-                    playerEntity.getScoreboard().forEachScore(CriteriaInit.JOBS, playerEntity.getEntityName(), ScoreboardPlayerScore::incrementScore);
-                    CriteriaInit.JOB_UP.trigger((ServerPlayerEntity) playerEntity, string, getJobLevel(string));
+                    playerEntity.getScoreboard().forEachScore(CriteriaInit.JOBS, playerEntity, ScoreAccess::incrementScore);
+                    CriteriaInit.JOB_UP.trigger((ServerPlayerEntity) playerEntity, this.playerJobs.get(id).getKey(), getJobLevel(id));
                     JobsServerPacket.writeS2CJobPacket(this, (ServerPlayerEntity) playerEntity);
                 }
-                currentJobXp -= getNextJobLevelExperience(string);
+                currentJobXp -= getNextJobLevelExperience(id);
             }
-            setJobXP(string, currentJobXp);
+            setJobXP(id, currentJobXp);
         }
     }
 
-    public void addJobExperienceLevels(PlayerEntity playerEntity, String string, int levels) {
-        int jobLevel = getJobLevel(string);
-        if (jobLevel < ConfigInit.CONFIG.jobMaxLevel) {
+    public void addJobExperienceLevels(PlayerEntity playerEntity, int id, int levels) {
+        int jobLevel = getJobLevel(id);
+        if (jobLevel < this.playerJobs.get(id).getMaxLevel()) {
             jobLevel += levels;
-            setJobLevel(string, jobLevel);
+            setJobLevel(id, jobLevel);
         }
         if (jobLevel < 0) {
             jobLevel = 0;
-            setJobLevel(string, jobLevel);
+            setJobLevel(id, jobLevel);
         }
         if (!playerEntity.getWorld().isClient()) {
             // Add numismatic money
@@ -244,46 +145,50 @@ public class JobsManager {
                 playerBalance.silentModify(jobLevel * ConfigInit.CONFIG.moneyMultiplicator);
             }
             // Add levelz xp
-            if (ConfigInit.CONFIG.levelZXPMultiplicator > 0)
-                ((PlayerSyncAccess) playerEntity).addLevelExperience(ConfigInit.CONFIG.levelZXPMultiplicator * jobLevel);
+            if (ConfigInit.CONFIG.levelZXPMultiplicator > 0) {
+                ((ServerPlayerSyncAccess) playerEntity).addLevelExperience(ConfigInit.CONFIG.levelZXPMultiplicator * jobLevel);
+            }
             // Add vanilla xp
-            if (ConfigInit.CONFIG.xpMultiplicator > 0)
+            if (ConfigInit.CONFIG.xpMultiplicator > 0) {
                 playerEntity.addExperience(ConfigInit.CONFIG.xpMultiplicator * jobLevel);
+            }
         }
 
     }
 
-    public void employJob(String jobName) {
-        if (!isEmployedJob(jobName))
-            employedJobsList.add(jobName);
+    public void employJob(int id) {
+        if (!isEmployedJob(id)) {
+            employedJobsList.add(id);
+        }
     }
 
-    public void quitJob(String jobName) {
-        if (isEmployedJob(jobName))
-            employedJobsList.remove(jobName);
+    public void quitJob(int id) {
+        if (isEmployedJob(id)) {
+            employedJobsList.remove((Object)id);
+        }
     }
 
-    public boolean isEmployedJob(String jobName) {
-        return employedJobsList.contains(jobName);
+    public boolean isEmployedJob(int id) {
+        return employedJobsList.contains(id);
     }
 
-    public boolean canEmployJob(String string) {
-        return !isEmployedJob(string) && employedJobsList.size() < ConfigInit.CONFIG.employedJobs && getEmployedJobTime() == 0;
+    public boolean canEmployJob(int id) {
+        return !isEmployedJob(id) && employedJobsList.size() < ConfigInit.CONFIG.employedJobs && getEmployedJobTime() == 0;
     }
 
     public boolean hasMaxEmployedJobs() {
         return employedJobsList != null && employedJobsList.size() == ConfigInit.CONFIG.employedJobs;
     }
 
-    @Nullable
-    public ArrayList<String> getEmployedJobs() {
-        return employedJobsList.isEmpty() ? null : employedJobsList;
+    public ArrayList<Integer> getEmployedJobsList() {
+        return employedJobsList;
     }
 
-    public boolean isJobMaxLevel(String string) {
-        if (ConfigInit.CONFIG.allowMaxLvlProgress)
+    public boolean isJobMaxLevel(int id) {
+        if (ConfigInit.CONFIG.allowMaxLvlProgress) {
             return false;
-        return getJobLevel(string) >= ConfigInit.CONFIG.jobMaxLevel;
+        }
+        return getJobLevel(id) >= this.playerJobs.get(id).getMaxLevel();
     }
 
     public int getEmployedJobTime() {
@@ -295,14 +200,16 @@ public class JobsManager {
     }
 
     // Recommend to use https://www.geogebra.org/graphing
-    public int getNextJobLevelExperience(String string) {
-        if (isJobMaxLevel(string))
+    public int getNextJobLevelExperience(int id) {
+        if (isJobMaxLevel(id)) {
             return 0;
-        int experienceCost = (int) (ConfigInit.CONFIG.jobXPBaseCost + ConfigInit.CONFIG.jobXPCostMultiplicator * Math.pow(getJobLevel(string), ConfigInit.CONFIG.jobXPExponent));
-        if (ConfigInit.CONFIG.jobXPMaxCost != 0)
+        }
+        int experienceCost = (int) (ConfigInit.CONFIG.jobXPBaseCost + ConfigInit.CONFIG.jobXPCostMultiplicator * Math.pow(getJobLevel(id), ConfigInit.CONFIG.jobXPExponent));
+        if (ConfigInit.CONFIG.jobXPMaxCost != 0) {
             return experienceCost >= ConfigInit.CONFIG.jobXPMaxCost ? ConfigInit.CONFIG.jobXPMaxCost : experienceCost;
-        else
+        } else {
             return experienceCost;
+        }
     }
 
 }

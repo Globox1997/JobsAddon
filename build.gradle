@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.3-SNAPSHOT'
+	id 'fabric-loom' version '1.8-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -26,11 +26,11 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // LevelZ
-    modImplementation ('maven.modrinth:levelz:1.4.13+1.20.1') {
+    modImplementation ('maven.modrinth:levelz:2.0.3+1.21.1') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
     // LibZ
-    modApi ('maven.modrinth:libz:1.0.3+1.20.1') {
+    modApi ('maven.modrinth:libz:1.0.3+1.21.1') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Cloth
@@ -48,15 +48,15 @@ dependencies {
 	modCompileOnly ("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.2")
     modCompileOnly ("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.2")
 	// FarmersDelight
-	modCompileOnly ('maven.modrinth:farmers-delight-fabric:1.4.3') {
+	modCompileOnly ('maven.modrinth:farmers-delight-refabricated:1.21.1-2.2.2') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// FallingTree
-	modCompileOnly ('maven.modrinth:fallingtree:1.20.1-4.3.4') {
+	modCompileOnly ('maven.modrinth:fallingtree:1.21.1-1.21.1.2') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
     // TreeChop
-    modCompileOnly ('maven.modrinth:treechop:7TyJOEzG') {
+    modCompileOnly ('maven.modrinth:treechop:0.19.2') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Meadow
@@ -78,14 +78,10 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	it.options.release = 17
+	it.options.release = 21
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 }
 
@@ -94,8 +90,8 @@ jar {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
 
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 // configure the maven publication

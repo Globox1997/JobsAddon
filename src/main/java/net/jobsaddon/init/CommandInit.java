@@ -6,6 +6,10 @@ import java.util.List;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import net.jobsaddon.jobs.Job;
+import net.minecraft.command.CommandSource;
 import org.apache.commons.lang3.StringUtils;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -21,148 +25,91 @@ import net.minecraft.util.math.MathHelper;
 
 public class CommandInit {
 
+    private static final SuggestionProvider<ServerCommandSource> JOBS_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
+            JobsManager.JOBS.values().stream().map(Job::getKey), builder);
+
     public static void init() {
+
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-            dispatcher.register((CommandManager.literal("jobmanager").requires((serverCommandSource) -> {
-                return serverCommandSource.hasPermissionLevel(3);
+            dispatcher.register((CommandManager.literal("job").requires((serverCommandSource) -> {
+                return serverCommandSource.hasPermissionLevel(2);
             })).then(CommandManager.argument("targets", EntityArgumentType.players())
                     // Add values
-                    .then(CommandManager.literal("add").then(CommandManager.literal("brewer").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "brewer",
+                    .then(CommandManager.literal("add").then(CommandManager.literal("level").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "level",
                                 IntegerArgumentType.getInteger(commandContext, "level"), 0);
-                    }))).then(CommandManager.literal("builder").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "builder",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 0);
-                    }))).then(CommandManager.literal("farmer").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "farmer",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 0);
-                    }))).then(CommandManager.literal("fisher").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "fisher",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 0);
-                    }))).then(CommandManager.literal("lumberjack").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "lumberjack",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 0);
-                    }))).then(CommandManager.literal("miner").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "miner",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 0);
-                    }))).then(CommandManager.literal("smither").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "smither",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 0);
-                    }))).then(CommandManager.literal("warrior").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "warrior",
+                    }))).then(CommandManager.argument("jobKey", StringArgumentType.string()).suggests(JOBS_SUGGESTION_PROVIDER).then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), StringArgumentType.getString(commandContext, "jobKey"),
                                 IntegerArgumentType.getInteger(commandContext, "level"), 0);
                     }))))
                     // Remove values
-                    .then(CommandManager.literal("remove").then(CommandManager.literal("brewer").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "brewer",
+                    .then(CommandManager.literal("remove").then(CommandManager.literal("level").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "level",
                                 IntegerArgumentType.getInteger(commandContext, "level"), 1);
-                    }))).then(CommandManager.literal("builder").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "builder",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 1);
-                    }))).then(CommandManager.literal("farmer").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "farmer",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 1);
-                    }))).then(CommandManager.literal("fisher").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "fisher",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 1);
-                    }))).then(CommandManager.literal("lumberjack").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "lumberjack",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 1);
-                    }))).then(CommandManager.literal("miner").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "miner",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 1);
-                    }))).then(CommandManager.literal("smither").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "smither",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 1);
-                    }))).then(CommandManager.literal("warrior").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "warrior",
+                    }))).then(CommandManager.argument("jobKey", StringArgumentType.string()).suggests(JOBS_SUGGESTION_PROVIDER).then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), StringArgumentType.getString(commandContext, "jobKey"),
                                 IntegerArgumentType.getInteger(commandContext, "level"), 1);
                     }))))
                     // Set values
-                    .then(CommandManager.literal("set").then(CommandManager.literal("brewer").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "brewer",
+                    .then(CommandManager.literal("set").then(CommandManager.literal("level").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "level",
                                 IntegerArgumentType.getInteger(commandContext, "level"), 2);
-                    }))).then(CommandManager.literal("builder").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "builder",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 2);
-                    }))).then(CommandManager.literal("farmer").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "farmer",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 2);
-                    }))).then(CommandManager.literal("fisher").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "fisher",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 2);
-                    }))).then(CommandManager.literal("lumberjack").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "lumberjack",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 2);
-                    }))).then(CommandManager.literal("miner").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "miner",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 2);
-                    }))).then(CommandManager.literal("smither").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "smither",
-                                IntegerArgumentType.getInteger(commandContext, "level"), 2);
-                    }))).then(CommandManager.literal("warrior").then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "warrior",
+                    }))).then(CommandManager.argument("jobKey", StringArgumentType.string()).suggests(JOBS_SUGGESTION_PROVIDER).then(CommandManager.argument("level", IntegerArgumentType.integer()).executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), StringArgumentType.getString(commandContext, "jobKey"),
                                 IntegerArgumentType.getInteger(commandContext, "level"), 2);
                     }))))
                     // Print values
-                    .then(CommandManager.literal("get").then(CommandManager.literal("brewer").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "brewer", 0, 3);
+                    .then(CommandManager.literal("get").then(CommandManager.literal("level").executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "level", 0, 3);
                     })).then(CommandManager.literal("all").executes((commandContext) -> {
                         return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "all", 0, 3);
-                    })).then(CommandManager.literal("builder").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "builder", 0, 3);
-                    })).then(CommandManager.literal("farmer").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "farmer", 0, 3);
-                    })).then(CommandManager.literal("fisher").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "fisher", 0, 3);
-                    })).then(CommandManager.literal("lumberjack").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "lumberjack", 0, 3);
-                    })).then(CommandManager.literal("miner").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "miner", 0, 3);
-                    })).then(CommandManager.literal("smither").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "smither", 0, 3);
-                    })).then(CommandManager.literal("warrior").executes((commandContext) -> {
-                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "warrior", 0, 3);
+                    })).then(CommandManager.argument("jobKey", StringArgumentType.string()).suggests(JOBS_SUGGESTION_PROVIDER).executes((commandContext) -> {
+                        return executeJobCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), StringArgumentType.getString(commandContext, "jobKey"), 0, 3);
                     })))));
         });
     }
 
     // Reference 0:Add, 1:Remove, 2:Set, 3:Print
-    private static int executeJobCommand(ServerCommandSource source, Collection<ServerPlayerEntity> targets, String jobName, int i, int reference) {
-        Iterator<ServerPlayerEntity> var3 = targets.iterator();
+    private static int executeJobCommand(ServerCommandSource source, Collection<ServerPlayerEntity> targets, String jobKey, int i, int reference) {
+        Iterator<ServerPlayerEntity> player = targets.iterator();
 
         i = MathHelper.abs(i);
         // loop over players
-        while (var3.hasNext()) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var3.next();
+        while (player.hasNext()) {
+            ServerPlayerEntity serverPlayerEntity = player.next();
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
 
-            int playerJobLevel = jobsManager.getJobLevel(jobName);
+            int playerJobLevel = 0;
+            int jobId = -1;
+            for (Job overallJob : JobsManager.JOBS.values()) {
+                if (overallJob.getKey().equals(jobKey)) {
+                    playerJobLevel = jobsManager.getJobLevel(overallJob.getId());
+                    jobId = overallJob.getId();
+                    break;
+                }
+            }
+
             if (reference == 0) {
                 playerJobLevel += i;
-            }
-            if (reference == 1) {
-                playerJobLevel = playerJobLevel - i > 0 ? playerJobLevel - i : 0;
-            }
-            if (reference == 2) {
+            } else if (reference == 1) {
+                playerJobLevel = Math.max(playerJobLevel - i, 0);
+            } else if (reference == 2) {
                 playerJobLevel = i;
-            }
-            if (reference == 3) {
-                if (jobName.equals("all")) {
-                    for (int u = 0; u < jobStrings().size(); u++) {
-                        final String finalBobName = jobStrings().get(u);
-                        source.sendFeedback(() -> Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(finalBobName) + " Level:",
-                                jobsManager.getJobLevel(finalBobName)), true);
+            } else if (reference == 3) {
+                if (jobKey.equals("all")) {
+                    for (Job overallJob: JobsManager.JOBS.values()) {
+                        final String finalJobName = overallJob.getKey();
+                        source.sendFeedback(() -> Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(finalJobName) + " Level:",
+                                jobsManager.getJobLevel(overallJob.getId())), true);
                     }
                 } else {
                     final int finalPlayerJobLevel = playerJobLevel;
                     source.sendFeedback(
-                            () -> Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(jobName) + " Level:", finalPlayerJobLevel), true);
+                            () -> Text.translatable("commands.jobmanager.printLevel", serverPlayerEntity.getDisplayName(), StringUtils.capitalize(jobKey) + " Level:", finalPlayerJobLevel), true);
                 }
-
                 continue;
             }
-            jobsManager.setJobLevel(jobName, playerJobLevel);
+            jobsManager.setJobLevel(jobId, playerJobLevel);
 
             JobsServerPacket.writeS2CJobPacket(jobsManager, serverPlayerEntity);
 
@@ -174,7 +121,4 @@ public class CommandInit {
         return targets.size();
     }
 
-    private static final List<String> jobStrings() {
-        return List.of("brewer", "builder", "farmer", "fisher", "lumberjack", "miner", "smither", "warrior");
-    }
 }

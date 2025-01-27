@@ -1,9 +1,11 @@
 {
-  "replace": false,
-  "recipes": [
-    "betternether:nether_ruby_block",
-    "betternether:nether_ruby_from_block",
-    "betternether:cincinnasite_forged_from_ingot",
-    "betternether:cincinnasite_ingot"
-  ]
+  "restriction": {
+    "replace": false,
+    "recipes": [
+      "betternether:nether_ruby_block",
+      "betternether:nether_ruby_from_block",
+      "betternether:cincinnasite_forged_from_ingot",
+      "betternether:cincinnasite_ingot"
+    ]
+  }
 }

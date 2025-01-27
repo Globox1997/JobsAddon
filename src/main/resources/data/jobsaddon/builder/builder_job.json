@@ -1,9 +1,0 @@
-{
-    "2": {
-        "replace": false,
-        "blocks": [
-            "minecraft:obsidian",
-            "minecraft:crying_obsidian"
-        ]
-    }
-}

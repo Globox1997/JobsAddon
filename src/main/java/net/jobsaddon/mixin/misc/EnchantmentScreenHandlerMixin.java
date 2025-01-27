@@ -28,7 +28,7 @@ public class EnchantmentScreenHandlerMixin {
     @Inject(method = "onButtonClick", at = @At(value = "RETURN", ordinal = 2), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onButtonClickMixin(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> info, ItemStack itemStack, ItemStack itemStack2) {
         if (info.getReturnValue()) {
-            JobHelper.addBrewerEnchantmentXp(player, itemStack, oldItemStack);
+            JobHelper.enchantingJobXp(player, itemStack, oldItemStack);
         }
     }
 }

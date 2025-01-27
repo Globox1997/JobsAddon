@@ -1,6 +1,5 @@
 package net.jobsaddon.mixin.compat;
 
-import com.nhoryzon.mc.farmersdelight.entity.block.inventory.slot.CookingPotResultSlot;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,9 +10,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import vectorwing.farmersdelight.common.block.entity.container.CookingPotResultSlot;
 
 @SuppressWarnings("unused")
-@Mixin(CookingPotResultSlot.class)
+//@Mixin(CookingPotResultSlot.class)
 public class CookingPotResultSlotMixin {
 
     // @Shadow

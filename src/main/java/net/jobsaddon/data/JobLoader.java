@@ -1,552 +1,220 @@
 package net.jobsaddon.data;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.init.ConfigInit;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.jobsaddon.jobs.Job;
+import net.jobsaddon.jobs.JobExperience;
+import net.jobsaddon.jobs.JobsManager;
+import net.levelz.registry.EnchantmentRegistry;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
-    private final List<Item> potionItems = List.of(Items.POTION, Items.LINGERING_POTION, Items.SPLASH_POTION);
+    private static final List<String> TYPES = List.of("blockbreak", "crafting", "enchanting", "brewing", "entitykill", "blockplace", "itemdrop");
 
-    // Map to store replacing bools
-    private HashMap<Integer, Boolean> replaceList = new HashMap<Integer, Boolean>();
+    private static List<Integer> jobList = new ArrayList<>();
 
     @Override
     public Identifier getFabricId() {
-        return new Identifier("jobsaddon", "job_loader");
+        return JobsAddonMain.identifierOf("job_loader");
     }
 
     @Override
     public void reload(ResourceManager manager) {
-
-        refreshReplaceList();
-        // brewer
-        manager.findResources("brewer", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
+        manager.findResources("job", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
             try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("effects") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.brewerItemBrewingMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("effects").size(); u++) {
-
-                                if (!Registries.POTION.containsId(new Identifier(jsonObject.getAsJsonArray("effects").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid potion effect identifier", jsonObject.getAsJsonArray("effects").get(u).getAsString());
-                                    continue;
-                                }
-
-                                NbtCompound nbtCompound = new NbtCompound();
-                                nbtCompound.putString("Potion", jsonObject.getAsJsonArray("effects").get(u).getAsString());
-                                for (int k = 0; k < potionItems.size(); k++) {
-                                    ItemStack itemStack = new ItemStack(potionItems.get(k));
-                                    itemStack.setNbt(nbtCompound);
-                                    JobLists.brewerItemBrewingMap.put(itemStack, i);
-                                }
-                            }
-                        }
-
-                        if (jsonObject.getAsJsonArray("enchantments") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.brewerEnchantmentMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("enchantments").size(); u++) {
-
-                                if (!Registries.ENCHANTMENT.containsId(new Identifier(jsonObject.getAsJsonArray("enchantments").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid enchantment identifier", jsonObject.getAsJsonArray("enchantments").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.brewerEnchantmentMap.put(Registries.ENCHANTMENT.get(new Identifier(jsonObject.getAsJsonArray("enchantments").get(u).getAsString())), i);
-                            }
-                        }
-
-                    } else
-                        continue;
+                if (!ConfigInit.CONFIG.defaultJobs && id.getPath().endsWith("/default.json")) {
+                    return;
                 }
 
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-
-        refreshReplaceList();
-        // builder
-        manager.findResources("builder", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
                 InputStream stream = resourceRef.getInputStream();
                 JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+                for (String mapKey : data.keySet()) {
+                    JsonObject jobJsonObject = data.getAsJsonObject(mapKey);
 
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("blocks") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.builderBlockIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("blocks").size(); u++) {
-
-                                if (jsonObject.getAsJsonArray("blocks").get(u).getAsString().startsWith("#")) {
-                                    JobLists.builderBlockTagMap.put(TagKey.of(RegistryKeys.BLOCK, new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString().replace("#", ""))), i);
-                                    continue;
-                                }
-                                if (!Registries.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", jsonObject.getAsJsonArray("blocks").get(u).getAsString());
-                                    continue;
-                                }
-                                JobLists.builderBlockIdMap.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
-                            }
+                    if (mapKey.equals("restriction")) {
+                        for (int u = 0; u < jobJsonObject.getAsJsonArray("recipes").size(); u++) {
+                            Identifier recipeId = Identifier.of(jobJsonObject.getAsJsonArray("recipes").get(u).getAsString());
+//                            if (!Registries.RECIPE_TYPE.containsId(recipeId)) {
+//                                JobsAddonMain.LOGGER.warn("{} is not a valid recipe identifier", recipeId);
+//                                continue;
+//                            }
+                            JobsManager.RESTRICTED_RECIPES.add(recipeId);
                         }
-
-                    } else
                         continue;
-                }
-
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-
-        refreshReplaceList();
-        // farmer
-        manager.findResources("farmer", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("items") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.farmerItemIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("items").size(); u++) {
-
-                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("items").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.farmerItemIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
-                            }
-                        }
-
-                        if (jsonObject.getAsJsonArray("crafting") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.farmerCraftingIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("crafting").size(); u++) {
-                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
-                                    continue;
-                                }
-
-                                // Item item = Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()));
-                                // if (!item.isFood() && !item.getDefaultStack().isIn(TagInit.FARMER_CRAFTING_ITEMS)) {
-                                // JobsAddonMain.LOGGER.warn("{} is not a valid food item", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
-                                // continue;
-                                // }
-
-                                JobLists.farmerCraftingIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
-                            }
-                        }
-
-                        if (jsonObject.getAsJsonArray("smoker") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.farmerSmokerIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("smoker").size(); u++) {
-
-                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("smoker").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("smoker").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.farmerSmokerIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("smoker").get(u).getAsString()))), i);
-                            }
-                        }
-
-                    } else
-                        continue;
-                }
-
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-
-        refreshReplaceList();
-        // fisher
-        manager.findResources("fisher", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("items") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.fisherItemIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("items").size(); u++) {
-
-                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("items").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.fisherItemIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
-                            }
-                        }
-
-                        if (jsonObject.getAsJsonArray("crafting") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.fisherCraftingIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("crafting").size(); u++) {
-
-                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("crafting").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.fisherCraftingIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("crafting").get(u).getAsString()))), i);
-                            }
-                        }
-
-                        if (jsonObject.getAsJsonArray("entities") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.fisherEntityIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("entities").size(); u++) {
-
-                                if (!Registries.ENTITY_TYPE.containsId(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid entity identifier", jsonObject.getAsJsonArray("entities").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.fisherEntityIdMap.put(Registries.ENTITY_TYPE.getRawId(Registries.ENTITY_TYPE.get(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))),
-                                        i);
-                            }
-                        }
-
-                    } else
-                        continue;
-                }
-
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-
-        refreshReplaceList();
-        // lumberjack
-        manager.findResources("lumberjack", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("blocks") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.lumberjackBlockIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("blocks").size(); u++) {
-
-                                if (!Registries.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", jsonObject.getAsJsonArray("blocks").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.lumberjackBlockIdMap.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
-                            }
-                        }
-
-                    } else
-                        continue;
-                }
-
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-
-        refreshReplaceList();
-        // miner
-        manager.findResources("miner", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("blocks") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.minerBlockIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("blocks").size(); u++) {
-
-                                if (!Registries.BLOCK.containsId(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", jsonObject.getAsJsonArray("blocks").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.minerBlockIdMap.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString()))), i);
-                            }
-                        }
-
-                    } else
-                        continue;
-                }
-
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-
-        refreshReplaceList();
-        // smither
-        manager.findResources("smither", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("items") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.smitherItemIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("items").size(); u++) {
-
-                                if (!Registries.ITEM.containsId(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", jsonObject.getAsJsonArray("items").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.smitherItemIdMap.put(Registries.ITEM.getRawId(Registries.ITEM.get(new Identifier(jsonObject.getAsJsonArray("items").get(u).getAsString()))), i);
-                            }
-                        }
-
-                    } else
-                        continue;
-                }
-
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-
-        refreshReplaceList();
-        // warrior
-        manager.findResources("warrior", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++) {
-                    JsonElement jsonElement = data.get(String.valueOf(i));
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false))
-                            replaceList.replace(i, true);
-
-                        if (jsonObject.getAsJsonArray("entities") != null) {
-
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                Iterator<Integer> iterator = JobLists.warriorEntityIdMap.values().iterator();
-                                while (iterator.hasNext())
-                                    if (iterator.next().equals(i))
-                                        iterator.remove();
-                            } else if (replaceList.get(i))
-                                continue;
-
-                            for (int u = 0; u < jsonObject.getAsJsonArray("entities").size(); u++) {
-
-                                if (!Registries.ENTITY_TYPE.containsId(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))) {
-                                    JobsAddonMain.LOGGER.warn("{} is not a valid entity identifier", jsonObject.getAsJsonArray("entities").get(u).getAsString());
-                                    continue;
-                                }
-
-                                JobLists.warriorEntityIdMap
-                                        .put(Registries.ENTITY_TYPE.getRawId(Registries.ENTITY_TYPE.get(new Identifier(jsonObject.getAsJsonArray("entities").get(u).getAsString()))), i);
-                            }
-                        }
-
-                    } else
-                        continue;
-                }
-
-            } catch (Exception e) {
-                JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
-            }
-        });
-        refreshReplaceList();
-        // restricted
-        manager.findResources("restricted", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                if (JsonHelper.getBoolean(data, "replace", false))
-                    JobLists.restrictedRecipeIds.clear();
-
-                if (data.getAsJsonArray("recipes") != null)
-                    for (int u = 0; u < data.getAsJsonArray("recipes").size(); u++) {
-                        // if (!Registry.RECIPE_TYPE.containsId(new Identifier(data.getAsJsonArray("recipes").get(u).getAsString()))) {
-                        // JobsAddonMain.LOGGER.warn("{} is not a valid recipe identifier", data.getAsJsonArray("recipes").get(u).getAsString());
-                        // continue;
-                        // }
-                        JobLists.restrictedRecipeIds.add(new Identifier(data.getAsJsonArray("recipes").get(u).getAsString()));
                     }
+
+                    // replace check
+                    if (jobList.contains(jobJsonObject.get("id").getAsInt())) {
+                        JobsAddonMain.LOGGER.warn("Job {} was already loaded.", jobJsonObject.get("id").getAsString());
+                        continue;
+                    }
+                    if (jobJsonObject.has("replace") && jobJsonObject.get("replace").getAsBoolean()) {
+                        jobList.add(jobJsonObject.get("id").getAsInt());
+                    }
+                    int identification = jobJsonObject.get("id").getAsInt();
+                    // loading check
+                    if (JobsManager.JOBS.containsKey(identification)) {
+                        if (jobJsonObject.has("key") && !JobsManager.JOBS.get(identification).getKey().equals(jobJsonObject.get("key").getAsString())) {
+                            JobsAddonMain.LOGGER.warn("Id {} in job {} was already used by another skill.", identification, jobJsonObject.get("id").getAsString());
+                            continue;
+                        }
+                    } else {
+                        // job creation
+                        String key = jobJsonObject.get("key").getAsString();
+                        int maxLevel = jobJsonObject.get("maxlevel").getAsInt();
+                        JobsManager.JOBS.put(identification, new Job(identification, key, maxLevel, 0, 0));
+                    }
+                    for (String type : TYPES) {
+                        if (!jobJsonObject.has(type)) {
+                            continue;
+                        }
+                        createJobManagerExperience(jobJsonObject, type, identification);
+                    }
+                }
+
             } catch (Exception e) {
                 JobsAddonMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
             }
         });
     }
 
-    private void refreshReplaceList() {
-        replaceList.clear();
-        for (int i = 0; i < ConfigInit.CONFIG.jobMaxLevel; i++)
-            replaceList.put(i, false);
+    private void createJobManagerExperience(JsonObject jsonObject, String type, int jobIdentification) {
+        for (String key : jsonObject.getAsJsonObject(type).keySet()) {
+            JsonObject typeJsonObject = jsonObject.getAsJsonObject(type).getAsJsonObject(key);
+            int experience = Integer.parseInt(key);
+            boolean replace = typeJsonObject.has("replace") && typeJsonObject.get("replace").getAsBoolean();
+
+            if (type.equals("blockbreak")) {
+                if (replace) {
+                    JobsManager.BLOCK_BREAK_EXPERIENCE.values().removeIf(jobExperience -> jobExperience.getExperience() == experience);
+                }
+                if (!typeJsonObject.has("blocks") || !typeJsonObject.get("blocks").isJsonArray()) {
+                    JobsAddonMain.LOGGER.warn("{} is missing an blocks array", typeJsonObject);
+                    continue;
+                }
+                for (int u = 0; u < typeJsonObject.getAsJsonArray("blocks").size(); u++) {
+                    // if (jsonObject.getAsJsonArray("blocks").get(u).getAsString().startsWith("#")) {
+                    //     JobLists.builderBlockTagMap.put(TagKey.of(RegistryKeys.BLOCK, new Identifier(jsonObject.getAsJsonArray("blocks").get(u).getAsString().replace("#", ""))), i);
+                    //     continue;
+                    // }
+                    Identifier blockId = Identifier.of(typeJsonObject.getAsJsonArray("blocks").get(u).getAsString());
+                    if (!Registries.BLOCK.containsId(blockId)) {
+                        JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", blockId);
+                        continue;
+                    }
+                    JobsManager.BLOCK_BREAK_EXPERIENCE.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(blockId)), new JobExperience(jobIdentification, experience));
+                }
+            } else if (type.equals("crafting")) {
+                if (replace) {
+                    JobsManager.ITEM_CRAFT_EXPERIENCE.values().removeIf(jobExperience -> jobExperience.getExperience() == experience);
+                }
+                if (!typeJsonObject.has("items") || !typeJsonObject.get("items").isJsonArray()) {
+                    JobsAddonMain.LOGGER.warn("{} is missing an items array", typeJsonObject);
+                    continue;
+                }
+                for (int u = 0; u < typeJsonObject.getAsJsonArray("items").size(); u++) {
+                    Identifier itemId = Identifier.of(typeJsonObject.getAsJsonArray("items").get(u).getAsString());
+                    if (!Registries.ITEM.containsId(itemId)) {
+                        JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", itemId);
+                        continue;
+                    }
+                    JobsManager.ITEM_CRAFT_EXPERIENCE.put(Registries.ITEM.getRawId(Registries.ITEM.get(itemId)), new JobExperience(jobIdentification, experience));
+                }
+            } else if (type.equals("enchanting")) {
+                if (replace) {
+                    JobsManager.ENCHANTMENT_EXPERIENCE.values().removeIf(jobExperience -> jobExperience.getExperience() == experience);
+                }
+                if (!typeJsonObject.has("enchantments") || !typeJsonObject.get("enchantments").isJsonObject()) {
+                    JobsAddonMain.LOGGER.warn("{} is missing an enchantments object list", typeJsonObject);
+                    continue;
+                }
+                for (String enchantment : typeJsonObject.getAsJsonObject("enchantments").keySet()) {
+                    Identifier enchantmentId = Identifier.of(enchantment);
+                    int level = typeJsonObject.getAsJsonObject("enchantments").get(enchantment).getAsInt();
+                    if (!EnchantmentRegistry.containsId(enchantmentId, level)) {
+                        JobsAddonMain.LOGGER.warn("{} is not a valid enchantment identifier", enchantmentId);
+                        continue;
+                    }
+                    JobsManager.ENCHANTMENT_EXPERIENCE.put(EnchantmentRegistry.getId(enchantmentId, level), new JobExperience(jobIdentification, experience));
+                }
+            } else if (type.equals("brewing")) {
+                if (replace) {
+                    JobsManager.BREWING_EXPERIENCE.values().removeIf(jobExperience -> jobExperience.getExperience() == experience);
+                }
+                if (!typeJsonObject.has("effects") || !typeJsonObject.get("effects").isJsonArray()) {
+                    JobsAddonMain.LOGGER.warn("{} is missing an effect array", typeJsonObject);
+                    continue;
+                }
+                for (int u = 0; u < typeJsonObject.getAsJsonArray("effects").size(); u++) {
+                    Identifier effectId = Identifier.of(typeJsonObject.getAsJsonArray("effects").get(u).getAsString());
+//                    Registries.POTION.
+                    if (!Registries.POTION.containsId(effectId)) {
+                        JobsAddonMain.LOGGER.warn("{} is not a valid effect identifier", effectId);
+                        continue;
+                    }
+                    JobsManager.BREWING_EXPERIENCE.put(Registries.POTION.getRawId(Registries.POTION.get(effectId)), new JobExperience(jobIdentification, experience));
+                }
+            } else if (type.equals("entitykill")) {
+                if (replace) {
+                    JobsManager.ENTITY_KILL_EXPERIENCE.values().removeIf(jobExperience -> jobExperience.getExperience() == experience);
+                }
+                if (!typeJsonObject.has("entities") || !typeJsonObject.get("entities").isJsonArray()) {
+                    JobsAddonMain.LOGGER.warn("{} is missing an entities array", typeJsonObject);
+                    continue;
+                }
+                for (int u = 0; u < typeJsonObject.getAsJsonArray("entities").size(); u++) {
+                    Identifier entityId = Identifier.of(typeJsonObject.getAsJsonArray("entities").get(u).getAsString());
+                    if (!Registries.ENTITY_TYPE.containsId(entityId)) {
+                        JobsAddonMain.LOGGER.warn("{} is not a valid entity identifier", entityId);
+                        continue;
+                    }
+                    JobsManager.ENTITY_KILL_EXPERIENCE.put(Registries.ENTITY_TYPE.getRawId(Registries.ENTITY_TYPE.get(entityId)), new JobExperience(jobIdentification, experience));
+                }
+            } else if (type.equals("blockplace")) {
+                if (replace) {
+                    JobsManager.BLOCK_PLACE_EXPERIENCE.values().removeIf(jobExperience -> jobExperience.getExperience() == experience);
+                }
+                if (!typeJsonObject.has("blocks") || !typeJsonObject.get("blocks").isJsonArray()) {
+                    JobsAddonMain.LOGGER.warn("{} is missing an blocks array", typeJsonObject);
+                    continue;
+                }
+                for (int u = 0; u < typeJsonObject.getAsJsonArray("blocks").size(); u++) {
+                    Identifier blockId = Identifier.of(typeJsonObject.getAsJsonArray("blocks").get(u).getAsString());
+                    if (!Registries.BLOCK.containsId(blockId)) {
+                        JobsAddonMain.LOGGER.warn("{} is not a valid block identifier", blockId);
+                        continue;
+                    }
+                    JobsManager.BLOCK_PLACE_EXPERIENCE.put(Registries.BLOCK.getRawId(Registries.BLOCK.get(blockId)), new JobExperience(jobIdentification, experience));
+                }
+            } else if (type.equals("itemdrop")) {
+                if (replace) {
+                    JobsManager.ITEM_DROP_EXPERIENCE.values().removeIf(jobExperience -> jobExperience.getExperience() == experience);
+                }
+                if (!typeJsonObject.has("items") || !typeJsonObject.get("items").isJsonArray()) {
+                    JobsAddonMain.LOGGER.warn("{} is missing an items array", typeJsonObject);
+                    continue;
+                }
+                for (int u = 0; u < typeJsonObject.getAsJsonArray("items").size(); u++) {
+                    Identifier itemId = Identifier.of(typeJsonObject.getAsJsonArray("items").get(u).getAsString());
+                    if (!Registries.ITEM.containsId(itemId)) {
+                        JobsAddonMain.LOGGER.warn("{} is not a valid item identifier", itemId);
+                        continue;
+                    }
+                    JobsManager.ITEM_DROP_EXPERIENCE.put(Registries.ITEM.getRawId(Registries.ITEM.get(itemId)), new JobExperience(jobIdentification, experience));
+                }
+            }
+        }
     }
 
 }

@@ -21,7 +21,7 @@ public class ComposterBlockMixin {
     @Inject(method = "addToComposter", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldAccess;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z"))
     private static void addToComposterMixin(@Nullable Entity user, BlockState state, WorldAccess world, BlockPos pos, ItemStack stack, CallbackInfoReturnable<BlockState> info) {
         if (user instanceof PlayerEntity playerEntity) {
-            JobHelper.addFarmerCraftingXp(playerEntity, stack);
+            JobHelper.craftItemJobXp(playerEntity, stack);
         }
     }
 

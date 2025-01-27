@@ -27,7 +27,7 @@ import net.minecraft.util.math.BlockPos;
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
 
-    private final JobsManager jobsManager = new JobsManager();
+    private final JobsManager jobsManager = new JobsManager((PlayerEntity) (Object) this);
     private BlockPos lastBlockPos;
     private int lastBlockId;
     private int blockCount;
@@ -56,8 +56,7 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     private void onKilledOtherMixin(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (!player.getWorld().isClient()) {
-            JobHelper.addFisherEntityXp(player, other);
-            JobHelper.addWarriorXp(player, other);
+            JobHelper.killEntityJobXp(player, other);
         }
     }
 
