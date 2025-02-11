@@ -1,7 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- 
+- Fixed brewing stand crash
 ### Changed:
-- Updated to mc 1.21.1
-- Reworked job system
+- 

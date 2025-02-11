@@ -113,7 +113,7 @@ public class JobHelper {
         if (!player.getWorld().isClient() && !stack.isEmpty() && stack.get(DataComponentTypes.POTION_CONTENTS) != null) {
             PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
             if (potionContentsComponent.potion().isPresent() && JobsManager.BREWING_EXPERIENCE.containsKey(Registries.POTION.getRawId(potionContentsComponent.potion().get().value()))) {
-                JobExperience jobExperience = JobsManager.ITEM_CRAFT_EXPERIENCE.get(Registries.POTION.getRawId(potionContentsComponent.potion().get().value()));
+                JobExperience jobExperience = JobsManager.BREWING_EXPERIENCE.get(Registries.POTION.getRawId(potionContentsComponent.potion().get().value()));
 
                 if (((JobsManagerAccess) player).getJobsManager().isEmployedJob(jobExperience.getId())) {
                     int xpCount = stack.getCount() * jobExperience.getExperience();
