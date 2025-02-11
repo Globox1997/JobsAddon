@@ -22,7 +22,7 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
     private static final List<String> TYPES = List.of("blockbreak", "crafting", "enchanting", "brewing", "entitykill", "blockplace", "itemdrop");
 
-    private static List<Integer> jobList = new ArrayList<>();
+    private static final List<Integer> jobList = new ArrayList<>();
 
     @Override
     public Identifier getFabricId() {
@@ -55,14 +55,13 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
                     }
 
                     // replace check
-                    if (jobList.contains(jobJsonObject.get("id").getAsInt())) {
-                        JobsAddonMain.LOGGER.warn("Job {} was already loaded.", jobJsonObject.get("id").getAsString());
+                    int identification = jobJsonObject.get("id").getAsInt();
+                    if (jobList.contains(identification)) {
                         continue;
                     }
                     if (jobJsonObject.has("replace") && jobJsonObject.get("replace").getAsBoolean()) {
-                        jobList.add(jobJsonObject.get("id").getAsInt());
+                        jobList.add(identification);
                     }
-                    int identification = jobJsonObject.get("id").getAsInt();
                     // loading check
                     if (JobsManager.JOBS.containsKey(identification)) {
                         if (jobJsonObject.has("key") && !JobsManager.JOBS.get(identification).getKey().equals(jobJsonObject.get("key").getAsString())) {

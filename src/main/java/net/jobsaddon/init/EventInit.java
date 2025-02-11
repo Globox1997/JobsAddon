@@ -1,6 +1,5 @@
 package net.jobsaddon.init;
 
-import ht.treechop.api.FellData;
 import ht.treechop.api.TreeChopEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
@@ -11,19 +10,11 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.access.JobsManagerAccess;
-import net.jobsaddon.access.PlayerAccess;
-import net.jobsaddon.data.JobLists;
 import net.jobsaddon.jobs.Job;
 import net.jobsaddon.jobs.JobHelper;
 import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.JobsServerPacket;
-import net.minecraft.registry.Registries;
 import net.minecraft.scoreboard.ScoreAccess;
-import net.minecraft.scoreboard.ScoreboardCriterion;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
 
 public class EventInit {
 

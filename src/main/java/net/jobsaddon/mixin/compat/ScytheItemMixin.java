@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import net.jobsaddon.access.JobsManagerAccess;
-import net.jobsaddon.data.JobLists;
 import net.jobsaddon.init.ConfigInit;
 import net.jobsaddon.init.TagInit;
 import net.jobsaddon.network.JobsServerPacket;

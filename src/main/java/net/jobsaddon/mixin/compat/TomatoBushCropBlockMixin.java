@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import net.jobsaddon.access.JobsManagerAccess;
-import net.jobsaddon.data.JobLists;
 import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
