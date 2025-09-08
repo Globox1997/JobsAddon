@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed brewing stand crash
+- Fixed numismatic compat
 ### Changed:
 - 

@@ -142,7 +142,7 @@ public class JobsManager {
             // Add numismatic money
             if (FabricLoader.getInstance().isModLoaded("numismatic-overhaul") && ConfigInit.CONFIG.moneyMultiplicator > 0) {
                 CurrencyComponent playerBalance = ModComponents.CURRENCY.get(playerEntity);
-                playerBalance.silentModify(jobLevel * ConfigInit.CONFIG.moneyMultiplicator);
+                playerBalance.silentModify((long) jobLevel * ConfigInit.CONFIG.moneyMultiplicator);
             }
             // Add levelz xp
             if (ConfigInit.CONFIG.levelZXPMultiplicator > 0) {
@@ -164,7 +164,7 @@ public class JobsManager {
 
     public void quitJob(int id) {
         if (isEmployedJob(id)) {
-            employedJobsList.remove((Object)id);
+            employedJobsList.remove((Object) id);
         }
     }
 
