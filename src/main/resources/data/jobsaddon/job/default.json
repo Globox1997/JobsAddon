@@ -661,16 +661,16 @@
       "5": {
         "replace": false,
         "entities": [
-          "minecraft:tadpole"
+          "minecraft:tadpole",
+          "minecraft:salmon",
+          "minecraft:tropical_fish",
+          "minecraft:cod"
         ]
       },
       "10": {
         "replace": false,
         "entities": [
-          "minecraft:cod",
           "minecraft:frog",
-          "minecraft:salmon",
-          "minecraft:tropical_fish",
           "minecraft:pufferfish",
           "minecraft:glow_squid",
           "minecraft:squid"
