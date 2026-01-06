@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed numismatic compat
+- Fixed hardmode respawn sync
 ### Changed:
 - 

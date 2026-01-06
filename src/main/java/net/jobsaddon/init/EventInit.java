@@ -66,7 +66,9 @@ public class EventInit {
             JobsServerPacket.writeS2CJobPacket(((JobsManagerAccess) player).getJobsManager(), player);
         });
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            JobsServerPacket.writeS2CJobPacket(((JobsManagerAccess) oldPlayer).getJobsManager(), newPlayer);
+            if (alive) {
+                JobsServerPacket.writeS2CJobPacket(((JobsManagerAccess) oldPlayer).getJobsManager(), newPlayer);
+            }
         });
         if (isTreeChopLoaded) {
             TreeChopEvents.BEFORE_FELL.register((world, player, pos, data) -> {
