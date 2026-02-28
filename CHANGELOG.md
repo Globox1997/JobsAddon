@@ -1,7 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed hardmode respawn sync
-- Fixed fallingtree compat
+- Fixed job syncing to client on server
 ### Changed:
-- Reduced fish experience
+- 

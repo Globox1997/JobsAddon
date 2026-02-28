@@ -22,7 +22,7 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
     private static final List<String> TYPES = List.of("blockbreak", "crafting", "enchanting", "brewing", "entitykill", "blockplace", "itemdrop");
 
-    private static final List<Integer> jobList = new ArrayList<>();
+    private static final List<Integer> JOB_LIST = new ArrayList<>();
 
     @Override
     public Identifier getFabricId() {
@@ -31,6 +31,17 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
     @Override
     public void reload(ResourceManager manager) {
+        JOB_LIST.clear();
+        JobsManager.JOBS.clear();
+        JobsManager.BLOCK_BREAK_EXPERIENCE.clear();
+        JobsManager.BLOCK_PLACE_EXPERIENCE.clear();
+        JobsManager.ITEM_DROP_EXPERIENCE.clear();
+        JobsManager.ITEM_CRAFT_EXPERIENCE.clear();
+        JobsManager.ENCHANTMENT_EXPERIENCE.clear();
+        JobsManager.BREWING_EXPERIENCE.clear();
+        JobsManager.ENTITY_KILL_EXPERIENCE.clear();
+        JobsManager.RESTRICTED_RECIPES.clear();
+
         manager.findResources("job", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
             try {
                 if (!ConfigInit.CONFIG.defaultJobs && id.getPath().endsWith("/default.json")) {
@@ -56,11 +67,11 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
                     // replace check
                     int identification = jobJsonObject.get("id").getAsInt();
-                    if (jobList.contains(identification)) {
+                    if (JOB_LIST.contains(identification)) {
                         continue;
                     }
                     if (jobJsonObject.has("replace") && jobJsonObject.get("replace").getAsBoolean()) {
-                        jobList.add(identification);
+                        JOB_LIST.add(identification);
                     }
                     // loading check
                     if (JobsManager.JOBS.containsKey(identification)) {

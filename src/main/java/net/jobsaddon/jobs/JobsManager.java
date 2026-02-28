@@ -67,6 +67,7 @@ public class JobsManager {
             }
         }
         this.employedJobTime = nbt.getInt("EmployedJobTime");
+        cleanupInvalidJobs();
     }
 
     public void writeNbt(NbtCompound nbt) {
@@ -209,6 +210,19 @@ public class JobsManager {
             return experienceCost >= ConfigInit.CONFIG.jobXPMaxCost ? ConfigInit.CONFIG.jobXPMaxCost : experienceCost;
         } else {
             return experienceCost;
+        }
+    }
+
+    public void cleanupInvalidJobs() {
+        this.playerJobs.keySet().removeIf(jobId -> !JOBS.containsKey(jobId));
+
+        this.employedJobsList.removeIf(jobId -> !JOBS.containsKey(jobId));
+
+        for (Integer globalId : JOBS.keySet()) {
+            if (!this.playerJobs.containsKey(globalId)) {
+                Job baseJob = JOBS.get(globalId);
+                this.playerJobs.put(globalId, new Job(baseJob.getId(), baseJob.getKey(), baseJob.getMaxLevel(), 0, 0));
+            }
         }
     }
 
