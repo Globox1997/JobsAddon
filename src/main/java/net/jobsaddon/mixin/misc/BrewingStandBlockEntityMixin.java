@@ -34,7 +34,7 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
         super(blockEntityType, blockPos, blockState);
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BrewingStandBlockEntity;craft(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/collection/DefaultedList;)V"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BrewingStandBlockEntity;craft(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/collection/DefaultedList;)V", shift = At.Shift.AFTER))
     private static void tickMixin(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity, CallbackInfo info) {
         if (!world.isClient() && ((BrewingStandAccess) blockEntity).getBrewer() != null && world.getPlayerByUuid(((BrewingStandAccess) blockEntity).getBrewer()) instanceof ServerPlayerEntity serverPlayerEntity) {
             for (int i = 0; i < 3; i++) {

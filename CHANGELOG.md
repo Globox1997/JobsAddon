@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed job syncing to client on server
+- Fixed brewer job
 ### Changed:
 - 
