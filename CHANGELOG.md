@@ -1,6 +1,7 @@
 ### Added:
-- 
+- Tide compat
+- FallingTrees compat by Herobrot
 ### Fixed:
-- Fixed brewer job
+- 
 ### Changed:
 - 

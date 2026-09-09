@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.11-SNAPSHOT'
+	id 'fabric-loom' version '1.17-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -68,6 +68,14 @@ dependencies {
 	}
 	// Harvest Scythes
     modCompileOnly ('maven.modrinth:harvest-scythes:2.5.6+MC1.20') {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	// Tide 2
+	modCompileOnly ('maven.modrinth:tide:ztNu3GtG') {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	// DynamicTrees
+	modCompileOnly ('maven.modrinth:dynamictrees:1.7.2-BETA') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 }

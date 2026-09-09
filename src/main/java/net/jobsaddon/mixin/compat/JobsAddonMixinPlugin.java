@@ -30,6 +30,10 @@ public class JobsAddonMixinPlugin implements IMixinConfigPlugin {
             return false;
         if (mixinClassName.contains("MobEntityMixin") && FabricLoader.getInstance().isModLoaded("rpgz"))
             return false;
+        if (mixinClassName.contains("TideFishingHookMixin") && !FabricLoader.getInstance().isModLoaded("tide"))
+            return false;
+        if (mixinClassName.contains("FallingTreeEntityMixin") && !FabricLoader.getInstance().isModLoaded("dynamictrees"))
+            return false;
 
         return true;
     }
