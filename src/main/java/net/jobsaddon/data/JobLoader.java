@@ -168,7 +168,6 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
                 }
                 for (int u = 0; u < typeJsonObject.getAsJsonArray("effects").size(); u++) {
                     Identifier effectId = Identifier.of(typeJsonObject.getAsJsonArray("effects").get(u).getAsString());
-//                    Registries.POTION.
                     if (!Registries.POTION.containsId(effectId)) {
                         JobsAddonMain.LOGGER.warn("{} is not a valid effect identifier", effectId);
                         continue;
