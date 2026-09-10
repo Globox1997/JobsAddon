@@ -1,6 +1,6 @@
 ### Added:
 - Tide compat
-- FallingTrees compat by Herobrot
+- DynamicTrees compat by Herobrot
 ### Fixed:
 - 
 ### Changed:
