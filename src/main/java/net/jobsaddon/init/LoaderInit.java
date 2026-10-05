@@ -13,7 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class LoaderInit {
 
     public static void init() {
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new JobLoader());
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(JobLoader.ID, JobLoader::new);
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, serverResourceManager, success) -> {
             if (success) {

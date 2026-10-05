@@ -10,6 +10,7 @@ import net.jobsaddon.jobs.JobExperience;
 import net.jobsaddon.jobs.JobsManager;
 import net.levelz.registry.EnchantmentRegistry;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
@@ -18,7 +19,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JobLoader implements SimpleSynchronousResourceReloadListener {
+public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements SimpleSynchronousResourceReloadListener {
+
+    public static final Identifier ID = JobsAddonMain.identifierOf("job_loader");
 
     private static final List<String> TYPES = List.of("blockbreak", "crafting", "enchanting", "brewing", "entitykill", "blockplace", "itemdrop");
 
@@ -26,7 +29,7 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
 
     @Override
     public Identifier getFabricId() {
-        return JobsAddonMain.identifierOf("job_loader");
+        return ID;
     }
 
     @Override
@@ -41,6 +44,8 @@ public class JobLoader implements SimpleSynchronousResourceReloadListener {
         JobsManager.BREWING_EXPERIENCE.clear();
         JobsManager.ENTITY_KILL_EXPERIENCE.clear();
         JobsManager.RESTRICTED_RECIPES.clear();
+
+        EnchantmentRegistry.updateEnchantments(this.wrapperLookup());
 
         manager.findResources("job", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
             try {
