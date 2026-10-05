@@ -7,8 +7,14 @@ JobsAddon is a mod addon for the [LevelZ](https://www.curseforge.com/minecraft/m
 JobsAddon is a mod built for the [Fabric Loader](https://fabricmc.net/). It requires [LevelZ](https://www.curseforge.com/minecraft/mc-mods/levelz) to be installed separately; all other dependencies are installed with the mod.
 
 ### License
+#### Source Code
+The source code in this repository is licensed under the GPLv3 License.
+See the LICENSE file for details.
 
-JobsAddon is licensed under GPLv3.
+#### Assets
+All assets (including but not limited to images, audio, models, and other media)
+are **All Rights Reserved** and may not be used, modified, or redistributed
+without explicit permission from the copyright holder.
 
 ### Datapacks
 
