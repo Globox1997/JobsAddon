@@ -1,34 +1,38 @@
 package net.jobsaddon.mixin.misc;
 
-import org.jetbrains.annotations.Nullable;
+import net.jobsaddon.jobs.JobHelper;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.EnchantmentScreenHandler;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import net.jobsaddon.jobs.JobHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.EnchantmentScreenHandler;
 
 @Mixin(EnchantmentScreenHandler.class)
 public class EnchantmentScreenHandlerMixin {
 
-    @Nullable
-    @Unique
-    private ItemStack oldItemStack = null;
+    @Shadow
+    @Final
+    private Inventory inventory;
 
-    @Inject(method = "onButtonClick", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/inventory/Inventory;getStack(I)Lnet/minecraft/item/ItemStack;", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void onButtonClickMixin(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> info, ItemStack itemStack) {
-        oldItemStack = itemStack.copy();
+    @Unique
+    private ItemStack oldItemStack = ItemStack.EMPTY;
+
+    @Inject(method = "onButtonClick", at = @At("HEAD"))
+    private void onButtonClickHeadMixin(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> info) {
+        this.oldItemStack = this.inventory.getStack(0).copy();
     }
 
-    @Inject(method = "onButtonClick", at = @At(value = "RETURN", ordinal = 2), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void onButtonClickMixin(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> info, ItemStack itemStack, ItemStack itemStack2) {
-        if (info.getReturnValue()) {
-            JobHelper.enchantingJobXp(player, itemStack, oldItemStack);
+    @Inject(method = "onButtonClick", at = @At("RETURN"))
+    private void onButtonClickReturnMixin(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> info) {
+        if (info.getReturnValueZ()) {
+            JobHelper.enchantingJobXp(player, this.inventory.getStack(0), this.oldItemStack);
         }
+        this.oldItemStack = ItemStack.EMPTY;
     }
 }
