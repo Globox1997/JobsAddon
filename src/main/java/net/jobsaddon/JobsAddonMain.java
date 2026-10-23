@@ -2,6 +2,7 @@ package net.jobsaddon;
 
 import net.fabricmc.api.ModInitializer;
 import net.jobsaddon.init.*;
+import net.jobsaddon.jobs.PlacedBlockTracker;
 import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -18,8 +19,8 @@ public class JobsAddonMain implements ModInitializer {
         ConfigInit.init();
         CriteriaInit.init();
         JobsServerPacket.init();
-        TagInit.init();
         EventInit.init();
+        PlacedBlockTracker.init();
     }
 
     public static Identifier identifierOf(String name) {

@@ -1,5 +1,6 @@
 package net.jobsaddon.init;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.jobsaddon.JobsAddonMain;
@@ -15,10 +16,15 @@ public class LoaderInit {
     public static void init() {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(JobLoader.ID, JobLoader::new);
 
+        CommonLifecycleEvents.TAGS_LOADED.register((registries, client) -> {
+            if (!client) {
+                JobLoader.resolveTags();
+            }
+        });
+
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, serverResourceManager, success) -> {
             if (success) {
-                for (int i = 0; i < server.getPlayerManager().getPlayerList().size(); i++) {
-                    ServerPlayerEntity serverPlayerEntity = server.getPlayerManager().getPlayerList().get(i);
+                for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
                     JobsManager manager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
                     manager.cleanupInvalidJobs();
                     JobsServerPacket.writeS2CJobPacket(manager, serverPlayerEntity);

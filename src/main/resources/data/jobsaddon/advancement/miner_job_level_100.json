@@ -5,7 +5,7 @@
     },
     "display": {
         "icon": {
-            "item": "levelz:rare_candy"
+            "id": "levelz:rare_candy"
         },
         "title": {
             "translate": "advancements.adventure.miner_level_100.title"

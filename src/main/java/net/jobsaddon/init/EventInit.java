@@ -3,72 +3,53 @@ package net.jobsaddon.init;
 import ht.treechop.api.TreeChopEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.access.JobsManagerAccess;
-import net.jobsaddon.jobs.Job;
 import net.jobsaddon.jobs.JobHelper;
 import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.JobsServerPacket;
-import net.minecraft.scoreboard.ScoreAccess;
+
+import java.util.List;
 
 public class EventInit {
 
     public static final boolean isTreeChopLoaded = FabricLoader.getInstance().isModLoaded("treechop");
 
+    private static final List<String> COMPAT_PACKS = List.of("bakery", "betterend", "betternether", "candlelight", "earlystage", "snuffles", "supplementaries", "vinery");
+
     public static void init() {
-        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-//            JobLists.builderBlockTagMap.forEach((tagKey, xp) -> {
-//                Registries.BLOCK.getOrCreateEntryList(tagKey).forEach(block -> {
-//                    JobLists.builderBlockIdMap.put(Registries.BLOCK.getRawId(block.value()), xp);
-//                });
-//            });
-        });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             JobsManager jobsManager = ((JobsManagerAccess) handler.getPlayer()).getJobsManager();
             JobsServerPacket.writeS2CJobPacket(jobsManager, handler.getPlayer());
         });
+        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+            ((JobsManagerAccess) newPlayer).getJobsManager().copyFrom(((JobsManagerAccess) oldPlayer).getJobsManager(), !alive && ConfigInit.CONFIG.resetCurrentJobXP);
+        });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (alive || !net.levelz.init.ConfigInit.CONFIG.hardMode) {
-
-                JobsManager jobsManager = ((JobsManagerAccess) oldPlayer).getJobsManager();
-                JobsManager newJobsManager = ((JobsManagerAccess) newPlayer).getJobsManager();
-                // Set on client
-                JobsServerPacket.writeS2CJobPacket(jobsManager, newPlayer);
-                // Set on server
-
-                boolean resetCurrentJobXP = net.jobsaddon.init.ConfigInit.CONFIG.resetCurrentJobXP;
-                for (Job job : jobsManager.getPlayerJobs().values()) {
-                    newJobsManager.setJobLevel(job.getId(), job.getLevel());
-                    if (!resetCurrentJobXP) {
-                        newJobsManager.setJobXP(job.getId(), job.getExperience());
-                    }
+            JobsManager jobsManager = ((JobsManagerAccess) newPlayer).getJobsManager();
+            if (!alive) {
+                float retainPercentage = getJobLevelRetainPercentage();
+                if (retainPercentage < 100.0F) {
+                    jobsManager.retainJobLevels(retainPercentage);
+                    // the score counts the job level ups
+                    int totalJobLevel = jobsManager.getTotalJobLevel();
+                    newPlayer.getScoreboard().forEachScore(CriteriaInit.JOBS, newPlayer, score -> score.setScore(totalJobLevel));
                 }
-
-                if (!jobsManager.getEmployedJobsList().isEmpty()) {
-                    for (int jobId : jobsManager.getEmployedJobsList()) {
-                        newJobsManager.employJob(jobId);
+                if (ConfigInit.CONFIG.quitJobsOnDeath && !jobsManager.getEmployedJobsList().isEmpty()) {
+                    for (int jobId : List.copyOf(jobsManager.getEmployedJobsList())) {
+                        jobsManager.quitJob(jobId);
                     }
+                    jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                 }
-                newJobsManager.setEmployedJobTime(jobsManager.getEmployedJobTime());
             }
-            if (!alive && net.levelz.init.ConfigInit.CONFIG.hardMode) {
-                newPlayer.getScoreboard().forEachScore(CriteriaInit.JOBS, newPlayer, ScoreAccess::resetScore);
-                // set timer cause it is hard mode
-                ((JobsManagerAccess) newPlayer).getJobsManager().setEmployedJobTime(net.jobsaddon.init.ConfigInit.CONFIG.jobChangeTime);
-            }
+            JobsServerPacket.writeS2CJobPacket(jobsManager, newPlayer);
         });
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             JobsServerPacket.writeS2CJobPacket(((JobsManagerAccess) player).getJobsManager(), player);
-        });
-        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            if (alive) {
-                JobsServerPacket.writeS2CJobPacket(((JobsManagerAccess) oldPlayer).getJobsManager(), newPlayer);
-            }
         });
         if (isTreeChopLoaded) {
             TreeChopEvents.BEFORE_FELL.register((world, player, pos, data) -> {
@@ -78,37 +59,18 @@ public class EventInit {
                 return true;
             });
         }
-        if (FabricLoader.getInstance().isModLoaded("bakery")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("bakery_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
+        for (String modId : COMPAT_PACKS) {
+            if (FabricLoader.getInstance().isModLoaded(modId)) {
+                ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf(modId + "_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
+                        ResourcePackActivationType.DEFAULT_ENABLED);
+            }
         }
-        if (FabricLoader.getInstance().isModLoaded("betterend")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("betterend_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
+    }
+
+    private static float getJobLevelRetainPercentage() {
+        if (ConfigInit.CONFIG.jobLevelRetainPercentage < 0.0F) {
+            return net.levelz.init.ConfigInit.CONFIG.levelRetainPercentage;
         }
-        if (FabricLoader.getInstance().isModLoaded("betternether")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("betternether_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
-        }
-        if (FabricLoader.getInstance().isModLoaded("candlelight")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("candlelight_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
-        }
-        if (FabricLoader.getInstance().isModLoaded("earlystage")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("earlystage_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
-        }
-        if (FabricLoader.getInstance().isModLoaded("snuffles")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("snuffles_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
-        }
-        if (FabricLoader.getInstance().isModLoaded("supplementaries")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("supplementaries_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
-        }
-        if (FabricLoader.getInstance().isModLoaded("vinery")) {
-            ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf("vinery_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),
-                    ResourcePackActivationType.DEFAULT_ENABLED);
-        }
+        return ConfigInit.CONFIG.jobLevelRetainPercentage;
     }
 }

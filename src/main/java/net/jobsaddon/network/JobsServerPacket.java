@@ -3,6 +3,7 @@ package net.jobsaddon.network;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.jobsaddon.access.JobsManagerAccess;
+import net.jobsaddon.api.JobEmploymentEvents;
 import net.jobsaddon.init.ConfigInit;
 import net.jobsaddon.jobs.Job;
 import net.jobsaddon.jobs.JobsManager;
@@ -27,13 +28,15 @@ public class JobsServerPacket {
             context.server().execute(() -> {
                 JobsManager jobsManager = ((JobsManagerAccess) context.player()).getJobsManager();
                 if (employJob) {
-                    if (jobsManager.canEmployJob(jobId)) {
+                    if (JobsManager.JOBS.containsKey(jobId) && jobsManager.canEmployJob(jobId)
+                            && JobEmploymentEvents.ALLOW_EMPLOY.invoker().allowEmploy(context.player(), jobsManager.getJob(jobId))) {
                         jobsManager.employJob(jobId);
                         jobsManager.setEmployedJobTime(ConfigInit.CONFIG.jobChangeTime);
                     }
                 } else {
                     jobsManager.quitJob(jobId);
                 }
+                writeS2CJobPacket(jobsManager, context.player());
             });
         });
     }

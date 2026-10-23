@@ -16,10 +16,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,8 +42,6 @@ public class JobScreen extends Screen implements Tab {
     private final WidgetButtonPage[] jobButtons = new WidgetButtonPage[8];
     private int jobRow = 0;
 
-    private boolean hadEmployedTimer = false;
-
     public JobScreen() {
         super(Text.translatable("screen.jobsaddon.jobs_screen"));
     }
@@ -54,13 +55,12 @@ public class JobScreen extends Screen implements Tab {
         this.jobsManager = ((JobsManagerAccess) this.client.player).getJobsManager();
 
         for (int i = 0; i < 8; i++) {
-            if (this.jobsManager.getPlayerJobs().size() <= i) {
-                break;
-            }
-            final int jobIds = i;
+            final int buttonIndex = i;
             this.jobButtons[i] = this.addDrawableChild(new WidgetButtonPage(this.x + (i % 2 == 0 ? 8 : 96), this.y + 55 + i / 2 * 38, button -> {
-                int jobId = jobIds + this.jobRow * 2;
-                if (button.active) {
+                List<Integer> jobIds = getJobIds();
+                int index = buttonIndex + this.jobRow * 2;
+                if (button.active && index < jobIds.size()) {
+                    int jobId = jobIds.get(index);
                     boolean isEmployed = ((WidgetButtonPage) button).isEmployedButton();
                     if (isEmployed) {
                         this.jobsManager.quitJob(jobId);
@@ -74,6 +74,12 @@ public class JobScreen extends Screen implements Tab {
                 }
             }));
         }
+        updateJobButtons();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
         updateJobButtons();
     }
 
@@ -126,26 +132,25 @@ public class JobScreen extends Screen implements Tab {
                 } else {
                     string = String.format("%02d:%02d", (seconds % 3600) / 60, (seconds % 60));
                 }
-                if (!this.hadEmployedTimer) {
-                    this.hadEmployedTimer = true;
-                }
                 timeText = Text.of(Text.translatable("text.jobsaddon.employedTime").getString() + string);
             } else {
-                if (this.hadEmployedTimer) {
-                    this.hadEmployedTimer = false;
-                    updateJobButtons();
-                }
                 timeText = Text.of(Text.translatable("text.jobsaddon.employedTime").getString() + "00:00");
             }
 
-            if (!jobsManager.getEmployedJobsList().isEmpty()) {
-                if (jobsManager.getEmployedJobsList().size() > ConfigInit.CONFIG.employedJobs) {
-                    employedText = Text.translatable("text.jobsaddon.tooManyEmployedJobs", getJobTitle(jobsManager.getEmployedJobsList().get(0)), getJobTitle(jobsManager.getEmployedJobsList().get(1)));
-                } else if (jobsManager.getEmployedJobsList().size() == 1) {
-                    employedText = Text.translatable("text.jobsaddon.employedJob", getJobTitle(jobsManager.getEmployedJobsList().get(0)));
-                } else {
-                    employedText = Text.translatable("text.jobsaddon.employedJobs", getJobTitle(jobsManager.getEmployedJobsList().get(0)), getJobTitle(jobsManager.getEmployedJobsList().get(1)));
+            List<Integer> employedJobs = jobsManager.getEmployedJobsList().stream().filter(jobId -> jobsManager.getJob(jobId) != null).toList();
+            if (employedJobs.size() == 1) {
+                employedText = Text.translatable("text.jobsaddon.employedJob", getJobTitle(employedJobs.get(0)));
+            } else if (employedJobs.size() == 2) {
+                employedText = Text.translatable("text.jobsaddon.employedJobs", getJobTitle(employedJobs.get(0)), getJobTitle(employedJobs.get(1)));
+            } else if (employedJobs.size() > 2) {
+                MutableText jobList = Text.empty();
+                for (int i = 0; i < employedJobs.size(); i++) {
+                    if (i > 0) {
+                        jobList.append(", ");
+                    }
+                    jobList.append(getJobTitle(employedJobs.get(i)));
                 }
+                employedText = Text.translatable("text.jobsaddon.employedJobList", jobList);
             } else {
                 employedText = Text.translatable("text.jobsaddon.notEmployed");
             }
@@ -154,15 +159,16 @@ public class JobScreen extends Screen implements Tab {
             context.drawText(this.textRenderer, timeText, this.x + 12, this.y + 20, 0x3F3F3F, false);
         }
         if (employedText != null) {
-            context.drawText(this.textRenderer, employedText, this.x + 12, this.y + 33, 0x3F3F3F, false);
+            context.drawText(this.textRenderer, Language.getInstance().reorder(this.textRenderer.trimToWidth(employedText, this.backgroundWidth - 24)), this.x + 12, this.y + 33, 0x3F3F3F, false);
         }
 
+        List<Integer> jobIds = getJobIds();
         for (int i = 0; i < 8; i++) {
-            int jobId = i + this.jobRow * 2;
-
-            if (this.jobsManager.getPlayerJobs().size() <= jobId) {
+            int index = i + this.jobRow * 2;
+            if (jobIds.size() <= index) {
                 break;
             }
+            int jobId = jobIds.get(index);
             int xPos = this.x + i % 2 * 88 + 8;
             int yPos = this.y + i / 2 * 38 + 55;
 
@@ -180,7 +186,7 @@ public class JobScreen extends Screen implements Tab {
             // render xp bar
             context.drawTexture(JOB_BUTTON_TEXTURES, xPos + 4, yPos + 29, 88, 0, 80, 5);
             if (jobsManager.getNextJobLevelExperience(jobId) > 0 && jobsManager.getJobXP(jobId) > 0) {
-                context.drawTexture(JOB_BUTTON_TEXTURES, xPos + 4, yPos + 29, 88, 5, 79 * jobsManager.getJobXP(jobId) / jobsManager.getNextJobLevelExperience(jobId), 5);
+                context.drawTexture(JOB_BUTTON_TEXTURES, xPos + 4, yPos + 29, 88, 5, Math.min(79, 79 * jobsManager.getJobXP(jobId) / jobsManager.getNextJobLevelExperience(jobId)), 5);
                 if (this.isPointWithinBounds(xPos + 4 - this.x, yPos + 29 - this.y, 80, 5, mouseX, mouseY)) {
                     context.drawTooltip(textRenderer, Text.translatable("text.jobsaddon.jobLevelExperience", jobsManager.getJobXP(jobId), jobsManager.getNextJobLevelExperience(jobId)), mouseX, mouseY);
                 }
@@ -224,27 +230,25 @@ public class JobScreen extends Screen implements Tab {
     }
 
     private void updateJobButtons() {
+        List<Integer> jobIds = getJobIds();
         for (int i = 0; i < this.jobButtons.length; i++) {
-            if (this.jobsManager.getPlayerJobs().size() <= i) {
-                break;
-            }
-            int jobId = i + this.jobRow * 2;
-            if (this.jobsManager.getPlayerJobs().size() <= jobId) {
+            int index = i + this.jobRow * 2;
+            if (jobIds.size() <= index) {
                 this.jobButtons[i].visible = false;
-                return;
-            } else {
-                this.jobButtons[i].visible = true;
+                continue;
             }
-
-            if (this.jobsManager.getPlayerJobs().get(jobId).getMaxLevel() <= this.jobsManager.getPlayerJobs().get(jobId).getLevel()) {
-                this.jobButtons[i].active = false;
-            } else if (this.jobsManager.getEmployedJobTime() > 0) {
-                this.jobButtons[i].active = false;
-            } else {
-                this.jobButtons[i].active = this.jobsManager.canEmployJob(jobId) || this.jobsManager.isEmployedJob(jobId);
-            }
+            this.jobButtons[i].visible = true;
+            int jobId = jobIds.get(index);
+            // employed jobs can always be quit
+            this.jobButtons[i].active = this.jobsManager.isEmployedJob(jobId) || this.jobsManager.canEmployJob(jobId);
             this.jobButtons[i].setEmployedButton(this.jobsManager.isEmployedJob(jobId));
         }
+    }
+
+    private List<Integer> getJobIds() {
+        List<Integer> jobIds = new ArrayList<>(this.jobsManager.getPlayerJobs().keySet());
+        Collections.sort(jobIds);
+        return jobIds;
     }
 
     private boolean isPointWithinBounds(int x, int y, int width, int height, double pointX, double pointY) {
