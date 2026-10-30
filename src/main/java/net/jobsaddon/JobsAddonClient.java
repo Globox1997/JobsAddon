@@ -3,6 +3,7 @@ package net.jobsaddon;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.jobsaddon.init.KeyInit;
 import net.jobsaddon.init.RenderInit;
 import net.jobsaddon.network.JobsClientPacket;
 
@@ -13,6 +14,7 @@ public class JobsAddonClient implements ClientModInitializer {
     public void onInitializeClient() {
         RenderInit.init();
         JobsClientPacket.init();
+        KeyInit.init();
     }
 
 }
