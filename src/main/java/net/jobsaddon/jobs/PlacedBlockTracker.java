@@ -34,7 +34,7 @@ public class PlacedBlockTracker {
         LevelChunk chunk = world.getChunkAt(pos);
         int stateId = Block.getId(state);
         int previousStateId = chunk.getAttachedOrCreate(PLACED_BLOCKS).put(pos.asLong(), stateId);
-        chunk.setUnsaved(true);
+        chunk.markUnsaved();
         return previousStateId == NO_STATE || !matches(previousStateId, state);
     }
 

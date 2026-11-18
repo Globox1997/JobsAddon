@@ -15,10 +15,22 @@ public record JobPacket(JobRecord jobRecord, List<Integer> employedJobsList, int
 
     public static final StreamCodec<RegistryFriendlyByteBuf, JobPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
         value.jobRecord.write(buf);
-        buf.writeCollection(value.employedJobsList, FriendlyByteBuf::writeInt);
+        buf.writeInt(value.employedJobsList.size());
+        for (int jobId : value.employedJobsList) {
+            buf.writeInt(jobId);
+        }
         buf.writeInt(value.employedJobTime);
 
-    }, buf -> new JobPacket(JobRecord.read(buf), buf.readList(FriendlyByteBuf::readInt), buf.readInt()));
+    }, buf -> new JobPacket(JobRecord.read(buf), readEmployedJobs(buf), buf.readInt()));
+
+    private static List<Integer> readEmployedJobs(FriendlyByteBuf buf) {
+        int size = buf.readInt();
+        List<Integer> employedJobsList = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            employedJobsList.add(buf.readInt());
+        }
+        return employedJobsList;
+    }
 
     public record JobRecord(List<Job> jobs) {
 

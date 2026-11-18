@@ -1,7 +1,8 @@
 package net.jobsaddon.jobs;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class Job {
 
@@ -19,22 +20,20 @@ public class Job {
         this.experience = experience;
     }
 
-    public Job(CompoundTag nbt) {
-        this.id = nbt.getInt("Id");
-        this.key = nbt.getString("Key");
-        this.maxLevel = nbt.getInt("MaxLevel");
-        this.level = nbt.getInt("Level");
-        this.experience = nbt.getInt("Experience");
+    public Job(ValueInput input) {
+        this.id = input.getIntOr("Id", 0);
+        this.key = input.getStringOr("Key", "");
+        this.maxLevel = input.getIntOr("MaxLevel", 0);
+        this.level = input.getIntOr("Level", 0);
+        this.experience = input.getIntOr("Experience", 0);
     }
 
-    public CompoundTag writeDataToNbt() {
-        CompoundTag nbt = new CompoundTag();
-        nbt.putInt("Id", this.id);
-        nbt.putString("Key", this.key);
-        nbt.putInt("MaxLevel", this.maxLevel);
-        nbt.putInt("Level", this.level);
-        nbt.putInt("Experience", this.experience);
-        return nbt;
+    public void writeData(ValueOutput output) {
+        output.putInt("Id", this.id);
+        output.putString("Key", this.key);
+        output.putInt("MaxLevel", this.maxLevel);
+        output.putInt("Level", this.level);
+        output.putInt("Experience", this.experience);
     }
 
     public int getId() {

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(CaveVines.class)
 public interface CaveVinesMixin {
 
-    @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+    @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private static void pickBerriesMixin(@Nullable Entity picker, BlockState state, Level world, BlockPos pos, CallbackInfoReturnable<InteractionResult> info) {
         if (!world.isClientSide() && picker instanceof Player player) {
             JobHelper.harvestJobXp(player, state);

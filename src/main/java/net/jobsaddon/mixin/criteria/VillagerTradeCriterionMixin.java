@@ -1,9 +1,9 @@
 package net.jobsaddon.mixin.criteria;
 
 import net.jobsaddon.jobs.JobHelper;
-import net.minecraft.advancements.critereon.TradeTrigger;
+import net.minecraft.advancements.triggers.TradeTrigger;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

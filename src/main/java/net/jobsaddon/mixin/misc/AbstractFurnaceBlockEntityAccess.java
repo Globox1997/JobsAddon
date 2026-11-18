@@ -1,7 +1,8 @@
 package net.jobsaddon.mixin.misc;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.resources.ResourceLocation;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -10,6 +11,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AbstractFurnaceBlockEntityAccess {
 
     @Accessor("recipesUsed")
-    Object2IntOpenHashMap<ResourceLocation> getRecipesUsed();
+    Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> getRecipesUsed();
 
 }

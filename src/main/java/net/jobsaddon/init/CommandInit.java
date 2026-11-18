@@ -39,7 +39,7 @@ public class CommandInit {
 
     public static void init() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(Commands.literal("job").requires(serverCommandSource -> serverCommandSource.hasPermission(2))
+            dispatcher.register(Commands.literal("job").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                     .then(Commands.argument("targets", EntityArgument.players())
                             .then(valueCommand("add", Operation.ADD))
                             .then(valueCommand("remove", Operation.REMOVE))

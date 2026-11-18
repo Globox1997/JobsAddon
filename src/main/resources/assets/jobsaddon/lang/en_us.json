@@ -67,6 +67,6 @@
     "advancements.adventure.miner_level_100.title": "Work hard, play hard",
     "advancements.adventure.miner_level_100.description": "Mine a lot of blocks",
 
-    "category.jobsaddon.keybind": "JobsAddon Keybinds",
+    "key.category.jobsaddon.keybind": "JobsAddon Keybinds",
     "key.jobsaddon.openjobsscreen": "Jobs Screen"
 }

@@ -1,7 +1,7 @@
 package net.jobsaddon.mixin.criteria;
 
 import net.jobsaddon.jobs.JobHelper;
-import net.minecraft.advancements.critereon.BredAnimalsTrigger;
+import net.minecraft.advancements.triggers.BredAnimalsTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.animal.Animal;

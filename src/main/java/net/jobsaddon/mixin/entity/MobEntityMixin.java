@@ -1,6 +1,7 @@
 package net.jobsaddon.mixin.entity;
 
 import net.jobsaddon.jobs.JobHelper;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,10 +23,10 @@ public abstract class MobEntityMixin extends LivingEntity {
 
     @Nullable
     @Override
-    public ItemEntity spawnAtLocation(ItemStack stack) {
+    public ItemEntity spawnAtLocation(ServerLevel level, ItemStack stack) {
         if (!stack.isEmpty() && this.isDeadOrDying() && this.getLastAttacker() instanceof ServerPlayer serverPlayerEntity) {
             JobHelper.itemDropJobXp(serverPlayerEntity, List.of(stack));
         }
-        return super.spawnAtLocation(stack);
+        return super.spawnAtLocation(level, stack);
     }
 }

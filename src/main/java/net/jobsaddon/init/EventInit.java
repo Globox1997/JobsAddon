@@ -1,7 +1,6 @@
 package net.jobsaddon.init;
 
-import ht.treechop.api.TreeChopEvents;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -9,16 +8,12 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.access.JobsManagerAccess;
-import net.jobsaddon.compat.CupellationCompat;
-import net.jobsaddon.jobs.JobHelper;
 import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.JobsServerPacket;
 
 import java.util.List;
 
 public class EventInit {
-
-    public static final boolean isTreeChopLoaded = FabricLoader.getInstance().isModLoaded("treechop");
 
     private static final List<String> COMPAT_PACKS = List.of("bakery", "betterend", "betternether", "candlelight", "earlystage", "snuffles", "supplementaries", "vinery");
 
@@ -38,7 +33,7 @@ public class EventInit {
                     jobsManager.retainJobLevels(retainPercentage);
                     // the score counts the job level ups
                     int totalJobLevel = jobsManager.getTotalJobLevel();
-                    newPlayer.getScoreboard().forAllObjectives(CriteriaInit.JOBS, newPlayer, score -> score.set(totalJobLevel));
+                    newPlayer.level().getScoreboard().forAllObjectives(CriteriaInit.JOBS, newPlayer, score -> score.set(totalJobLevel));
                 }
                 if (ConfigInit.CONFIG.quitJobsOnDeath && !jobsManager.getEmployedJobsList().isEmpty()) {
                     for (int jobId : List.copyOf(jobsManager.getEmployedJobsList())) {
@@ -49,20 +44,9 @@ public class EventInit {
             }
             JobsServerPacket.writeS2CJobPacket(jobsManager, newPlayer);
         });
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
+        ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> {
             JobsServerPacket.writeS2CJobPacket(((JobsManagerAccess) player).getJobsManager(), player);
         });
-        if (isTreeChopLoaded) {
-            TreeChopEvents.BEFORE_FELL.register((world, player, pos, data) -> {
-                if (!world.isClientSide() && player != null && data.getTree().getLogBlocks().isPresent()) {
-                    JobHelper.multiBlockBreakJobXp(player, data.getTree().getLogBlocks().get().stream().toList());
-                }
-                return true;
-            });
-        }
-        if (FabricLoader.getInstance().isModLoaded("cupellation")) {
-            CupellationCompat.init();
-        }
         for (String modId : COMPAT_PACKS) {
             if (FabricLoader.getInstance().isModLoaded(modId)) {
                 ResourceManagerHelper.registerBuiltinResourcePack(JobsAddonMain.identifierOf(modId + "_compat"), FabricLoader.getInstance().getModContainer("jobsaddon").orElseThrow(),

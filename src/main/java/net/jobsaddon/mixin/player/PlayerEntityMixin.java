@@ -11,10 +11,12 @@ import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.access.PlayerAccess;
 import net.jobsaddon.jobs.JobHelper;
 import net.jobsaddon.jobs.JobsManager;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 @Mixin(Player.class)
 public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
@@ -25,12 +27,12 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     private boolean quickCraftedRecipe;
 
     @Inject(method = "readAdditionalSaveData", at = @At(value = "TAIL"))
-    private void readCustomDataFromNbtMixin(CompoundTag tag, CallbackInfo info) {
+    private void readCustomDataFromNbtMixin(ValueInput tag, CallbackInfo info) {
         this.jobsManager.readNbt(tag);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At(value = "TAIL"))
-    private void writeCustomDataToNbtMixin(CompoundTag tag, CallbackInfo info) {
+    private void writeCustomDataToNbtMixin(ValueOutput tag, CallbackInfo info) {
         this.jobsManager.writeNbt(tag);
     }
 
@@ -42,7 +44,7 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
     }
 
     @Inject(method = "killedEntity", at = @At("HEAD"))
-    private void onKilledOtherMixin(ServerLevel world, LivingEntity other, CallbackInfoReturnable<Boolean> info) {
+    private void onKilledOtherMixin(ServerLevel world, LivingEntity other, DamageSource source, CallbackInfoReturnable<Boolean> info) {
         JobHelper.killEntityJobXp((Player) (Object) this, other);
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +22,10 @@ import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.StonecutterMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleItemRecipe;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -74,7 +77,7 @@ public class JobHelper {
                 continue;
             }
             if (multiplier < 0.0F) {
-                multiplier = jobsManager.getDiminishingReturns().getMultiplier(type, rawId, serverPlayerEntity.getServer().getTickCount());
+                multiplier = jobsManager.getDiminishingReturns().getMultiplier(type, rawId, serverPlayerEntity.level().getServer().getTickCount());
             }
             int xpCount = roundRandomly((float) jobExperience.getExperience() * count * multiplier, serverPlayerEntity.getRandom());
             if (xpCount > 0) {
@@ -121,12 +124,15 @@ public class JobHelper {
         for (Slot slot : player.containerMenu.slots) {
             if (slot.container instanceof ResultContainer craftingResultInventory) {
                 RecipeHolder<?> recipeEntry = craftingResultInventory.getRecipeUsed();
-                return recipeEntry != null && JobsManager.RESTRICTED_RECIPES.contains(recipeEntry.id());
+                return recipeEntry != null && JobsManager.RESTRICTED_RECIPES.contains(recipeEntry.id().identifier());
             }
             if (slot.container instanceof AbstractFurnaceBlockEntity abstractFurnaceBlockEntity) {
-                for (ResourceLocation recipeId : ((AbstractFurnaceBlockEntityAccess) abstractFurnaceBlockEntity).getRecipesUsed().keySet()) {
-                    if (JobsManager.RESTRICTED_RECIPES.contains(recipeId) && world.getRecipeManager().byKey(recipeId)
-                            .map(recipeEntry -> recipeEntry.value().getResultItem(world.registryAccess()).is(stack.getItem())).orElse(false)) {
+                if (world.getServer() == null) {
+                    return false;
+                }
+                for (ResourceKey<Recipe<?>> recipeId : ((AbstractFurnaceBlockEntityAccess) abstractFurnaceBlockEntity).getRecipesUsed().keySet()) {
+                    if (JobsManager.RESTRICTED_RECIPES.contains(recipeId.identifier()) && world.getServer().getRecipeManager().byKey(recipeId)
+                            .map(recipeEntry -> recipeEntry.value() instanceof SingleItemRecipe singleItemRecipe && singleItemRecipe.assemble(new SingleRecipeInput(ItemStack.EMPTY)).is(stack.getItem())).orElse(false)) {
                         return true;
                     }
                 }

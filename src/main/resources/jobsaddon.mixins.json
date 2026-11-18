@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.jobsaddon.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "plugin": "net.jobsaddon.mixin.compat.JobsAddonMixinPlugin",
   "mixins": [
     "block.BlockMixin",
@@ -13,8 +13,6 @@
     "criteria.BredAnimalsCriterionMixin",
     "criteria.TameAnimalCriterionMixin",
     "criteria.VillagerTradeCriterionMixin",
-    "compat.FallingTreeEntityMixin",
-    "compat.TideFishingHookMixin",
     "entity.FishingBobberEntityMixin",
     "entity.MobEntityMixin",
     "misc.AbstractFurnaceBlockEntityAccess",

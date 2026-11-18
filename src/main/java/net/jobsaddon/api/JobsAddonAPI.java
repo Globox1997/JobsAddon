@@ -11,7 +11,7 @@ import net.jobsaddon.network.JobsServerPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -138,7 +138,7 @@ public final class JobsAddonAPI {
      * @param id    the id of the block, item, entity type or potion, depending on the type
      * @param count multiplies the experience
      */
-    public static void triggerExperience(ServerPlayer player, JobExperienceType type, ResourceLocation id, int count) {
+    public static void triggerExperience(ServerPlayer player, JobExperienceType type, Identifier id, int count) {
         Registry<?> registry = switch (type) {
             case BLOCK_BREAK, BLOCK_PLACE, HARVEST -> BuiltInRegistries.BLOCK;
             case ITEM_DROP, CRAFTING, SMITHING, STONECUTTING, TRADING, CASTING -> BuiltInRegistries.ITEM;
@@ -152,8 +152,8 @@ public final class JobsAddonAPI {
         }
     }
 
-    private static <T> int getRawId(Registry<T> registry, ResourceLocation id) {
-        return registry.getId(registry.get(id));
+    private static <T> int getRawId(Registry<T> registry, Identifier id) {
+        return registry.getId(registry.getValue(id));
     }
 
     // Right click harvesting for other mods

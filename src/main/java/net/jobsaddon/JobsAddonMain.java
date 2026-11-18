@@ -4,7 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.jobsaddon.init.*;
 import net.jobsaddon.jobs.PlacedBlockTracker;
 import net.jobsaddon.network.JobsServerPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +23,7 @@ public class JobsAddonMain implements ModInitializer {
         PlacedBlockTracker.init();
     }
 
-    public static ResourceLocation identifierOf(String name) {
-        return ResourceLocation.fromNamespaceAndPath("jobsaddon", name);
+    public static Identifier identifierOf(String name) {
+        return Identifier.fromNamespaceAndPath("jobsaddon", name);
     }
 }

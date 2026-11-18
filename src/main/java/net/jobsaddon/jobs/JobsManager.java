@@ -9,14 +9,13 @@ import net.jobsaddon.init.ConfigInit;
 import net.jobsaddon.init.CriteriaInit;
 import net.jobsaddon.network.JobsServerPacket;
 import net.levelz.access.ServerPlayerSyncAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.scores.ScoreAccess;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +31,7 @@ public class JobsManager {
     public static final Map<Integer, List<JobExperience>> ENCHANTMENT_EXPERIENCE = JobExperienceType.ENCHANTING.getExperienceMap();
     public static final Map<Integer, List<JobExperience>> BREWING_EXPERIENCE = JobExperienceType.BREWING.getExperienceMap();
     public static final Map<Integer, List<JobExperience>> ENTITY_KILL_EXPERIENCE = JobExperienceType.ENTITY_KILL.getExperienceMap();
-    public static final Set<ResourceLocation> RESTRICTED_RECIPES = new HashSet<>(); // used for crafting xp restriction
+    public static final Set<Identifier> RESTRICTED_RECIPES = new HashSet<>(); // used for crafting xp restriction
 
     private static final int MAX_LEVEL_UPS_PER_CALL = 1000;
 
@@ -50,31 +49,29 @@ public class JobsManager {
         cleanupInvalidJobs();
     }
 
-    public void readNbt(CompoundTag nbt) {
-        ListTag jobsList = nbt.getList("Jobs", Tag.TAG_COMPOUND);
-        for (int i = 0; i < jobsList.size(); i++) {
-            Job job = new Job(jobsList.getCompound(i));
+    public void readNbt(ValueInput nbt) {
+        nbt.childrenListOrEmpty("Jobs").stream().forEach(jobInput -> {
+            Job job = new Job(jobInput);
             this.playerJobs.put(job.getId(), job);
-        }
+        });
         // Employed Jobs
         this.employedJobsList.clear();
-        int employedJobCount = nbt.getInt("EmployedJobCount");
+        int employedJobCount = nbt.getIntOr("EmployedJobCount", 0);
         for (int i = 0; i < employedJobCount; i++) {
-            int jobId = nbt.getInt("EmployedJob" + i);
+            int jobId = nbt.getIntOr("EmployedJob" + i, 0);
             if (!this.employedJobsList.contains(jobId)) {
                 this.employedJobsList.add(jobId);
             }
         }
-        this.employedJobTime = nbt.getInt("EmployedJobTime");
+        this.employedJobTime = nbt.getIntOr("EmployedJobTime", 0);
         cleanupInvalidJobs();
     }
 
-    public void writeNbt(CompoundTag nbt) {
-        ListTag jobs = new ListTag();
+    public void writeNbt(ValueOutput nbt) {
+        ValueOutput.ValueOutputList jobs = nbt.childrenList("Jobs");
         for (Job job : this.playerJobs.values()) {
-            jobs.add(job.writeDataToNbt());
+            job.writeData(jobs.addChild());
         }
-        nbt.put("Jobs", jobs);
         // Employed Jobs
         for (int i = 0; i < this.employedJobsList.size(); i++) {
             nbt.putInt("EmployedJob" + i, this.employedJobsList.get(i));
@@ -166,7 +163,7 @@ public class JobsManager {
             addJobExperienceLevels(playerEntity, id, 1);
 
             if (getJobLevel(id) > oldLevel && playerEntity instanceof ServerPlayer serverPlayerEntity) {
-                playerEntity.getScoreboard().forAllObjectives(CriteriaInit.JOBS, playerEntity, ScoreAccess::increment);
+                playerEntity.level().getScoreboard().forAllObjectives(CriteriaInit.JOBS, playerEntity, ScoreAccess::increment);
                 CriteriaInit.JOB_UP.trigger(serverPlayerEntity, this.playerJobs.get(id).getKey(), getJobLevel(id));
                 JobLevelUpCallback.EVENT.invoker().onLevelUp(serverPlayerEntity, this.playerJobs.get(id), getJobLevel(id));
                 leveledUp = true;

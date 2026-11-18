@@ -16,10 +16,10 @@ import java.util.List;
 public class JobsServerPacket {
 
     public static void init() {
-        PayloadTypeRegistry.playC2S().register(EmployPacket.PACKET_ID, EmployPacket.PACKET_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(EmployPacket.PACKET_ID, EmployPacket.PACKET_CODEC);
 
-        PayloadTypeRegistry.playS2C().register(JobPacket.PACKET_ID, JobPacket.PACKET_CODEC);
-        PayloadTypeRegistry.playS2C().register(JobXpPacket.PACKET_ID, JobXpPacket.PACKET_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(JobPacket.PACKET_ID, JobPacket.PACKET_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(JobXpPacket.PACKET_ID, JobXpPacket.PACKET_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(EmployPacket.PACKET_ID, (payload, context) -> {
             int jobId = payload.jobId();

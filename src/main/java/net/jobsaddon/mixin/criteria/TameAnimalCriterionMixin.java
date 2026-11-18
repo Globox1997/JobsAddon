@@ -1,7 +1,7 @@
 package net.jobsaddon.mixin.criteria;
 
 import net.jobsaddon.jobs.JobHelper;
-import net.minecraft.advancements.critereon.TameAnimalTrigger;
+import net.minecraft.advancements.triggers.TameAnimalTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.Animal;
 import org.spongepowered.asm.mixin.Mixin;

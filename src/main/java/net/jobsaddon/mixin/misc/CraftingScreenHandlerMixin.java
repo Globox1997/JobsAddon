@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 @Mixin(CraftingMenu.class)
 public class CraftingScreenHandlerMixin {
 
-    @Inject(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ContainerLevelAccess;execute(Ljava/util/function/BiConsumer;)V"))
+    @Inject(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/Item;onCraftedBy(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/player/Player;)V"))
     private void quickMoveMixin(Player player, int slot, CallbackInfoReturnable<ItemStack> info) {
         if (!player.level().isClientSide()) {
             ((PlayerAccess) player).setQuickCraftedRecipe(true);

@@ -15,7 +15,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -26,14 +26,14 @@ import java.util.*;
 
 public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSynchronousResourceReloadListener {
 
-    public static final ResourceLocation ID = JobsAddonMain.identifierOf("job_loader");
+    public static final Identifier ID = JobsAddonMain.identifierOf("job_loader");
 
     private static final List<String> FOLDERS = List.of("job", "restricted");
 
     private static final List<TagExperience<?>> TAG_EXPERIENCE = new ArrayList<>();
 
     @Override
-    public ResourceLocation getFabricId() {
+    public Identifier getFabricId() {
         return ID;
     }
 
@@ -47,14 +47,14 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
         EnchantmentRegistry.updateEnchantments(this.wrapperLookup());
 
         List<String> packOrder = manager.listPacks().map(PackResources::packId).toList();
-        List<Map.Entry<ResourceLocation, Resource>> resources = new ArrayList<>();
+        List<Map.Entry<Identifier, Resource>> resources = new ArrayList<>();
         for (String folder : FOLDERS) {
             resources.addAll(manager.listResources(folder, id -> id.getPath().endsWith(".json")).entrySet());
         }
-        resources.sort(Comparator.<Map.Entry<ResourceLocation, Resource>>comparingInt(entry -> packOrder.indexOf(entry.getValue().sourcePackId())).thenComparing(Map.Entry::getKey));
+        resources.sort(Comparator.<Map.Entry<Identifier, Resource>>comparingInt(entry -> packOrder.indexOf(entry.getValue().sourcePackId())).thenComparing(Map.Entry::getKey));
 
-        for (Map.Entry<ResourceLocation, Resource> entry : resources) {
-            ResourceLocation id = entry.getKey();
+        for (Map.Entry<Identifier, Resource> entry : resources) {
+            Identifier id = entry.getKey();
             if (!ConfigInit.CONFIG.defaultJobs && id.getPath().equals("job/default.json")) {
                 continue;
             }
@@ -89,7 +89,7 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
             JobsManager.RESTRICTED_RECIPES.clear();
         }
         for (JsonElement element : GsonHelper.getAsJsonArray(jsonObject, "recipes")) {
-            ResourceLocation recipeId = ResourceLocation.tryParse(element.getAsString());
+            Identifier recipeId = Identifier.tryParse(element.getAsString());
             if (recipeId == null) {
                 JobsAddonMain.LOGGER.warn("{} is not a valid recipe identifier", element.getAsString());
                 continue;
@@ -98,7 +98,7 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
         }
     }
 
-    private void loadJob(ResourceLocation fileId, JsonObject jobJsonObject) {
+    private void loadJob(Identifier fileId, JsonObject jobJsonObject) {
         int jobId = GsonHelper.getAsInt(jobJsonObject, "id");
         boolean replace = GsonHelper.getAsBoolean(jobJsonObject, "replace", false);
         Job existingJob = JobsManager.JOBS.get(jobId);
@@ -142,7 +142,7 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
         loadEnchantingExperience(fileId, jobJsonObject, jobId);
     }
 
-    private <T> void loadExperience(ResourceLocation fileId, JsonObject jobJsonObject, int jobId, String type, String arrayKey, Registry<T> registry, Map<Integer, List<JobExperience>> map) {
+    private <T> void loadExperience(Identifier fileId, JsonObject jobJsonObject, int jobId, String type, String arrayKey, Registry<T> registry, Map<Integer, List<JobExperience>> map) {
         if (!jobJsonObject.has(type)) {
             return;
         }
@@ -165,7 +165,7 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
             for (JsonElement element : GsonHelper.getAsJsonArray(experienceJsonObject, arrayKey)) {
                 String entry = element.getAsString();
                 if (entry.startsWith("#")) {
-                    ResourceLocation tagId = ResourceLocation.tryParse(entry.substring(1));
+                    Identifier tagId = Identifier.tryParse(entry.substring(1));
                     if (tagId == null) {
                         JobsAddonMain.LOGGER.warn("{} in {} is not a valid tag identifier", entry, fileId);
                         continue;
@@ -173,17 +173,17 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
                     TAG_EXPERIENCE.add(new TagExperience<>(registry, TagKey.create(registry.key(), tagId), map, jobExperience));
                     continue;
                 }
-                ResourceLocation entryId = ResourceLocation.tryParse(entry);
+                Identifier entryId = Identifier.tryParse(entry);
                 if (entryId == null || !registry.containsKey(entryId)) {
-                    JobsAddonMain.LOGGER.warn("{} in {} is not a valid {} identifier", entry, fileId, registry.key().location().getPath());
+                    JobsAddonMain.LOGGER.warn("{} in {} is not a valid {} identifier", entry, fileId, registry.key().identifier().getPath());
                     continue;
                 }
-                JobsManager.addJobExperience(map, registry.getId(registry.get(entryId)), jobExperience, true);
+                JobsManager.addJobExperience(map, registry.getId(registry.getValue(entryId)), jobExperience, true);
             }
         }
     }
 
-    private void loadEnchantingExperience(ResourceLocation fileId, JsonObject jobJsonObject, int jobId) {
+    private void loadEnchantingExperience(Identifier fileId, JsonObject jobJsonObject, int jobId) {
         if (!jobJsonObject.has("enchanting")) {
             return;
         }
@@ -203,7 +203,7 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
             }
             JsonObject enchantments = GsonHelper.getAsJsonObject(experienceJsonObject, "enchantments");
             for (String enchantment : enchantments.keySet()) {
-                ResourceLocation enchantmentId = ResourceLocation.tryParse(enchantment);
+                Identifier enchantmentId = Identifier.tryParse(enchantment);
                 int level = enchantments.get(enchantment).getAsInt();
                 if (enchantmentId == null || !EnchantmentRegistry.containsId(enchantmentId, level)) {
                     JobsAddonMain.LOGGER.warn("{} in {} is not a valid enchantment identifier", enchantment, fileId);
@@ -214,7 +214,7 @@ public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSy
         }
     }
 
-    private static Integer parseExperience(ResourceLocation fileId, String experienceKey) {
+    private static Integer parseExperience(Identifier fileId, String experienceKey) {
         try {
             return Integer.parseInt(experienceKey);
         } catch (NumberFormatException e) {
