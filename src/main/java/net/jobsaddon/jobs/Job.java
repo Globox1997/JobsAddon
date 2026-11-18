@@ -1,7 +1,7 @@
 package net.jobsaddon.jobs;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 
 public class Job {
 
@@ -19,7 +19,7 @@ public class Job {
         this.experience = experience;
     }
 
-    public Job(NbtCompound nbt) {
+    public Job(CompoundTag nbt) {
         this.id = nbt.getInt("Id");
         this.key = nbt.getString("Key");
         this.maxLevel = nbt.getInt("MaxLevel");
@@ -27,8 +27,8 @@ public class Job {
         this.experience = nbt.getInt("Experience");
     }
 
-    public NbtCompound writeDataToNbt() {
-        NbtCompound nbt = new NbtCompound();
+    public CompoundTag writeDataToNbt() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt("Id", this.id);
         nbt.putString("Key", this.key);
         nbt.putInt("MaxLevel", this.maxLevel);
@@ -65,11 +65,11 @@ public class Job {
         return experience;
     }
 
-    public Text getJobName() {
-        return Text.translatable("text.jobsaddon." + this.key);
+    public Component getJobName() {
+        return Component.translatable("text.jobsaddon." + this.key);
     }
 
-    public Text getJobTooltip() {
-        return Text.translatable("text.jobsaddon." + this.key + ".tooltip");
+    public Component getJobTooltip() {
+        return Component.translatable("text.jobsaddon." + this.key + ".tooltip");
     }
 }

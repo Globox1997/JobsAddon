@@ -1,9 +1,5 @@
 package net.jobsaddon.mixin.misc;
 
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ForgingScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.ScreenHandlerType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,19 +7,23 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.jobsaddon.jobs.JobHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.AnvilScreenHandler;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.ItemCombinerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 
-@Mixin(AnvilScreenHandler.class)
-public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
+@Mixin(AnvilMenu.class)
+public abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
 
-    public AnvilScreenHandlerMixin(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
+    public AnvilScreenHandlerMixin(@Nullable MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess context) {
         super(type, syncId, playerInventory, context);
     }
 
-    @Inject(method = "onTakeOutput", at = @At("HEAD"))
-    protected void onTakeOutputMixin(PlayerEntity player, ItemStack stack, CallbackInfo info) {
-        JobHelper.enchantingJobXp(player, stack, this.input.getStack(0));
+    @Inject(method = "onTake", at = @At("HEAD"))
+    protected void onTakeOutputMixin(Player player, ItemStack stack, CallbackInfo info) {
+        JobHelper.enchantingJobXp(player, stack, this.inputSlots.getItem(0));
     }
 }

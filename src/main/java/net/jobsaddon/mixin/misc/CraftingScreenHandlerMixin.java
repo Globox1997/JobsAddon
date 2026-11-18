@@ -6,16 +6,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.jobsaddon.access.PlayerAccess;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.ItemStack;
 
-@Mixin(CraftingScreenHandler.class)
+@Mixin(CraftingMenu.class)
 public class CraftingScreenHandlerMixin {
 
-    @Inject(method = "quickMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/ScreenHandlerContext;run(Ljava/util/function/BiConsumer;)V"))
-    private void quickMoveMixin(PlayerEntity player, int slot, CallbackInfoReturnable<ItemStack> info) {
-        if (!player.getWorld().isClient()) {
+    @Inject(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ContainerLevelAccess;execute(Ljava/util/function/BiConsumer;)V"))
+    private void quickMoveMixin(Player player, int slot, CallbackInfoReturnable<ItemStack> info) {
+        if (!player.level().isClientSide()) {
             ((PlayerAccess) player).setQuickCraftedRecipe(true);
         }
     }

@@ -11,26 +11,26 @@ import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.access.PlayerAccess;
 import net.jobsaddon.jobs.JobHelper;
 import net.jobsaddon.jobs.JobsManager;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
 
     @Unique
-    private final JobsManager jobsManager = new JobsManager((PlayerEntity) (Object) this);
+    private final JobsManager jobsManager = new JobsManager((Player) (Object) this);
     @Unique
     private boolean quickCraftedRecipe;
 
-    @Inject(method = "readCustomDataFromNbt", at = @At(value = "TAIL"))
-    private void readCustomDataFromNbtMixin(NbtCompound tag, CallbackInfo info) {
+    @Inject(method = "readAdditionalSaveData", at = @At(value = "TAIL"))
+    private void readCustomDataFromNbtMixin(CompoundTag tag, CallbackInfo info) {
         this.jobsManager.readNbt(tag);
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At(value = "TAIL"))
-    private void writeCustomDataToNbtMixin(NbtCompound tag, CallbackInfo info) {
+    @Inject(method = "addAdditionalSaveData", at = @At(value = "TAIL"))
+    private void writeCustomDataToNbtMixin(CompoundTag tag, CallbackInfo info) {
         this.jobsManager.writeNbt(tag);
     }
 
@@ -41,9 +41,9 @@ public class PlayerEntityMixin implements JobsManagerAccess, PlayerAccess {
         }
     }
 
-    @Inject(method = "onKilledOther", at = @At("HEAD"))
-    private void onKilledOtherMixin(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> info) {
-        JobHelper.killEntityJobXp((PlayerEntity) (Object) this, other);
+    @Inject(method = "killedEntity", at = @At("HEAD"))
+    private void onKilledOtherMixin(ServerLevel world, LivingEntity other, CallbackInfoReturnable<Boolean> info) {
+        JobHelper.killEntityJobXp((Player) (Object) this, other);
     }
 
     @Override

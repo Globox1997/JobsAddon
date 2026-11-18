@@ -1,21 +1,21 @@
 package net.jobsaddon.network.packet;
 
 import net.jobsaddon.JobsAddonMain;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record JobXpPacket(int jobId, int experience) implements CustomPayload {
+public record JobXpPacket(int jobId, int experience) implements CustomPacketPayload {
 
-    public static final CustomPayload.Id<JobXpPacket> PACKET_ID = new CustomPayload.Id<>(JobsAddonMain.identifierOf("job_xp_packet"));
+    public static final CustomPacketPayload.Type<JobXpPacket> PACKET_ID = new CustomPacketPayload.Type<>(JobsAddonMain.identifierOf("job_xp_packet"));
 
-    public static final PacketCodec<RegistryByteBuf, JobXpPacket> PACKET_CODEC = PacketCodec.of((value, buf) -> {
+    public static final StreamCodec<RegistryFriendlyByteBuf, JobXpPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
         buf.writeInt(value.jobId);
         buf.writeInt(value.experience);
     }, buf -> new JobXpPacket(buf.readInt(), buf.readInt()));
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

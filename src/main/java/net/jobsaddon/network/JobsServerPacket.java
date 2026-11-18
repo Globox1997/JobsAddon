@@ -10,8 +10,7 @@ import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.packet.EmployPacket;
 import net.jobsaddon.network.packet.JobPacket;
 import net.jobsaddon.network.packet.JobXpPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-
+import net.minecraft.server.level.ServerPlayer;
 import java.util.List;
 
 public class JobsServerPacket {
@@ -41,7 +40,7 @@ public class JobsServerPacket {
         });
     }
 
-    public static void writeS2CJobPacket(JobsManager jobsManager, ServerPlayerEntity serverPlayerEntity) {
+    public static void writeS2CJobPacket(JobsManager jobsManager, ServerPlayer serverPlayerEntity) {
         List<Job> activeJobs = jobsManager.getPlayerJobs().values().stream().filter(job -> JobsManager.JOBS.containsKey(job.getId())).toList();
         ServerPlayNetworking.send(serverPlayerEntity, new JobPacket(new JobPacket.JobRecord(activeJobs), jobsManager.getEmployedJobsList(), jobsManager.getEmployedJobTime()));
     }

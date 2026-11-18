@@ -2,45 +2,44 @@ package net.jobsaddon.network.packet;
 
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.jobs.Job;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import java.util.ArrayList;
 import java.util.List;
 
-public record JobPacket(JobRecord jobRecord, List<Integer> employedJobsList, int employedJobTime) implements CustomPayload {
+public record JobPacket(JobRecord jobRecord, List<Integer> employedJobsList, int employedJobTime) implements CustomPacketPayload {
 
-    public static final CustomPayload.Id<JobPacket> PACKET_ID = new CustomPayload.Id<>(JobsAddonMain.identifierOf("job_packet"));
+    public static final CustomPacketPayload.Type<JobPacket> PACKET_ID = new CustomPacketPayload.Type<>(JobsAddonMain.identifierOf("job_packet"));
 
-    public static final PacketCodec<RegistryByteBuf, JobPacket> PACKET_CODEC = PacketCodec.of((value, buf) -> {
+    public static final StreamCodec<RegistryFriendlyByteBuf, JobPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
         value.jobRecord.write(buf);
-        buf.writeCollection(value.employedJobsList, PacketByteBuf::writeInt);
+        buf.writeCollection(value.employedJobsList, FriendlyByteBuf::writeInt);
         buf.writeInt(value.employedJobTime);
 
-    }, buf -> new JobPacket(JobRecord.read(buf), buf.readList(PacketByteBuf::readInt), buf.readInt()));
+    }, buf -> new JobPacket(JobRecord.read(buf), buf.readList(FriendlyByteBuf::readInt), buf.readInt()));
 
     public record JobRecord(List<Job> jobs) {
 
-        public void write(PacketByteBuf buf) {
+        public void write(FriendlyByteBuf buf) {
             buf.writeInt(jobs().size());
             for (int i = 0; i < jobs().size(); i++) {
                 Job playerJob = jobs.get(i);
                 buf.writeInt(playerJob.getId());
-                buf.writeString(playerJob.getKey());
+                buf.writeUtf(playerJob.getKey());
                 buf.writeInt(playerJob.getMaxLevel());
                 buf.writeInt(playerJob.getLevel());
                 buf.writeInt(playerJob.getExperience());
             }
         }
 
-        public static JobRecord read(PacketByteBuf buf) {
+        public static JobRecord read(FriendlyByteBuf buf) {
             List<Job> playerJobs = new ArrayList<>();
             int size = buf.readInt();
             for (int i = 0; i < size; i++) {
                 int id = buf.readInt();
-                String key = buf.readString();
+                String key = buf.readUtf();
                 int maxLevel = buf.readInt();
                 int level = buf.readInt();
                 int experience = buf.readInt();
@@ -52,7 +51,7 @@ public record JobPacket(JobRecord jobRecord, List<Integer> employedJobsList, int
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

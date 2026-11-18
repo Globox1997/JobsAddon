@@ -8,13 +8,13 @@ import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.data.JobLoader;
 import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.JobsServerPacket;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.PackType;
 
 public class LoaderInit {
 
     public static void init() {
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(JobLoader.ID, JobLoader::new);
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(JobLoader.ID, JobLoader::new);
 
         CommonLifecycleEvents.TAGS_LOADED.register((registries, client) -> {
             if (!client) {
@@ -24,7 +24,7 @@ public class LoaderInit {
 
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, serverResourceManager, success) -> {
             if (success) {
-                for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
+                for (ServerPlayer serverPlayerEntity : server.getPlayerList().getPlayers()) {
                     JobsManager manager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
                     manager.cleanupInvalidJobs();
                     JobsServerPacket.writeS2CJobPacket(manager, serverPlayerEntity);

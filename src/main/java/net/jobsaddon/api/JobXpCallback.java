@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.jobsaddon.jobs.Job;
 import net.jobsaddon.jobs.JobExperienceType;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
@@ -26,5 +26,5 @@ public interface JobXpCallback {
      * @param experience the experience which will get added
      * @return the new experience, 0 or less cancels it
      */
-    int modifyExperience(ServerPlayerEntity player, Job job, @Nullable JobExperienceType type, int experience);
+    int modifyExperience(ServerPlayer player, Job job, @Nullable JobExperienceType type, int experience);
 }

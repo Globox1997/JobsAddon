@@ -12,15 +12,14 @@ import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.packet.EmployPacket;
 import net.libz.api.Tab;
 import net.libz.util.DrawTabHelper;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Language;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +28,8 @@ import java.util.Objects;
 @Environment(EnvType.CLIENT)
 public class JobScreen extends Screen implements Tab {
 
-    private static final Identifier BACKGROUND_TEXTURE = JobsAddonMain.identifierOf("textures/gui/jobs_background.png");
-    private static final Identifier JOB_BUTTON_TEXTURES = JobsAddonMain.identifierOf("textures/gui/jobs_buttons.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = JobsAddonMain.identifierOf("textures/gui/jobs_background.png");
+    private static final ResourceLocation JOB_BUTTON_TEXTURES = JobsAddonMain.identifierOf("textures/gui/jobs_buttons.png");
 
     private final int backgroundWidth = 200;
     private final int backgroundHeight = 215;
@@ -43,7 +42,7 @@ public class JobScreen extends Screen implements Tab {
     private int jobRow = 0;
 
     public JobScreen() {
-        super(Text.translatable("screen.jobsaddon.jobs_screen"));
+        super(Component.translatable("screen.jobsaddon.jobs_screen"));
     }
 
     @Override
@@ -52,11 +51,11 @@ public class JobScreen extends Screen implements Tab {
         this.x = (this.width - this.backgroundWidth) / 2;
         this.y = (this.height - this.backgroundHeight) / 2;
 
-        this.jobsManager = ((JobsManagerAccess) this.client.player).getJobsManager();
+        this.jobsManager = ((JobsManagerAccess) this.minecraft.player).getJobsManager();
 
         for (int i = 0; i < 8; i++) {
             final int buttonIndex = i;
-            this.jobButtons[i] = this.addDrawableChild(new WidgetButtonPage(this.x + (i % 2 == 0 ? 8 : 96), this.y + 55 + i / 2 * 38, button -> {
+            this.jobButtons[i] = this.addRenderableWidget(new WidgetButtonPage(this.x + (i % 2 == 0 ? 8 : 96), this.y + 55 + i / 2 * 38, button -> {
                 List<Integer> jobIds = getJobIds();
                 int index = buttonIndex + this.jobRow * 2;
                 if (button.active && index < jobIds.size()) {
@@ -84,7 +83,7 @@ public class JobScreen extends Screen implements Tab {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -108,17 +107,17 @@ public class JobScreen extends Screen implements Tab {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
         // render title
-        if (this.client.player != null) {
-            Text title = Text.translatable("text.jobsaddon.gui.title", this.client.player.getName().getString());
-            context.drawText(this.textRenderer, title, this.x + this.backgroundWidth / 2 - this.client.textRenderer.getWidth(title) / 2, this.y + 7, 0x3F3F3F, false);
+        if (this.minecraft.player != null) {
+            Component title = Component.translatable("text.jobsaddon.gui.title", this.minecraft.player.getName().getString());
+            context.drawString(this.font, title, this.x + this.backgroundWidth / 2 - this.minecraft.font.width(title) / 2, this.y + 7, 0x3F3F3F, false);
         }
         // render time label
-        Text timeText = null;
-        Text employedText = null;
+        Component timeText = null;
+        Component employedText = null;
         if (jobsManager != null) {
             if (jobsManager.getEmployedJobTime() > 0) {
                 int seconds = jobsManager.getEmployedJobTime() / 20;
@@ -128,34 +127,34 @@ public class JobScreen extends Screen implements Tab {
                 } else {
                     string = String.format("%02d:%02d", (seconds % 3600) / 60, (seconds % 60));
                 }
-                timeText = Text.of(Text.translatable("text.jobsaddon.employedTime").getString() + string);
+                timeText = Component.nullToEmpty(Component.translatable("text.jobsaddon.employedTime").getString() + string);
             } else {
-                timeText = Text.of(Text.translatable("text.jobsaddon.employedTime").getString() + "00:00");
+                timeText = Component.nullToEmpty(Component.translatable("text.jobsaddon.employedTime").getString() + "00:00");
             }
 
             List<Integer> employedJobs = jobsManager.getEmployedJobsList().stream().filter(jobId -> jobsManager.getJob(jobId) != null).toList();
             if (employedJobs.size() == 1) {
-                employedText = Text.translatable("text.jobsaddon.employedJob", getJobTitle(employedJobs.get(0)));
+                employedText = Component.translatable("text.jobsaddon.employedJob", getJobTitle(employedJobs.get(0)));
             } else if (employedJobs.size() == 2) {
-                employedText = Text.translatable("text.jobsaddon.employedJobs", getJobTitle(employedJobs.get(0)), getJobTitle(employedJobs.get(1)));
+                employedText = Component.translatable("text.jobsaddon.employedJobs", getJobTitle(employedJobs.get(0)), getJobTitle(employedJobs.get(1)));
             } else if (employedJobs.size() > 2) {
-                MutableText jobList = Text.empty();
+                MutableComponent jobList = Component.empty();
                 for (int i = 0; i < employedJobs.size(); i++) {
                     if (i > 0) {
                         jobList.append(", ");
                     }
                     jobList.append(getJobTitle(employedJobs.get(i)));
                 }
-                employedText = Text.translatable("text.jobsaddon.employedJobList", jobList);
+                employedText = Component.translatable("text.jobsaddon.employedJobList", jobList);
             } else {
-                employedText = Text.translatable("text.jobsaddon.notEmployed");
+                employedText = Component.translatable("text.jobsaddon.notEmployed");
             }
         }
         if (timeText != null) {
-            context.drawText(this.textRenderer, timeText, this.x + 12, this.y + 20, 0x3F3F3F, false);
+            context.drawString(this.font, timeText, this.x + 12, this.y + 20, 0x3F3F3F, false);
         }
         if (employedText != null) {
-            context.drawText(this.textRenderer, Language.getInstance().reorder(this.textRenderer.trimToWidth(employedText, this.backgroundWidth - 24)), this.x + 12, this.y + 33, 0x3F3F3F, false);
+            context.drawString(this.font, Language.getInstance().getVisualOrder(this.font.substrByWidth(employedText, this.backgroundWidth - 24)), this.x + 12, this.y + 33, 0x3F3F3F, false);
         }
 
         List<Integer> jobIds = getJobIds();
@@ -169,46 +168,46 @@ public class JobScreen extends Screen implements Tab {
             int yPos = this.y + i / 2 * 38 + 55;
 
             // render job title
-            context.drawText(this.textRenderer, this.getJobTitle(jobId), xPos + 22, yPos + 4, 0xFFFFFF, false);
+            context.drawString(this.font, this.getJobTitle(jobId), xPos + 22, yPos + 4, 0xFFFFFF, false);
             // render job levels
-            Text jobLevelText = Text.translatable("text.jobsaddon.jobLevel", jobsManager.getJobLevel(jobId), jobsManager.getPlayerJobs().get(jobId).getMaxLevel());
-            context.drawText(this.textRenderer, jobLevelText, xPos + 48 - this.textRenderer.getWidth(jobLevelText) / 2, yPos + 19, 0xFFFFFF,
+            Component jobLevelText = Component.translatable("text.jobsaddon.jobLevel", jobsManager.getJobLevel(jobId), jobsManager.getPlayerJobs().get(jobId).getMaxLevel());
+            context.drawString(this.font, jobLevelText, xPos + 48 - this.font.width(jobLevelText) / 2, yPos + 19, 0xFFFFFF,
                     false);
             // render icons
-            context.drawTexture(JobsAddonMain.identifierOf("textures/gui/" + this.jobsManager.getPlayerJobs().get(jobId).getKey() + ".png"), xPos + 5, yPos + 5, 0, 0, 14, 14, 14, 14);
+            context.blit(JobsAddonMain.identifierOf("textures/gui/" + this.jobsManager.getPlayerJobs().get(jobId).getKey() + ".png"), xPos + 5, yPos + 5, 0, 0, 14, 14, 14, 14);
             if (this.isPointWithinBounds(xPos + 5 - this.x, yPos + 5 - this.y, 14, 14, mouseX, mouseY)) {
-                context.drawTooltip(this.textRenderer, this.getJobTooltip(jobId), mouseX, mouseY);
+                context.renderComponentTooltip(this.font, this.getJobTooltip(jobId), mouseX, mouseY);
             }
             // render xp bar
-            context.drawTexture(JOB_BUTTON_TEXTURES, xPos + 4, yPos + 29, 88, 0, 80, 5);
+            context.blit(JOB_BUTTON_TEXTURES, xPos + 4, yPos + 29, 88, 0, 80, 5);
             if (jobsManager.getNextJobLevelExperience(jobId) > 0 && jobsManager.getJobXP(jobId) > 0) {
-                context.drawTexture(JOB_BUTTON_TEXTURES, xPos + 4, yPos + 29, 88, 5, Math.min(79, 79 * jobsManager.getJobXP(jobId) / jobsManager.getNextJobLevelExperience(jobId)), 5);
+                context.blit(JOB_BUTTON_TEXTURES, xPos + 4, yPos + 29, 88, 5, Math.min(79, 79 * jobsManager.getJobXP(jobId) / jobsManager.getNextJobLevelExperience(jobId)), 5);
                 if (this.isPointWithinBounds(xPos + 4 - this.x, yPos + 29 - this.y, 80, 5, mouseX, mouseY)) {
-                    context.drawTooltip(textRenderer, Text.translatable("text.jobsaddon.jobLevelExperience", jobsManager.getJobXP(jobId), jobsManager.getNextJobLevelExperience(jobId)), mouseX, mouseY);
+                    context.renderTooltip(font, Component.translatable("text.jobsaddon.jobLevelExperience", jobsManager.getJobXP(jobId), jobsManager.getNextJobLevelExperience(jobId)), mouseX, mouseY);
                 }
             }
         }
     }
 
     @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderInGameBackground(context);
-        context.drawTexture(BACKGROUND_TEXTURE, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight, 256, 256);
+    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        renderTransparentBackground(context);
+        context.blit(BACKGROUND_TEXTURE, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight, 256, 256);
 
         if (this.jobsManager.getPlayerJobs().size() > 8) {
             int scrollLevels = getMaxJobRow();
             int sliderY = this.jobRow * 114 / scrollLevels;
-            context.drawTexture(BACKGROUND_TEXTURE, this.x + 186, this.y + 55 + sliderY, 200, 0, 6, 38);
+            context.blit(BACKGROUND_TEXTURE, this.x + 186, this.y + 55 + sliderY, 200, 0, 6, 38);
         } else {
-            context.drawTexture(BACKGROUND_TEXTURE, this.x + 186, this.y + 55, 206, 0, 6, 38);
+            context.blit(BACKGROUND_TEXTURE, this.x + 186, this.y + 55, 206, 0, 6, 38);
         }
-        DrawTabHelper.drawTab(client, context, this, x, y, mouseX, mouseY);
+        DrawTabHelper.drawTab(minecraft, context, this, x, y, mouseX, mouseY);
     }
 
     @Override
     public boolean keyPressed(int ch, int keyCode, int modifiers) {
-        if (KeyInit.screenKey.matchesKey(ch, keyCode) || net.levelz.init.KeyInit.screenKey.matchesKey(ch, keyCode) || Objects.requireNonNull(client).options.inventoryKey.matchesKey(ch, keyCode)) {
-            this.close();
+        if (KeyInit.screenKey.matches(ch, keyCode) || net.levelz.init.KeyInit.screenKey.matches(ch, keyCode) || Objects.requireNonNull(minecraft).options.keyInventory.matches(ch, keyCode)) {
+            this.onClose();
             return true;
         } else {
             return super.keyPressed(ch, keyCode, modifiers);
@@ -217,7 +216,7 @@ public class JobScreen extends Screen implements Tab {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        DrawTabHelper.onTabButtonClick(client, this, this.x, this.y, mouseX, mouseY, false);
+        DrawTabHelper.onTabButtonClick(minecraft, this, this.x, this.y, mouseX, mouseY, false);
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -258,36 +257,36 @@ public class JobScreen extends Screen implements Tab {
         return (pointX -= (double) i) >= (double) (x - 1) && pointX < (double) (x + width + 1) && (pointY -= (double) j) >= (double) (y - 1) && pointY < (double) (y + height + 1);
     }
 
-    private Text getJobTitle(int jobId) {
+    private Component getJobTitle(int jobId) {
         return this.jobsManager.getPlayerJobs().get(jobId).getJobName();
     }
 
-    private List<Text> getJobTooltip(int jobId) {
-        List<Text> tooltipList = new ArrayList<>();
+    private List<Component> getJobTooltip(int jobId) {
+        List<Component> tooltipList = new ArrayList<>();
         String[] tooltips = this.jobsManager.getPlayerJobs().get(jobId).getJobTooltip().getString().split("\n");
         for (String tooltip : tooltips) {
-            tooltipList.add(Text.of(tooltip));
+            tooltipList.add(Component.nullToEmpty(tooltip));
         }
         return tooltipList;
     }
 
-    private static class WidgetButtonPage extends ButtonWidget {
+    private static class WidgetButtonPage extends Button {
 
         private boolean employed;
 
-        public WidgetButtonPage(int x, int y, ButtonWidget.PressAction onPress) {
-            super(x, y, 88, 38, ScreenTexts.EMPTY, onPress, DEFAULT_NARRATION_SUPPLIER);
+        public WidgetButtonPage(int x, int y, Button.OnPress onPress) {
+            super(x, y, 88, 38, CommonComponents.EMPTY, onPress, DEFAULT_NARRATION);
         }
 
         @Override
-        protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-            context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+            context.setColor(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();
             int i = this.getTextureY();
 
-            context.drawTexture(JOB_BUTTON_TEXTURES, this.getX(), this.getY(), 0, i * 38, this.width, this.height);
-            context.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            context.blit(JOB_BUTTON_TEXTURES, this.getX(), this.getY(), 0, i * 38, this.width, this.height);
+            context.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
 
         public void setEmployedButton(boolean employed) {
@@ -302,7 +301,7 @@ public class JobScreen extends Screen implements Tab {
             int i = 1;
             if (!this.active) {
                 i = 0;
-            } else if (this.isSelected()) {
+            } else if (this.isHoveredOrFocused()) {
                 i = 2;
             }
             if (isEmployedButton()) {

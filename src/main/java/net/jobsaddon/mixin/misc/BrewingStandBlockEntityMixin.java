@@ -5,20 +5,20 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.jobsaddon.access.BrewingStandAccess;
 import net.jobsaddon.jobs.JobHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.BrewingStandBlockEntity;
-import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.UUID;
 
 @Mixin(BrewingStandBlockEntity.class)
-public abstract class BrewingStandBlockEntityMixin extends LockableContainerBlockEntity implements BrewingStandAccess {
+public abstract class BrewingStandBlockEntityMixin extends BaseContainerBlockEntity implements BrewingStandAccess {
 
     @Unique
     private static final double MAX_BREWER_DISTANCE = 32.0D;
@@ -43,8 +43,8 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
         super(blockEntityType, blockPos, blockState);
     }
 
-    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BrewingStandBlockEntity;craft(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/collection/DefaultedList;)V"))
-    private static void tickMixin(World world, BlockPos pos, DefaultedList<ItemStack> slots, Operation<Void> original, @Local(argsOnly = true) BrewingStandBlockEntity blockEntity) {
+    @WrapOperation(method = "serverTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/BrewingStandBlockEntity;doBrew(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/NonNullList;)V"))
+    private static void tickMixin(Level world, BlockPos pos, NonNullList<ItemStack> slots, Operation<Void> original, @Local(argsOnly = true) BrewingStandBlockEntity blockEntity) {
         ItemStack[] oldPotions = new ItemStack[3];
         for (int i = 0; i < oldPotions.length; i++) {
             oldPotions[i] = slots.get(i).copy();
@@ -52,32 +52,32 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
         original.call(world, pos, slots);
 
         UUID brewer = ((BrewingStandAccess) blockEntity).getBrewer();
-        if (!world.isClient() && brewer != null && world.getPlayerByUuid(brewer) instanceof ServerPlayerEntity serverPlayerEntity
-                && serverPlayerEntity.squaredDistanceTo(Vec3d.ofCenter(pos)) <= MAX_BREWER_DISTANCE * MAX_BREWER_DISTANCE) {
+        if (!world.isClientSide() && brewer != null && world.getPlayerByUUID(brewer) instanceof ServerPlayer serverPlayerEntity
+                && serverPlayerEntity.distanceToSqr(Vec3.atCenterOf(pos)) <= MAX_BREWER_DISTANCE * MAX_BREWER_DISTANCE) {
             for (int i = 0; i < oldPotions.length; i++) {
-                if (!slots.get(i).isEmpty() && !ItemStack.areEqual(oldPotions[i], slots.get(i))) {
+                if (!slots.get(i).isEmpty() && !ItemStack.matches(oldPotions[i], slots.get(i))) {
                     JobHelper.brewJobXp(serverPlayerEntity, slots.get(i));
                 }
             }
         }
     }
 
-    @Inject(method = "createScreenHandler", at = @At("HEAD"))
-    protected void createScreenHandlerMixin(int syncId, PlayerInventory playerInventory, CallbackInfoReturnable<ScreenHandler> cir) {
-        this.brewer = playerInventory.player.getUuid();
+    @Inject(method = "createMenu", at = @At("HEAD"))
+    protected void createScreenHandlerMixin(int syncId, Inventory playerInventory, CallbackInfoReturnable<AbstractContainerMenu> cir) {
+        this.brewer = playerInventory.player.getUUID();
     }
 
-    @Inject(method = "readNbt", at = @At("TAIL"))
-    protected void readNbtMixin(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
+    @Inject(method = "loadAdditional", at = @At("TAIL"))
+    protected void readNbtMixin(CompoundTag nbt, HolderLookup.Provider registryLookup, CallbackInfo info) {
         if (nbt.contains("Brewer")) {
-            this.brewer = nbt.getUuid("Brewer");
+            this.brewer = nbt.getUUID("Brewer");
         }
     }
 
-    @Inject(method = "writeNbt", at = @At("TAIL"))
-    protected void writeNbtMixin(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo info) {
+    @Inject(method = "saveAdditional", at = @At("TAIL"))
+    protected void writeNbtMixin(CompoundTag nbt, HolderLookup.Provider registryLookup, CallbackInfo info) {
         if (this.brewer != null) {
-            nbt.putUuid("Brewer", this.brewer);
+            nbt.putUUID("Brewer", this.brewer);
         }
     }
 

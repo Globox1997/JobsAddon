@@ -3,7 +3,7 @@ package net.jobsaddon.api;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.jobsaddon.jobs.Job;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 @FunctionalInterface
 public interface JobLevelUpCallback {
@@ -18,5 +18,5 @@ public interface JobLevelUpCallback {
      * @param job   the job of the player, read only
      * @param level the new level
      */
-    void onLevelUp(ServerPlayerEntity player, Job job, int level);
+    void onLevelUp(ServerPlayer player, Job job, int level);
 }

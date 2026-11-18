@@ -13,13 +13,12 @@ import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.jobs.Job;
 import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.JobsServerPacket;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -27,11 +26,11 @@ import java.util.stream.Stream;
 
 public class CommandInit {
 
-    private static final DynamicCommandExceptionType UNKNOWN_JOB_EXCEPTION = new DynamicCommandExceptionType(key -> Text.translatable("commands.jobsaddon.unknownJob", key));
+    private static final DynamicCommandExceptionType UNKNOWN_JOB_EXCEPTION = new DynamicCommandExceptionType(key -> Component.translatable("commands.jobsaddon.unknownJob", key));
 
-    private static final SuggestionProvider<ServerCommandSource> JOBS_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
+    private static final SuggestionProvider<CommandSourceStack> JOBS_SUGGESTION_PROVIDER = (context, builder) -> SharedSuggestionProvider.suggest(
             JobsManager.JOBS.values().stream().map(Job::getKey), builder);
-    private static final SuggestionProvider<ServerCommandSource> JOBS_AND_ALL_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
+    private static final SuggestionProvider<CommandSourceStack> JOBS_AND_ALL_SUGGESTION_PROVIDER = (context, builder) -> SharedSuggestionProvider.suggest(
             Stream.concat(Stream.of("all"), JobsManager.JOBS.values().stream().map(Job::getKey)), builder);
 
     private enum Operation {
@@ -40,38 +39,38 @@ public class CommandInit {
 
     public static void init() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(CommandManager.literal("job").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-                    .then(CommandManager.argument("targets", EntityArgumentType.players())
+            dispatcher.register(Commands.literal("job").requires(serverCommandSource -> serverCommandSource.hasPermission(2))
+                    .then(Commands.argument("targets", EntityArgument.players())
                             .then(valueCommand("add", Operation.ADD))
                             .then(valueCommand("remove", Operation.REMOVE))
                             .then(valueCommand("set", Operation.SET))
-                            .then(CommandManager.literal("get").then(CommandManager.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
-                                    .executes(context -> executeGet(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), getJobs(context, true)))))
-                            .then(CommandManager.literal("employ").then(CommandManager.argument("job", StringArgumentType.string()).suggests(JOBS_SUGGESTION_PROVIDER)
-                                    .executes(context -> executeEmploy(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), getJobs(context, false).getFirst()))))
-                            .then(CommandManager.literal("quit").then(CommandManager.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
-                                    .executes(context -> executeQuit(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), getJobs(context, true)))))
-                            .then(CommandManager.literal("reset").then(CommandManager.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
-                                    .executes(context -> executeReset(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), getJobs(context, true)))))
-                            .then(CommandManager.literal("cooldown").then(CommandManager.argument("ticks", IntegerArgumentType.integer(0))
-                                    .executes(context -> executeCooldown(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "ticks")))))));
+                            .then(Commands.literal("get").then(Commands.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
+                                    .executes(context -> executeGet(context.getSource(), EntityArgument.getPlayers(context, "targets"), getJobs(context, true)))))
+                            .then(Commands.literal("employ").then(Commands.argument("job", StringArgumentType.string()).suggests(JOBS_SUGGESTION_PROVIDER)
+                                    .executes(context -> executeEmploy(context.getSource(), EntityArgument.getPlayers(context, "targets"), getJobs(context, false).getFirst()))))
+                            .then(Commands.literal("quit").then(Commands.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
+                                    .executes(context -> executeQuit(context.getSource(), EntityArgument.getPlayers(context, "targets"), getJobs(context, true)))))
+                            .then(Commands.literal("reset").then(Commands.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
+                                    .executes(context -> executeReset(context.getSource(), EntityArgument.getPlayers(context, "targets"), getJobs(context, true)))))
+                            .then(Commands.literal("cooldown").then(Commands.argument("ticks", IntegerArgumentType.integer(0))
+                                    .executes(context -> executeCooldown(context.getSource(), EntityArgument.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "ticks")))))));
         });
     }
 
-    private static LiteralArgumentBuilder<ServerCommandSource> valueCommand(String name, Operation operation) {
-        return CommandManager.literal(name)
-                .then(CommandManager.literal("level").then(jobAmountArgument(operation, false)))
-                .then(CommandManager.literal("xp").then(jobAmountArgument(operation, true)))
+    private static LiteralArgumentBuilder<CommandSourceStack> valueCommand(String name, Operation operation) {
+        return Commands.literal(name)
+                .then(Commands.literal("level").then(jobAmountArgument(operation, false)))
+                .then(Commands.literal("xp").then(jobAmountArgument(operation, true)))
                 .then(jobAmountArgument(operation, false));
     }
 
-    private static RequiredArgumentBuilder<ServerCommandSource, String> jobAmountArgument(Operation operation, boolean experience) {
-        return CommandManager.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
-                .then(CommandManager.argument("amount", IntegerArgumentType.integer(0)).executes(context -> executeValue(context.getSource(), EntityArgumentType.getPlayers(context, "targets"),
+    private static RequiredArgumentBuilder<CommandSourceStack, String> jobAmountArgument(Operation operation, boolean experience) {
+        return Commands.argument("job", StringArgumentType.string()).suggests(JOBS_AND_ALL_SUGGESTION_PROVIDER)
+                .then(Commands.argument("amount", IntegerArgumentType.integer(0)).executes(context -> executeValue(context.getSource(), EntityArgument.getPlayers(context, "targets"),
                         getJobs(context, true), operation, experience, IntegerArgumentType.getInteger(context, "amount"))));
     }
 
-    private static List<Job> getJobs(CommandContext<ServerCommandSource> context, boolean allowAll) throws CommandSyntaxException {
+    private static List<Job> getJobs(CommandContext<CommandSourceStack> context, boolean allowAll) throws CommandSyntaxException {
         String key = StringArgumentType.getString(context, "job");
         if (allowAll && key.equals("all")) {
             return JobsManager.JOBS.values().stream().sorted(Comparator.comparingInt(Job::getId)).toList();
@@ -83,8 +82,8 @@ public class CommandInit {
         return List.of(job);
     }
 
-    private static int executeValue(ServerCommandSource source, Collection<ServerPlayerEntity> targets, List<Job> jobs, Operation operation, boolean experience, int amount) {
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
+    private static int executeValue(CommandSourceStack source, Collection<ServerPlayer> targets, List<Job> jobs, Operation operation, boolean experience, int amount) {
+        for (ServerPlayer serverPlayerEntity : targets) {
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
             for (Job job : jobs) {
                 int jobId = job.getId();
@@ -106,79 +105,79 @@ public class CommandInit {
                 }
             }
             JobsServerPacket.writeS2CJobPacket(jobsManager, serverPlayerEntity);
-            source.sendFeedback(() -> Text.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
         }
         return targets.size();
     }
 
-    private static int executeGet(ServerCommandSource source, Collection<ServerPlayerEntity> targets, List<Job> jobs) {
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
+    private static int executeGet(CommandSourceStack source, Collection<ServerPlayer> targets, List<Job> jobs) {
+        for (ServerPlayer serverPlayerEntity : targets) {
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
             for (Job job : jobs) {
                 int jobId = job.getId();
-                Text text = Text.translatable("commands.jobsaddon.info", serverPlayerEntity.getDisplayName(), job.getJobName(), jobsManager.getJobLevel(jobId), job.getMaxLevel(),
+                Component text = Component.translatable("commands.jobsaddon.info", serverPlayerEntity.getDisplayName(), job.getJobName(), jobsManager.getJobLevel(jobId), job.getMaxLevel(),
                         jobsManager.getJobXP(jobId), jobsManager.getNextJobLevelExperience(jobId));
                 if (jobsManager.isEmployedJob(jobId)) {
-                    text = text.copy().append(" ").append(Text.translatable("commands.jobsaddon.employed"));
+                    text = text.copy().append(" ").append(Component.translatable("commands.jobsaddon.employed"));
                 }
-                Text finalText = text;
-                source.sendFeedback(() -> finalText, false);
+                Component finalText = text;
+                source.sendSuccess(() -> finalText, false);
             }
         }
         return targets.size();
     }
 
-    private static int executeEmploy(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Job job) {
+    private static int executeEmploy(CommandSourceStack source, Collection<ServerPlayer> targets, Job job) {
         int count = 0;
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
+        for (ServerPlayer serverPlayerEntity : targets) {
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
             if (jobsManager.isEmployedJob(job.getId())) {
-                source.sendError(Text.translatable("commands.jobsaddon.alreadyEmployed", serverPlayerEntity.getDisplayName(), job.getJobName()));
+                source.sendFailure(Component.translatable("commands.jobsaddon.alreadyEmployed", serverPlayerEntity.getDisplayName(), job.getJobName()));
                 continue;
             }
             if (!jobsManager.hasFreeJobSlot()) {
-                source.sendError(Text.translatable("commands.jobsaddon.noFreeJobSlot", serverPlayerEntity.getDisplayName()));
+                source.sendFailure(Component.translatable("commands.jobsaddon.noFreeJobSlot", serverPlayerEntity.getDisplayName()));
                 continue;
             }
             jobsManager.employJob(job.getId());
             JobsServerPacket.writeS2CJobPacket(jobsManager, serverPlayerEntity);
-            source.sendFeedback(() -> Text.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
             count++;
         }
         return count;
     }
 
-    private static int executeQuit(ServerCommandSource source, Collection<ServerPlayerEntity> targets, List<Job> jobs) {
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
+    private static int executeQuit(CommandSourceStack source, Collection<ServerPlayer> targets, List<Job> jobs) {
+        for (ServerPlayer serverPlayerEntity : targets) {
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
             for (Job job : jobs) {
                 jobsManager.quitJob(job.getId());
             }
             JobsServerPacket.writeS2CJobPacket(jobsManager, serverPlayerEntity);
-            source.sendFeedback(() -> Text.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
         }
         return targets.size();
     }
 
-    private static int executeReset(ServerCommandSource source, Collection<ServerPlayerEntity> targets, List<Job> jobs) {
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
+    private static int executeReset(CommandSourceStack source, Collection<ServerPlayer> targets, List<Job> jobs) {
+        for (ServerPlayer serverPlayerEntity : targets) {
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
             for (Job job : jobs) {
                 jobsManager.setJobLevel(job.getId(), 0);
                 jobsManager.setJobXP(job.getId(), 0);
             }
             JobsServerPacket.writeS2CJobPacket(jobsManager, serverPlayerEntity);
-            source.sendFeedback(() -> Text.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
         }
         return targets.size();
     }
 
-    private static int executeCooldown(ServerCommandSource source, Collection<ServerPlayerEntity> targets, int ticks) {
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
+    private static int executeCooldown(CommandSourceStack source, Collection<ServerPlayer> targets, int ticks) {
+        for (ServerPlayer serverPlayerEntity : targets) {
             JobsManager jobsManager = ((JobsManagerAccess) serverPlayerEntity).getJobsManager();
             jobsManager.setEmployedJobTime(ticks);
             JobsServerPacket.writeS2CJobPacket(jobsManager, serverPlayerEntity);
-            source.sendFeedback(() -> Text.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable("commands.jobmanager.changed", serverPlayerEntity.getDisplayName()), true);
         }
         return targets.size();
     }

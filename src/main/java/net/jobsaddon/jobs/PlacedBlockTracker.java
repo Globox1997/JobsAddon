@@ -7,13 +7,12 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.init.ConfigInit;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.property.Property;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.WorldChunk;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.chunk.LevelChunk;
 import java.util.stream.LongStream;
 
 public class PlacedBlockTracker {
@@ -28,22 +27,22 @@ public class PlacedBlockTracker {
     public static void init() {
     }
 
-    public static boolean onPlayerPlaced(World world, BlockPos pos, BlockState state) {
-        if (!ConfigInit.CONFIG.trackPlacedBlocks || world.isClient()) {
+    public static boolean onPlayerPlaced(Level world, BlockPos pos, BlockState state) {
+        if (!ConfigInit.CONFIG.trackPlacedBlocks || world.isClientSide()) {
             return true;
         }
-        WorldChunk chunk = world.getWorldChunk(pos);
-        int stateId = Block.getRawIdFromState(state);
+        LevelChunk chunk = world.getChunkAt(pos);
+        int stateId = Block.getId(state);
         int previousStateId = chunk.getAttachedOrCreate(PLACED_BLOCKS).put(pos.asLong(), stateId);
-        chunk.setNeedsSaving(true);
+        chunk.setUnsaved(true);
         return previousStateId == NO_STATE || !matches(previousStateId, state);
     }
 
-    public static boolean isPlayerPlaced(World world, BlockPos pos, BlockState state) {
-        if (!ConfigInit.CONFIG.trackPlacedBlocks || world.isClient()) {
+    public static boolean isPlayerPlaced(Level world, BlockPos pos, BlockState state) {
+        if (!ConfigInit.CONFIG.trackPlacedBlocks || world.isClientSide()) {
             return false;
         }
-        Long2IntOpenHashMap placedBlocks = world.getWorldChunk(pos).getAttached(PLACED_BLOCKS);
+        Long2IntOpenHashMap placedBlocks = world.getChunkAt(pos).getAttached(PLACED_BLOCKS);
         if (placedBlocks == null) {
             return false;
         }
@@ -52,10 +51,10 @@ public class PlacedBlockTracker {
     }
 
     private static boolean matches(int placedStateId, BlockState state) {
-        if (!Block.getStateFromRawId(placedStateId).isOf(state.getBlock())) {
+        if (!Block.stateById(placedStateId).is(state.getBlock())) {
             return false;
         }
-        return !isGrowingBlock(state) || placedStateId == Block.getRawIdFromState(state);
+        return !isGrowingBlock(state) || placedStateId == Block.getId(state);
     }
 
     private static boolean isGrowingBlock(BlockState state) {

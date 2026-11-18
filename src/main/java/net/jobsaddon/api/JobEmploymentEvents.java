@@ -3,7 +3,7 @@ package net.jobsaddon.api;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.jobsaddon.jobs.Job;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public final class JobEmploymentEvents {
 
@@ -27,11 +27,11 @@ public final class JobEmploymentEvents {
 
     @FunctionalInterface
     public interface AllowEmploy {
-        boolean allowEmploy(ServerPlayerEntity player, Job job);
+        boolean allowEmploy(ServerPlayer player, Job job);
     }
 
     @FunctionalInterface
     public interface EmploymentChanged {
-        void onEmploymentChanged(ServerPlayerEntity player, Job job, boolean employed);
+        void onEmploymentChanged(ServerPlayer player, Job job, boolean employed);
     }
 }

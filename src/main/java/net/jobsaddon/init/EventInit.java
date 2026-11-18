@@ -38,7 +38,7 @@ public class EventInit {
                     jobsManager.retainJobLevels(retainPercentage);
                     // the score counts the job level ups
                     int totalJobLevel = jobsManager.getTotalJobLevel();
-                    newPlayer.getScoreboard().forEachScore(CriteriaInit.JOBS, newPlayer, score -> score.setScore(totalJobLevel));
+                    newPlayer.getScoreboard().forAllObjectives(CriteriaInit.JOBS, newPlayer, score -> score.set(totalJobLevel));
                 }
                 if (ConfigInit.CONFIG.quitJobsOnDeath && !jobsManager.getEmployedJobsList().isEmpty()) {
                     for (int jobId : List.copyOf(jobsManager.getEmployedJobsList())) {
@@ -54,7 +54,7 @@ public class EventInit {
         });
         if (isTreeChopLoaded) {
             TreeChopEvents.BEFORE_FELL.register((world, player, pos, data) -> {
-                if (!world.isClient() && player != null && data.getTree().getLogBlocks().isPresent()) {
+                if (!world.isClientSide() && player != null && data.getTree().getLogBlocks().isPresent()) {
                     JobHelper.multiBlockBreakJobXp(player, data.getTree().getLogBlocks().get().stream().toList());
                 }
                 return true;

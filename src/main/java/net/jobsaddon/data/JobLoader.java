@@ -11,35 +11,34 @@ import net.jobsaddon.jobs.JobExperience;
 import net.jobsaddon.jobs.JobExperienceType;
 import net.jobsaddon.jobs.JobsManager;
 import net.levelz.registry.EnchantmentRegistry;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourcePack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.GsonHelper;
 import java.io.Reader;
 import java.util.*;
 
-public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements SimpleSynchronousResourceReloadListener {
+public record JobLoader(HolderLookup.Provider wrapperLookup) implements SimpleSynchronousResourceReloadListener {
 
-    public static final Identifier ID = JobsAddonMain.identifierOf("job_loader");
+    public static final ResourceLocation ID = JobsAddonMain.identifierOf("job_loader");
 
     private static final List<String> FOLDERS = List.of("job", "restricted");
 
     private static final List<TagExperience<?>> TAG_EXPERIENCE = new ArrayList<>();
 
     @Override
-    public Identifier getFabricId() {
+    public ResourceLocation getFabricId() {
         return ID;
     }
 
     @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
         TAG_EXPERIENCE.clear();
         JobsManager.JOBS.clear();
         JobsManager.EXPERIENCE_MAPS.forEach(Map::clear);
@@ -47,19 +46,19 @@ public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements 
 
         EnchantmentRegistry.updateEnchantments(this.wrapperLookup());
 
-        List<String> packOrder = manager.streamResourcePacks().map(ResourcePack::getId).toList();
-        List<Map.Entry<Identifier, Resource>> resources = new ArrayList<>();
+        List<String> packOrder = manager.listPacks().map(PackResources::packId).toList();
+        List<Map.Entry<ResourceLocation, Resource>> resources = new ArrayList<>();
         for (String folder : FOLDERS) {
-            resources.addAll(manager.findResources(folder, id -> id.getPath().endsWith(".json")).entrySet());
+            resources.addAll(manager.listResources(folder, id -> id.getPath().endsWith(".json")).entrySet());
         }
-        resources.sort(Comparator.<Map.Entry<Identifier, Resource>>comparingInt(entry -> packOrder.indexOf(entry.getValue().getPackId())).thenComparing(Map.Entry::getKey));
+        resources.sort(Comparator.<Map.Entry<ResourceLocation, Resource>>comparingInt(entry -> packOrder.indexOf(entry.getValue().sourcePackId())).thenComparing(Map.Entry::getKey));
 
-        for (Map.Entry<Identifier, Resource> entry : resources) {
-            Identifier id = entry.getKey();
+        for (Map.Entry<ResourceLocation, Resource> entry : resources) {
+            ResourceLocation id = entry.getKey();
             if (!ConfigInit.CONFIG.defaultJobs && id.getPath().equals("job/default.json")) {
                 continue;
             }
-            try (Reader reader = entry.getValue().getReader()) {
+            try (Reader reader = entry.getValue().openAsReader()) {
                 JsonObject data = JsonParser.parseReader(reader).getAsJsonObject();
                 for (String mapKey : data.keySet()) {
                     try {
@@ -86,11 +85,11 @@ public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements 
     }
 
     private void loadRestriction(JsonObject jsonObject) {
-        if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
+        if (GsonHelper.getAsBoolean(jsonObject, "replace", false)) {
             JobsManager.RESTRICTED_RECIPES.clear();
         }
-        for (JsonElement element : JsonHelper.getArray(jsonObject, "recipes")) {
-            Identifier recipeId = Identifier.tryParse(element.getAsString());
+        for (JsonElement element : GsonHelper.getAsJsonArray(jsonObject, "recipes")) {
+            ResourceLocation recipeId = ResourceLocation.tryParse(element.getAsString());
             if (recipeId == null) {
                 JobsAddonMain.LOGGER.warn("{} is not a valid recipe identifier", element.getAsString());
                 continue;
@@ -99,22 +98,22 @@ public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements 
         }
     }
 
-    private void loadJob(Identifier fileId, JsonObject jobJsonObject) {
-        int jobId = JsonHelper.getInt(jobJsonObject, "id");
-        boolean replace = JsonHelper.getBoolean(jobJsonObject, "replace", false);
+    private void loadJob(ResourceLocation fileId, JsonObject jobJsonObject) {
+        int jobId = GsonHelper.getAsInt(jobJsonObject, "id");
+        boolean replace = GsonHelper.getAsBoolean(jobJsonObject, "replace", false);
         Job existingJob = JobsManager.JOBS.get(jobId);
 
         if (existingJob != null && !replace) {
             // extend the existing job
-            if (jobJsonObject.has("key") && !existingJob.getKey().equals(JsonHelper.getString(jobJsonObject, "key"))) {
-                JobsAddonMain.LOGGER.warn("Id {} of job {} in {} is already used by job {}.", jobId, JsonHelper.getString(jobJsonObject, "key"), fileId, existingJob.getKey());
+            if (jobJsonObject.has("key") && !existingJob.getKey().equals(GsonHelper.getAsString(jobJsonObject, "key"))) {
+                JobsAddonMain.LOGGER.warn("Id {} of job {} in {} is already used by job {}.", jobId, GsonHelper.getAsString(jobJsonObject, "key"), fileId, existingJob.getKey());
                 return;
             }
             if (jobJsonObject.has("maxlevel")) {
-                JobsManager.JOBS.put(jobId, new Job(jobId, existingJob.getKey(), JsonHelper.getInt(jobJsonObject, "maxlevel"), 0, 0));
+                JobsManager.JOBS.put(jobId, new Job(jobId, existingJob.getKey(), GsonHelper.getAsInt(jobJsonObject, "maxlevel"), 0, 0));
             }
         } else {
-            String key = JsonHelper.getString(jobJsonObject, "key");
+            String key = GsonHelper.getAsString(jobJsonObject, "key");
             Job jobWithKey = JobsManager.getJobByKey(key);
             if (jobWithKey != null && jobWithKey.getId() != jobId) {
                 JobsAddonMain.LOGGER.warn("Key {} of job id {} in {} is already used by job id {}.", key, jobId, fileId, jobWithKey.getId());
@@ -124,87 +123,87 @@ public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements 
                 JobsManager.removeJobExperience(jobId);
                 TAG_EXPERIENCE.removeIf(tagExperience -> tagExperience.jobExperience().getId() == jobId);
             }
-            JobsManager.JOBS.put(jobId, new Job(jobId, key, JsonHelper.getInt(jobJsonObject, "maxlevel"), 0, 0));
+            JobsManager.JOBS.put(jobId, new Job(jobId, key, GsonHelper.getAsInt(jobJsonObject, "maxlevel"), 0, 0));
         }
 
-        loadExperience(fileId, jobJsonObject, jobId, "blockbreak", "blocks", Registries.BLOCK, JobsManager.BLOCK_BREAK_EXPERIENCE);
-        loadExperience(fileId, jobJsonObject, jobId, "blockplace", "blocks", Registries.BLOCK, JobsManager.BLOCK_PLACE_EXPERIENCE);
-        loadExperience(fileId, jobJsonObject, jobId, "crafting", "items", Registries.ITEM, JobsManager.ITEM_CRAFT_EXPERIENCE);
-        loadExperience(fileId, jobJsonObject, jobId, "itemdrop", "items", Registries.ITEM, JobsManager.ITEM_DROP_EXPERIENCE);
-        loadExperience(fileId, jobJsonObject, jobId, "entitykill", "entities", Registries.ENTITY_TYPE, JobsManager.ENTITY_KILL_EXPERIENCE);
-        loadExperience(fileId, jobJsonObject, jobId, "brewing", "effects", Registries.POTION, JobsManager.BREWING_EXPERIENCE);
-        loadExperience(fileId, jobJsonObject, jobId, "smithing", "items", Registries.ITEM, JobExperienceType.SMITHING.getExperienceMap());
-        loadExperience(fileId, jobJsonObject, jobId, "stonecutting", "items", Registries.ITEM, JobExperienceType.STONECUTTING.getExperienceMap());
-        loadExperience(fileId, jobJsonObject, jobId, "breeding", "entities", Registries.ENTITY_TYPE, JobExperienceType.BREEDING.getExperienceMap());
-        loadExperience(fileId, jobJsonObject, jobId, "taming", "entities", Registries.ENTITY_TYPE, JobExperienceType.TAMING.getExperienceMap());
-        loadExperience(fileId, jobJsonObject, jobId, "trading", "items", Registries.ITEM, JobExperienceType.TRADING.getExperienceMap());
-        loadExperience(fileId, jobJsonObject, jobId, "harvest", "blocks", Registries.BLOCK, JobExperienceType.HARVEST.getExperienceMap());
-        loadExperience(fileId, jobJsonObject, jobId, "casting", "items", Registries.ITEM, JobExperienceType.CASTING.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "blockbreak", "blocks", BuiltInRegistries.BLOCK, JobsManager.BLOCK_BREAK_EXPERIENCE);
+        loadExperience(fileId, jobJsonObject, jobId, "blockplace", "blocks", BuiltInRegistries.BLOCK, JobsManager.BLOCK_PLACE_EXPERIENCE);
+        loadExperience(fileId, jobJsonObject, jobId, "crafting", "items", BuiltInRegistries.ITEM, JobsManager.ITEM_CRAFT_EXPERIENCE);
+        loadExperience(fileId, jobJsonObject, jobId, "itemdrop", "items", BuiltInRegistries.ITEM, JobsManager.ITEM_DROP_EXPERIENCE);
+        loadExperience(fileId, jobJsonObject, jobId, "entitykill", "entities", BuiltInRegistries.ENTITY_TYPE, JobsManager.ENTITY_KILL_EXPERIENCE);
+        loadExperience(fileId, jobJsonObject, jobId, "brewing", "effects", BuiltInRegistries.POTION, JobsManager.BREWING_EXPERIENCE);
+        loadExperience(fileId, jobJsonObject, jobId, "smithing", "items", BuiltInRegistries.ITEM, JobExperienceType.SMITHING.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "stonecutting", "items", BuiltInRegistries.ITEM, JobExperienceType.STONECUTTING.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "breeding", "entities", BuiltInRegistries.ENTITY_TYPE, JobExperienceType.BREEDING.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "taming", "entities", BuiltInRegistries.ENTITY_TYPE, JobExperienceType.TAMING.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "trading", "items", BuiltInRegistries.ITEM, JobExperienceType.TRADING.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "harvest", "blocks", BuiltInRegistries.BLOCK, JobExperienceType.HARVEST.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "casting", "items", BuiltInRegistries.ITEM, JobExperienceType.CASTING.getExperienceMap());
         loadEnchantingExperience(fileId, jobJsonObject, jobId);
     }
 
-    private <T> void loadExperience(Identifier fileId, JsonObject jobJsonObject, int jobId, String type, String arrayKey, Registry<T> registry, Map<Integer, List<JobExperience>> map) {
+    private <T> void loadExperience(ResourceLocation fileId, JsonObject jobJsonObject, int jobId, String type, String arrayKey, Registry<T> registry, Map<Integer, List<JobExperience>> map) {
         if (!jobJsonObject.has(type)) {
             return;
         }
-        JsonObject typeJsonObject = JsonHelper.getObject(jobJsonObject, type);
+        JsonObject typeJsonObject = GsonHelper.getAsJsonObject(jobJsonObject, type);
         for (String experienceKey : typeJsonObject.keySet()) {
             Integer experience = parseExperience(fileId, experienceKey);
             if (experience == null) {
                 continue;
             }
-            JsonObject experienceJsonObject = JsonHelper.getObject(typeJsonObject, experienceKey);
-            if (JsonHelper.getBoolean(experienceJsonObject, "replace", false)) {
+            JsonObject experienceJsonObject = GsonHelper.getAsJsonObject(typeJsonObject, experienceKey);
+            if (GsonHelper.getAsBoolean(experienceJsonObject, "replace", false)) {
                 JobsManager.removeJobExperience(map, jobId, experience);
                 TAG_EXPERIENCE.removeIf(tagExperience -> tagExperience.map() == map && tagExperience.jobExperience().getId() == jobId && tagExperience.jobExperience().getExperience() == experience);
             }
-            if (!JsonHelper.hasArray(experienceJsonObject, arrayKey)) {
+            if (!GsonHelper.isArrayNode(experienceJsonObject, arrayKey)) {
                 JobsAddonMain.LOGGER.warn("{} in {} is missing an {} array", experienceJsonObject, fileId, arrayKey);
                 continue;
             }
             JobExperience jobExperience = new JobExperience(jobId, experience);
-            for (JsonElement element : JsonHelper.getArray(experienceJsonObject, arrayKey)) {
+            for (JsonElement element : GsonHelper.getAsJsonArray(experienceJsonObject, arrayKey)) {
                 String entry = element.getAsString();
                 if (entry.startsWith("#")) {
-                    Identifier tagId = Identifier.tryParse(entry.substring(1));
+                    ResourceLocation tagId = ResourceLocation.tryParse(entry.substring(1));
                     if (tagId == null) {
                         JobsAddonMain.LOGGER.warn("{} in {} is not a valid tag identifier", entry, fileId);
                         continue;
                     }
-                    TAG_EXPERIENCE.add(new TagExperience<>(registry, TagKey.of(registry.getKey(), tagId), map, jobExperience));
+                    TAG_EXPERIENCE.add(new TagExperience<>(registry, TagKey.create(registry.key(), tagId), map, jobExperience));
                     continue;
                 }
-                Identifier entryId = Identifier.tryParse(entry);
-                if (entryId == null || !registry.containsId(entryId)) {
-                    JobsAddonMain.LOGGER.warn("{} in {} is not a valid {} identifier", entry, fileId, registry.getKey().getValue().getPath());
+                ResourceLocation entryId = ResourceLocation.tryParse(entry);
+                if (entryId == null || !registry.containsKey(entryId)) {
+                    JobsAddonMain.LOGGER.warn("{} in {} is not a valid {} identifier", entry, fileId, registry.key().location().getPath());
                     continue;
                 }
-                JobsManager.addJobExperience(map, registry.getRawId(registry.get(entryId)), jobExperience, true);
+                JobsManager.addJobExperience(map, registry.getId(registry.get(entryId)), jobExperience, true);
             }
         }
     }
 
-    private void loadEnchantingExperience(Identifier fileId, JsonObject jobJsonObject, int jobId) {
+    private void loadEnchantingExperience(ResourceLocation fileId, JsonObject jobJsonObject, int jobId) {
         if (!jobJsonObject.has("enchanting")) {
             return;
         }
-        JsonObject typeJsonObject = JsonHelper.getObject(jobJsonObject, "enchanting");
+        JsonObject typeJsonObject = GsonHelper.getAsJsonObject(jobJsonObject, "enchanting");
         for (String experienceKey : typeJsonObject.keySet()) {
             Integer experience = parseExperience(fileId, experienceKey);
             if (experience == null) {
                 continue;
             }
-            JsonObject experienceJsonObject = JsonHelper.getObject(typeJsonObject, experienceKey);
-            if (JsonHelper.getBoolean(experienceJsonObject, "replace", false)) {
+            JsonObject experienceJsonObject = GsonHelper.getAsJsonObject(typeJsonObject, experienceKey);
+            if (GsonHelper.getAsBoolean(experienceJsonObject, "replace", false)) {
                 JobsManager.removeJobExperience(JobsManager.ENCHANTMENT_EXPERIENCE, jobId, experience);
             }
-            if (!JsonHelper.hasJsonObject(experienceJsonObject, "enchantments")) {
+            if (!GsonHelper.isObjectNode(experienceJsonObject, "enchantments")) {
                 JobsAddonMain.LOGGER.warn("{} in {} is missing an enchantments object list", experienceJsonObject, fileId);
                 continue;
             }
-            JsonObject enchantments = JsonHelper.getObject(experienceJsonObject, "enchantments");
+            JsonObject enchantments = GsonHelper.getAsJsonObject(experienceJsonObject, "enchantments");
             for (String enchantment : enchantments.keySet()) {
-                Identifier enchantmentId = Identifier.tryParse(enchantment);
+                ResourceLocation enchantmentId = ResourceLocation.tryParse(enchantment);
                 int level = enchantments.get(enchantment).getAsInt();
                 if (enchantmentId == null || !EnchantmentRegistry.containsId(enchantmentId, level)) {
                     JobsAddonMain.LOGGER.warn("{} in {} is not a valid enchantment identifier", enchantment, fileId);
@@ -215,7 +214,7 @@ public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements 
         }
     }
 
-    private static Integer parseExperience(Identifier fileId, String experienceKey) {
+    private static Integer parseExperience(ResourceLocation fileId, String experienceKey) {
         try {
             return Integer.parseInt(experienceKey);
         } catch (NumberFormatException e) {
@@ -228,12 +227,12 @@ public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements 
 
         private void resolve() {
             boolean empty = true;
-            for (RegistryEntry<T> entry : this.registry.iterateEntries(this.tagKey)) {
-                JobsManager.addJobExperience(this.map, this.registry.getRawId(entry.value()), this.jobExperience, false);
+            for (Holder<T> entry : this.registry.getTagOrEmpty(this.tagKey)) {
+                JobsManager.addJobExperience(this.map, this.registry.getId(entry.value()), this.jobExperience, false);
                 empty = false;
             }
             if (empty) {
-                JobsAddonMain.LOGGER.warn("Tag #{} is empty or does not exist", this.tagKey.id());
+                JobsAddonMain.LOGGER.warn("Tag #{} is empty or does not exist", this.tagKey.location());
             }
         }
     }
