@@ -99,7 +99,7 @@ public class CommandInit {
                     }
                 } else {
                     switch (operation) {
-                        case ADD -> jobsManager.setJobLevel(jobId, jobsManager.getJobLevel(jobId) + amount);
+                        case ADD -> jobsManager.setJobLevel(jobId, (int) Math.min((long) jobsManager.getJobLevel(jobId) + amount, Integer.MAX_VALUE));
                         case REMOVE -> jobsManager.setJobLevel(jobId, jobsManager.getJobLevel(jobId) - amount);
                         case SET -> jobsManager.setJobLevel(jobId, amount);
                     }

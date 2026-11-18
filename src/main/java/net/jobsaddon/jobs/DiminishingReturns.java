@@ -28,6 +28,10 @@ public class DiminishingReturns {
         return (float) Math.max(ConfigInit.CONFIG.diminishingReturnsMinMultiplier, threshold / heat.value);
     }
 
+    public void copyFrom(DiminishingReturns diminishingReturns) {
+        this.heatMap.putAll(diminishingReturns.heatMap);
+    }
+
     public void clear() {
         this.heatMap.clear();
     }

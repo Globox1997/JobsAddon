@@ -50,8 +50,8 @@ public class JobsAddonConfig implements ConfigData, ConfigSync {
     @Comment("Lowest xp multiplier")
     public float diminishingReturnsMinMultiplier = 0.1F;
     @ConfigEntry.Category("experience_settings")
-    @Comment("Affected xp types: blockbreak, blockplace, itemdrop, crafting, enchanting, brewing, entitykill, smithing, stonecutting, breeding, taming, trading, harvest")
-    public List<String> diminishingReturnsTypes = new ArrayList<>(List.of("entitykill", "itemdrop", "breeding", "taming", "trading", "harvest"));
+    @Comment("Affected xp types: blockbreak, blockplace, itemdrop, crafting, enchanting, brewing, entitykill, smithing, stonecutting, breeding, taming, trading, harvest, casting")
+    public List<String> diminishingReturnsTypes = new ArrayList<>(List.of("entitykill", "itemdrop", "breeding", "taming", "trading", "harvest", "casting"));
 
     @ConfigEntry.Category("reward_settings")
     public int xpMultiplicator = 3;
