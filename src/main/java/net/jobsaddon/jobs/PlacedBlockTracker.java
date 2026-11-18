@@ -9,6 +9,7 @@ import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.init.ConfigInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
@@ -35,7 +36,7 @@ public class PlacedBlockTracker {
         int stateId = Block.getRawIdFromState(state);
         int previousStateId = chunk.getAttachedOrCreate(PLACED_BLOCKS).put(pos.asLong(), stateId);
         chunk.setNeedsSaving(true);
-        return previousStateId != stateId;
+        return previousStateId == NO_STATE || !matches(previousStateId, state);
     }
 
     public static boolean isPlayerPlaced(World world, BlockPos pos, BlockState state) {
@@ -43,7 +44,27 @@ public class PlacedBlockTracker {
             return false;
         }
         Long2IntOpenHashMap placedBlocks = world.getWorldChunk(pos).getAttached(PLACED_BLOCKS);
-        return placedBlocks != null && placedBlocks.get(pos.asLong()) == Block.getRawIdFromState(state);
+        if (placedBlocks == null) {
+            return false;
+        }
+        int placedStateId = placedBlocks.get(pos.asLong());
+        return placedStateId != NO_STATE && matches(placedStateId, state);
+    }
+
+    private static boolean matches(int placedStateId, BlockState state) {
+        if (!Block.getStateFromRawId(placedStateId).isOf(state.getBlock())) {
+            return false;
+        }
+        return !isGrowingBlock(state) || placedStateId == Block.getRawIdFromState(state);
+    }
+
+    private static boolean isGrowingBlock(BlockState state) {
+        for (Property<?> property : state.getProperties()) {
+            if (property.getName().equals("age")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Long2IntOpenHashMap createMap() {

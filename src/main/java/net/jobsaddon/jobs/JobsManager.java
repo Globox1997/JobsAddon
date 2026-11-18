@@ -34,6 +34,8 @@ public class JobsManager {
     public static final Map<Integer, List<JobExperience>> ENTITY_KILL_EXPERIENCE = JobExperienceType.ENTITY_KILL.getExperienceMap();
     public static final Set<Identifier> RESTRICTED_RECIPES = new HashSet<>(); // used for crafting xp restriction
 
+    private static final int MAX_LEVEL_UPS_PER_CALL = 1000;
+
     public static final List<Map<Integer, List<JobExperience>>> EXPERIENCE_MAPS = Arrays.stream(JobExperienceType.values()).map(JobExperienceType::getExperienceMap).toList();
 
     private final PlayerEntity playerEntity;
@@ -93,6 +95,7 @@ public class JobsManager {
             }
         }
         this.employedJobTime = jobsManager.getEmployedJobTime();
+        this.diminishingReturns.copyFrom(jobsManager.getDiminishingReturns());
     }
 
     public void retainJobLevels(float retainPercentage) {
@@ -152,15 +155,15 @@ public class JobsManager {
         if (experience <= 0 || !this.playerJobs.containsKey(id) || isJobMaxLevel(id)) {
             return;
         }
-        int currentJobXp = getJobXP(id) + experience;
+        long currentJobXp = (long) getJobXP(id) + experience;
         boolean leveledUp = false;
         int levelCost = getNextJobLevelExperience(id);
+        int levelUps = 0;
 
-        while (levelCost > 0 && currentJobXp >= levelCost) {
+        while (levelCost > 0 && currentJobXp >= levelCost && levelUps++ < MAX_LEVEL_UPS_PER_CALL) {
             currentJobXp -= levelCost;
             int oldLevel = getJobLevel(id);
             addJobExperienceLevels(playerEntity, id, 1);
-            playerEntity.getWorld().playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, playerEntity.getSoundCategory(), 1.0F, 1.0F);
 
             if (getJobLevel(id) > oldLevel && playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
                 playerEntity.getScoreboard().forEachScore(CriteriaInit.JOBS, playerEntity, ScoreAccess::incrementScore);
@@ -170,7 +173,11 @@ public class JobsManager {
             }
             levelCost = getNextJobLevelExperience(id);
         }
-        setJobXP(id, levelCost > 0 ? currentJobXp : 0);
+        setJobXP(id, levelCost > 0 ? (int) Math.min(currentJobXp, levelCost - 1) : 0);
+
+        if (levelUps > 0) {
+            playerEntity.getWorld().playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, playerEntity.getSoundCategory(), 1.0F, 1.0F);
+        }
 
         if (leveledUp && playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
             JobsServerPacket.writeS2CJobPacket(this, serverPlayerEntity);

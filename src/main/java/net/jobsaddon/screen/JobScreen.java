@@ -7,9 +7,9 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.access.JobsManagerAccess;
 import net.jobsaddon.init.ConfigInit;
+import net.jobsaddon.init.KeyInit;
 import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.packet.EmployPacket;
-import net.levelz.init.KeyInit;
 import net.libz.api.Tab;
 import net.libz.util.DrawTabHelper;
 import net.minecraft.client.gui.DrawContext;
@@ -91,11 +91,7 @@ public class JobScreen extends Screen implements Tab {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (this.jobsManager.getPlayerJobs().size() > 8 && isPointWithinBounds(8, 55, 186, 154, mouseX, mouseY)) {
-
-            int maxJobRow = (this.jobsManager.getPlayerJobs().size() - 8) / 2;
-            if (this.jobsManager.getPlayerJobs().size() % 2 != 0) {
-                maxJobRow += 1;
-            }
+            int maxJobRow = getMaxJobRow();
             int oldJobRow = this.jobRow;
             int newJobRow = this.jobRow;
             newJobRow = newJobRow - (int) (verticalAmount);
@@ -200,11 +196,7 @@ public class JobScreen extends Screen implements Tab {
         context.drawTexture(BACKGROUND_TEXTURE, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight, 256, 256);
 
         if (this.jobsManager.getPlayerJobs().size() > 8) {
-            int scrollLevels = (this.jobsManager.getPlayerJobs().size() - 8) / 2;
-            if (this.jobsManager.getPlayerJobs().size() % 2 != 0) {
-                scrollLevels += 1;
-            }
-
+            int scrollLevels = getMaxJobRow();
             int sliderY = this.jobRow * 114 / scrollLevels;
             context.drawTexture(BACKGROUND_TEXTURE, this.x + 186, this.y + 55 + sliderY, 200, 0, 6, 38);
         } else {
@@ -215,7 +207,7 @@ public class JobScreen extends Screen implements Tab {
 
     @Override
     public boolean keyPressed(int ch, int keyCode, int modifiers) {
-        if (KeyInit.screenKey.matchesKey(ch, keyCode) || Objects.requireNonNull(client).options.inventoryKey.matchesKey(ch, keyCode)) {
+        if (KeyInit.screenKey.matchesKey(ch, keyCode) || net.levelz.init.KeyInit.screenKey.matchesKey(ch, keyCode) || Objects.requireNonNull(client).options.inventoryKey.matchesKey(ch, keyCode)) {
             this.close();
             return true;
         } else {
@@ -230,6 +222,7 @@ public class JobScreen extends Screen implements Tab {
     }
 
     private void updateJobButtons() {
+        this.jobRow = Math.min(this.jobRow, getMaxJobRow());
         List<Integer> jobIds = getJobIds();
         for (int i = 0; i < this.jobButtons.length; i++) {
             int index = i + this.jobRow * 2;
@@ -243,6 +236,14 @@ public class JobScreen extends Screen implements Tab {
             this.jobButtons[i].active = this.jobsManager.isEmployedJob(jobId) || this.jobsManager.canEmployJob(jobId);
             this.jobButtons[i].setEmployedButton(this.jobsManager.isEmployedJob(jobId));
         }
+    }
+
+    private int getMaxJobRow() {
+        int jobCount = this.jobsManager.getPlayerJobs().size();
+        if (jobCount <= 8) {
+            return 0;
+        }
+        return (jobCount - 8 + 1) / 2;
     }
 
     private List<Integer> getJobIds() {
