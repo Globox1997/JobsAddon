@@ -141,7 +141,7 @@ public final class JobsAddonAPI {
     public static void triggerExperience(ServerPlayerEntity player, JobExperienceType type, Identifier id, int count) {
         Registry<?> registry = switch (type) {
             case BLOCK_BREAK, BLOCK_PLACE, HARVEST -> Registries.BLOCK;
-            case ITEM_DROP, CRAFTING, SMITHING, STONECUTTING, TRADING -> Registries.ITEM;
+            case ITEM_DROP, CRAFTING, SMITHING, STONECUTTING, TRADING, CASTING -> Registries.ITEM;
             case ENTITY_KILL, BREEDING, TAMING -> Registries.ENTITY_TYPE;
             case BREWING -> Registries.POTION;
             // levelz enchantment ids depend on the level, use the enchanting screen instead

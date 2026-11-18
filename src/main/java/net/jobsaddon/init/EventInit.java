@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.jobsaddon.JobsAddonMain;
 import net.jobsaddon.access.JobsManagerAccess;
+import net.jobsaddon.compat.CupellationCompat;
 import net.jobsaddon.jobs.JobHelper;
 import net.jobsaddon.jobs.JobsManager;
 import net.jobsaddon.network.JobsServerPacket;
@@ -58,6 +59,9 @@ public class EventInit {
                 }
                 return true;
             });
+        }
+        if (FabricLoader.getInstance().isModLoaded("cupellation")) {
+            CupellationCompat.init();
         }
         for (String modId : COMPAT_PACKS) {
             if (FabricLoader.getInstance().isModLoaded(modId)) {

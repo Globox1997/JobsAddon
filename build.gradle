@@ -66,6 +66,10 @@ dependencies {
 	modCompileOnly ('maven.modrinth:dynamictrees:1.7.2-BETA') {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
+	// Cupellation
+	modCompileOnly ('maven.modrinth:cupellation:1.0.9+1.21.1') {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 }
 
 processResources {

@@ -139,6 +139,7 @@ public record JobLoader(RegistryWrapper.WrapperLookup wrapperLookup) implements 
         loadExperience(fileId, jobJsonObject, jobId, "taming", "entities", Registries.ENTITY_TYPE, JobExperienceType.TAMING.getExperienceMap());
         loadExperience(fileId, jobJsonObject, jobId, "trading", "items", Registries.ITEM, JobExperienceType.TRADING.getExperienceMap());
         loadExperience(fileId, jobJsonObject, jobId, "harvest", "blocks", Registries.BLOCK, JobExperienceType.HARVEST.getExperienceMap());
+        loadExperience(fileId, jobJsonObject, jobId, "casting", "items", Registries.ITEM, JobExperienceType.CASTING.getExperienceMap());
         loadEnchantingExperience(fileId, jobJsonObject, jobId);
     }
 

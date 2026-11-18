@@ -19,7 +19,8 @@ public enum JobExperienceType {
     BREEDING("breeding"),
     TAMING("taming"),
     TRADING("trading"),
-    HARVEST("harvest"); // falls back to blockbreak
+    HARVEST("harvest"), // falls back to blockbreak
+    CASTING("casting"); // cupellation casts
 
     private final String key;
     private final Map<Integer, List<JobExperience>> experienceMap = new HashMap<>();

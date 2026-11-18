@@ -32,7 +32,7 @@ A job requires:
 - maxlevel (integer): determines the max level of the job
 
 Optional a job can have one or multiple of the following objects where experience is granted from:
-- "blockbreak", "crafting", "enchanting", "brewing", "entitykill", "blockplace", "itemdrop", "smithing", "stonecutting", "breeding", "taming", "trading", "harvest"  
+- "blockbreak", "crafting", "enchanting", "brewing", "entitykill", "blockplace", "itemdrop", "smithing", "stonecutting", "breeding", "taming", "trading", "harvest", "casting"  
 
 An integer determines the experience per completion.
 
@@ -49,6 +49,7 @@ An integer determines the experience per completion.
 - taming: requires entity id list
 - trading: requires item id list of bought items, experience per trade
 - harvest: requires block id list of right click harvested blocks like sweet berry bushes and cave vines
+- casting: requires item id list of [Cupellation](https://modrinth.com/mod/cupellation) casts taken out of a casting table or basin, only listed items grant experience
 
 Block, item, entity and potion lists can contain tags, for example `"#minecraft:logs"`.\
 
