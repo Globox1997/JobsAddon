@@ -1,0 +1,54 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "GPLv3, ARR (Assets)"
+issueTrackerURL = "https://github.com/Globox1997/JobsAddon/issues"
+
+[[mods]]
+modId = "jobsaddon"
+version = "${version}"
+displayName = "JobsAddon"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/jobsaddon"
+iconFile = "assets/jobsaddon/icon.png"
+authors = "Globox_Z"
+description = '''An addon for LevelZ which adds jobs'''
+
+[[mixins]]
+config = "jobsaddon.mixins.json"
+
+[[mixins]]
+config = "jobsaddon.neoforge.mixins.json"
+
+[[dependencies.jobsaddon]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.jobsaddon]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.jobsaddon]]
+modId = "cloth_config"
+type = "required"
+versionRange = "[${cloth_config_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.jobsaddon]]
+modId = "levelz"
+type = "required"
+versionRange = "[2.0.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.jobsaddon]]
+modId = "libz"
+type = "required"
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"

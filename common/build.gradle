@@ -1,0 +1,76 @@
+plugins {
+    id 'net.neoforged.moddev'
+}
+
+neoForge {
+    neoFormVersion = neo_form_version
+}
+
+sourceSets {
+    main {
+        java {
+            rootProject.ext.disabledCompat.each { path -> exclude path }
+        }
+    }
+}
+
+dependencies {
+    compileOnly("net.fabricmc:sponge-mixin:${mixin_version}")
+    compileOnly("io.github.llamalad7:mixinextras-common:${mixinextras_version}")
+    // Loader independent Cloth Config
+    compileOnly("me.shedaniel.cloth:cloth-config:${cloth_config_version}") {
+        transitive = false
+    }
+    // LevelZ
+    compileOnly("maven.modrinth:levelz:${levelz_fabric_version}") {
+        transitive = false
+    }
+    // LibZ
+    compileOnly("maven.modrinth:libz:${libz_fabric_version}") {
+        transitive = false
+    }
+    // Numismatic
+    compileOnly('maven.modrinth:numismatic-overhaul:0.3.4+1.21') {
+        transitive = false
+    }
+    compileOnly("org.ladysnake.cardinal-components-api:cardinal-components-base:6.1.2") {
+        transitive = false
+    }
+    compileOnly("org.ladysnake.cardinal-components-api:cardinal-components-entity:6.1.2") {
+        transitive = false
+    }
+}
+
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+}
+
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+}
+
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements'].each { variant ->
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, 'common')
+        }
+    }
+}
+sourceSets.configureEach {
+    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName].each { variant ->
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, 'common')
+            }
+        }
+    }
+}

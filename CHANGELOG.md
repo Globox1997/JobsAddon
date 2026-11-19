@@ -1,8 +1,6 @@
 ### Added:
-- Cupellation compat
+- Neoforge support
 ### Fixed:
-- Jobs keybind not closing the jobs screen
-- Dying reset diminishing returns
-- Huge xp amounts issue
+- 
 ### Changed:
--
+- Updated to 26.3

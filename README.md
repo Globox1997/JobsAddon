@@ -1,10 +1,11 @@
 # JobsAddon
-
 JobsAddon is a mod addon for the [LevelZ](https://www.curseforge.com/minecraft/mc-mods/levelz) mod and adds jobs.
 
 ### Installation
+JobsAddon is a mod built for both the [Fabric Loader](https://fabricmc.net/) and [NeoForge](https://neoforged.net/).
 
-JobsAddon is a mod built for the [Fabric Loader](https://fabricmc.net/). It requires [LevelZ](https://www.curseforge.com/minecraft/mc-mods/levelz) to be installed separately; all other dependencies are installed with the mod.
+- **Fabric:** requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api), [LevelZ](https://www.curseforge.com/minecraft/mc-mods/levelz), [LibZ](https://www.curseforge.com/minecraft/mc-mods/libz) and [Cloth Config API](https://www.curseforge.com/minecraft/mc-mods/cloth-config) to be installed separately.
+- **NeoForge:** requires [Cloth Config API](https://www.curseforge.com/minecraft/mc-mods/cloth-config), [LevelZ](https://www.curseforge.com/minecraft/mc-mods/levelz) and [LibZ](https://www.curseforge.com/minecraft/mc-mods/libz) to be installed separately.
 
 ### License
 #### Source Code
@@ -17,7 +18,6 @@ are **All Rights Reserved** and may not be used, modified, or redistributed
 without explicit permission from the copyright holder.
 
 ### Datapacks
-
 Most of the mods default settings for jobs can get changed via datapacks, general settings can get changed via the config file.\
 If you don't know how to create a datapack check out [Data Pack Wiki](https://minecraft.fandom.com/wiki/Data_Pack) website and try to create your first one for the vanilla game.\
 If you know how to create one, the folder path has to be ```data\jobsaddon\job\YOURFILE.json```\

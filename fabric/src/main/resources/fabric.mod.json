@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "jobsaddon",
+  "version": "${version}",
+  "name": "JobsAddon",
+  "description": "An addon for LevelZ which adds jobs",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/jobsaddon",
+    "sources": "https://github.com/Globox1997/JobsAddon",
+    "issues": "https://github.com/Globox1997/JobsAddon/issues"
+  },
+  "license": [
+    "GPLv3",
+    "ARR (Assets)"
+  ],
+  "icon": "assets/jobsaddon/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.jobsaddon.fabric.JobsAddonFabric"
+    ],
+    "client": [
+      "net.jobsaddon.fabric.client.JobsAddonFabricClient"
+    ],
+    "modmenu": [
+      "net.jobsaddon.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "jobsaddon.mixins.json",
+    "jobsaddon.fabric.mixins.json"
+  ],
+  "depends": {
+    "java": ">=25",
+    "minecraft": ">=${minecraft_version}",
+    "fabric-api": ">=${fabric_version}",
+    "fabricloader": ">=${loader_version}",
+    "cloth-config2": ">=${cloth_config_version}",
+    "levelz": ">=2.0.0"
+  }
+}

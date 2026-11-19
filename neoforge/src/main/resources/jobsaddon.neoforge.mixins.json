@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.jobsaddon.neoforge.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "plugin": "net.jobsaddon.mixin.compat.JobsAddonMixinPlugin",
+  "mixins": [
+    "BlockWrapperMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
